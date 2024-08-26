@@ -1,0 +1,122 @@
+name: emartconsumer
+description: Application for eMart user.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.2+2
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.2.3
+  firebase_core: ^2.32.0
+  firebase_crashlytics: ^3.5.7
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.17.5
+  firebase_storage: ^11.7.7
+  firebase_messaging: ^14.9.4
+  flutter_local_notifications: ^17.1.2
+  flutter_facebook_auth: ^7.0.0
+  geoflutterfire2: ^2.3.15
+  geolocator: ^10.0.1
+  geocoding: ^3.0.0
+  firebase_app_check: ^0.2.2+7
+  googleapis_auth: ^1.6.0
+
+  #payment getway
+  mercadopago_sdk: ^1.3.0
+  flutter_stripe: ^10.1.1
+  paytm_allinonesdk: ^1.2.5
+  flutterwave_standard: ^1.0.8
+  razorpay_flutter: ^1.3.7
+  flutter_paypal_native: ^2.1.0
+
+  date_picker_plus: ^4.0.0
+  syncfusion_flutter_datepicker: ^25.2.6
+  image_picker: ^1.1.1
+  url_launcher: ^6.2.6
+  progress_dialog_null_safe: ^3.0.0
+  intl: ^0.19.0
+  cached_network_image: ^3.3.1
+  video_thumbnail: ^0.5.3
+  path_provider: ^2.1.3
+  photo_view: ^0.15.0
+  video_player: ^2.8.6
+  smooth_page_indicator: ^1.1.0
+  intl_phone_number_input: ^0.7.4
+  pin_code_fields: ^8.0.1
+  permission_handler: ^11.3.1
+  easy_localization: ^3.0.7
+  mime: ^1.0.5
+  moor_flutter:
+  path: ^1.9.0
+  font_awesome_flutter: ^10.7.0
+  flutter_polyline_points: ^2.0.0
+  percent_indicator: ^4.2.3
+  lottie: ^3.1.2
+  flutter_native_image: ^0.0.6+1
+  video_compress: ^3.1.2
+  the_apple_sign_in: ^1.1.1
+  cupertino_icons: ^1.0.8
+  dotted_border: ^2.1.0
+  flutter_rating_bar: ^4.0.1
+  google_maps_flutter: ^2.6.1
+  flutter_staggered_grid_view: ^0.7.0
+  clipboard: ^0.1.3
+  location: ^6.0.2
+  print_bluetooth_thermal: ^1.1.0
+  esc_pos_utils: ^1.1.0
+  flutter_qr_bar_scanner: ^3.0.2
+  flutter_widget_from_html: ^0.15.0
+  scroll_to_index: ^3.0.1
+  rect_getter: ^1.1.0
+  story_view: ^0.16.5
+  flutter_share: ^2.0.0
+  flutterflow_paginate_firestore: ^1.0.3+1
+  bottom_picker: ^2.7.0
+  mailer: ^6.1.0
+  flutter_easyloading: ^3.0.5
+  flutter_svg: ^2.0.10+1
+  carousel_slider: ^4.2.1
+
+dependency_overrides:
+  webview_flutter: ^4.8.0
+  google_maps_place_picker_mb: ^3.1.2
+  uuid: ^4.4.0
+  http: ^1.2.1
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/translations/
+    - assets/icons/
+    - assets/json/
+    - assets/fonts/
+    - assets/
+
+  fonts:
+    - family: Metropolis-Regular
+      fonts:
+        - weight: 500
+        - asset: assets/fonts/Metropolis-Regular.otf
+
+    - family: Metropolis-Medium
+      fonts:
+        - asset: assets/fonts/Metropolis-Medium.otf
+
+    - family: Metropolis-Bold
+      fonts:
+        - weight: 700
+        - asset: assets/fonts/Metropolis-Bold.otf
+
+    - family: Metropolis-SemiBold
+      fonts:
+        - asset: assets/fonts/Metropolis-SemiBold.otf
+
+    - family: Metropolis-ExtraBold
+      fonts:
+        - asset: assets/fonts/Metropolis-ExtraBold.otf

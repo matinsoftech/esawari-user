@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "291110943538",
+    "firebase_url": "https://e-sawari-46aa4-default-rtdb.firebaseio.com",
+    "project_id": "e-sawari-46aa4",
+    "storage_bucket": "e-sawari-46aa4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291110943538:android:60fa4b6b9619b4efb5f52b",
+        "android_client_info": {
+          "package_name": "com.esawari.matinsoftech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQuXLzuneXoRdHxpRf9TCkmuS_547OnLg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
