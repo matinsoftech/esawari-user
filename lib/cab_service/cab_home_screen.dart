@@ -77,11 +77,13 @@ class _CabHomeScreenState extends State<CabHomeScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: Text(
-                          "Welcome".tr() +
-                              " ${MyAppState.currentUser == null ? '' : MyAppState.currentUser!.firstName ?? ''}",
-                          style: const TextStyle(
-                              fontSize: 22, color: Colors.black))
-                      .tr(),
+                    "Welcome".tr() +
+                        " ${MyAppState.currentUser == null ? '' : MyAppState.currentUser!.firstName ?? ''}",
+                    style: const TextStyle(
+                      fontSize: 22,
+                      color: Colors.black,
+                    ),
+                  ).tr(),
                 ),
               ),
             ],

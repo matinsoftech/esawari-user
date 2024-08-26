@@ -25,6 +25,7 @@ import 'package:emartconsumer/utils/DarkThemeProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 enum DrawerSelection {
@@ -537,7 +538,7 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                                       await auth.FirebaseAuth.instance
                                           .signOut();
                                       MyAppState.currentUser = null;
-                                      COLOR_PRIMARY = 0xFF00B761;
+                                      // COLOR_PRIMARY = 0xFF00B761;
                                       Provider.of<CartDatabase>(context,
                                               listen: false)
                                           .deleteAllProducts();
@@ -558,36 +559,45 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                     )),
               ),
               appBar: AppBar(
-                centerTitle: false,
-                title: Text(
-                  "Esawari".tr(),
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.normal),
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    icon: Icon(
+                      Icons.sort,
+                      weight: 1000,
+                      size: 40,
+                    ),
+                    color: const Color.fromARGB(255, 246, 48, 34),
+                  ),
                 ),
+                centerTitle: false,
+                title: Center(
+                  child: Image(
+                    image: isDarkMode(context)
+                        ? AssetImage("assets/images/ESAWARI_LOGO_white.png")
+                        : AssetImage("assets/images/ESAWARI_LOGO.png"),
+                    width: 110,
+                  ),
+                ),
+
+                //  Text(
+                //   "Esawari".tr(),
+                //   textAlign: TextAlign.left,
+                //   style: const TextStyle(
+                //       fontSize: 18, fontWeight: FontWeight.normal),
+                // ),
                 actions: [
                   IconButton(
                       padding: const EdgeInsets.only(right: 20),
                       visualDensity: const VisualDensity(horizontal: -4),
-                      tooltip: 'QrCode'.tr(),
-                      icon: Stack(
-                        clipBehavior: Clip.none,
-                        children: const [
-                          Image(
-                            image: AssetImage("assets/images/qrscan.png"),
-                            width: 20,
-                            color: Colors.black,
-                          ),
-                        ],
+                      tooltip: 'Notification'.tr(),
+                      icon: Icon(
+                        Icons.notifications,
+                        size: 25,
                       ),
-                      onPressed: () {
-                        push(
-                          context,
-                          QrCodeScanner(
-                            presectionList: preSectionList,
-                          ),
-                        );
-                      }),
+                      onPressed: () {}),
                   // IconButton(
                   //     padding: const EdgeInsets.only(right: 20),
                   //     visualDensity: const VisualDensity(horizontal: -4),

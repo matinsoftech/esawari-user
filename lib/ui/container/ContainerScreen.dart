@@ -67,7 +67,13 @@ class ContainerScreen extends StatefulWidget {
   final String appBarTitle;
   final DrawerSelection drawerSelection;
 
-  ContainerScreen({Key? key, required this.user, currentWidget, vendorId, appBarTitle, this.drawerSelection = DrawerSelection.Home})
+  ContainerScreen(
+      {Key? key,
+      required this.user,
+      currentWidget,
+      vendorId,
+      appBarTitle,
+      this.drawerSelection = DrawerSelection.Home})
       : appBarTitle = appBarTitle ?? 'Home'.tr(),
         vendorId = vendorId ?? "",
         currentWidget = currentWidget ??
@@ -123,17 +129,15 @@ class _ContainerScreen extends State<ContainerScreen> {
       sound: true,
     );
     getTaxList();
-
   }
 
-  getTaxList() async{
+  getTaxList() async {
     await FireStoreUtils().getTaxList(sectionConstantModel!.id).then((value) {
       if (value != null) {
         taxList = value;
       }
     });
   }
-
 
   @override
   void didChangeDependencies() {
@@ -166,7 +170,8 @@ class _ContainerScreen extends State<ContainerScreen> {
         value: user,
         child: Consumer<User>(builder: (context, user, _) {
           return Scaffold(
-            extendBodyBehindAppBar: _drawerSelection == DrawerSelection.Wallet ? true : false,
+            extendBodyBehindAppBar:
+                _drawerSelection == DrawerSelection.Wallet ? true : false,
             key: key,
             drawer: Drawer(
               child: Container(
@@ -182,32 +187,42 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    displayCircleImage(user.profilePictureURL, 75, false),
+                                    displayCircleImage(
+                                        user.profilePictureURL, 75, false),
                                     Row(
                                       children: [
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsets.only(top: 8.0),
+                                                padding: const EdgeInsets.only(
+                                                    top: 8.0),
                                                 child: Text(
                                                   user.fullName(),
-                                                  style: const TextStyle(color: Colors.white),
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
                                                 ),
                                               ),
                                               Padding(
-                                                  padding: const EdgeInsets.only(top: 5.0),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 5.0),
                                                   child: Text(
                                                     user.email,
-                                                    style: const TextStyle(color: Colors.white),
+                                                    style: const TextStyle(
+                                                        color: Colors.white),
                                                   )),
                                             ],
                                           ),
                                         ),
                                         Row(
                                           children: [
-                                            !themeChange.darkTheme ? const Icon(Icons.light_mode_sharp) : const Icon(Icons.nightlight),
+                                            !themeChange.darkTheme
+                                                ? const Icon(
+                                                    Icons.light_mode_sharp)
+                                                : const Icon(Icons.nightlight),
                                             Switch(
                                               // thumb color (round icon)
                                               splashRadius: 50.0,
@@ -215,7 +230,9 @@ class _ContainerScreen extends State<ContainerScreen> {
                                               // inactiveThumbImage: const AssetImage('http://wolfrosch.com/_img/works/goodies/icon/vim@2x'),
 
                                               value: themeChange.darkTheme,
-                                              onChanged: (value) => setState(() => themeChange.darkTheme = value),
+                                              onChanged: (value) => setState(
+                                                  () => themeChange.darkTheme =
+                                                      value),
                                             ),
                                           ],
                                         ),
@@ -232,15 +249,18 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.Dashboard,
+                                selected: _drawerSelection ==
+                                    DrawerSelection.Dashboard,
                                 title: const Text('Dashboard').tr(),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  pushAndRemoveUntil(context, const StoreSelection(), false);
+                                  pushAndRemoveUntil(
+                                      context, const StoreSelection(), false);
                                 },
                                 leading: Image.asset(
                                   'assets/images/dashboard.png',
-                                  color: _drawerSelection == DrawerSelection.Cuisines
+                                  color: _drawerSelection ==
+                                          DrawerSelection.Cuisines
                                       ? Color(COLOR_PRIMARY)
                                       : isDarkMode(context)
                                           ? Colors.grey.shade200
@@ -254,7 +274,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.Home,
+                                selected:
+                                    _drawerSelection == DrawerSelection.Home,
                                 title: const Text('Stores').tr(),
                                 onTap: () {
                                   Navigator.pop(context);
@@ -273,10 +294,12 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.Cuisines,
+                                  selected: _drawerSelection ==
+                                      DrawerSelection.Cuisines,
                                   leading: Image.asset(
                                     'assets/images/category.png',
-                                    color: _drawerSelection == DrawerSelection.Cuisines
+                                    color: _drawerSelection ==
+                                            DrawerSelection.Cuisines
                                         ? Color(COLOR_PRIMARY)
                                         : isDarkMode(context)
                                             ? Colors.grey.shade200
@@ -288,7 +311,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                                   onTap: () {
                                     Navigator.pop(context);
                                     setState(() {
-                                      _drawerSelection = DrawerSelection.Cuisines;
+                                      _drawerSelection =
+                                          DrawerSelection.Cuisines;
                                       _appBarTitle = 'Categories'.tr();
                                       _currentWidget = const CuisinesScreen();
                                     });
@@ -300,14 +324,16 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 style: ListTileStyle.drawer,
                                 selectedColor: Color(COLOR_PRIMARY),
                                 child: ListTile(
-                                    selected: _drawerSelection == DrawerSelection.dineIn,
+                                    selected: _drawerSelection ==
+                                        DrawerSelection.dineIn,
                                     leading: const Icon(Icons.restaurant),
                                     title: const Text('Dine-in').tr(),
                                     onTap: () {
                                       Navigator.pop(context);
 
                                       setState(() {
-                                        _drawerSelection = DrawerSelection.dineIn;
+                                        _drawerSelection =
+                                            DrawerSelection.dineIn;
                                         _appBarTitle = 'Dine-In'.tr();
                                         _currentWidget = DineInScreen(
                                           user: MyAppState.currentUser!,
@@ -320,7 +346,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.Search,
+                                  selected: _drawerSelection ==
+                                      DrawerSelection.Search,
                                   title: const Text('Search').tr(),
                                   leading: const Icon(Icons.search),
                                   onTap: () async {
@@ -340,7 +367,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.LikedStore,
+                                selected: _drawerSelection ==
+                                    DrawerSelection.LikedStore,
                                 title: const Text('Favourite Stores').tr(),
                                 onTap: () {
                                   Navigator.pop(context);
@@ -348,9 +376,11 @@ class _ContainerScreen extends State<ContainerScreen> {
                                     push(context, const AuthScreen());
                                   } else {
                                     setState(() {
-                                      _drawerSelection = DrawerSelection.LikedStore;
+                                      _drawerSelection =
+                                          DrawerSelection.LikedStore;
                                       _appBarTitle = 'Favourite Stores'.tr();
-                                      _currentWidget = const FavouriteStoreScreen();
+                                      _currentWidget =
+                                          const FavouriteStoreScreen();
                                     });
                                   }
                                 },
@@ -361,7 +391,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.LikedProduct,
+                                selected: _drawerSelection ==
+                                    DrawerSelection.LikedProduct,
                                 title: const Text('Favourite Item').tr(),
                                 onTap: () {
                                   Navigator.pop(context);
@@ -369,9 +400,11 @@ class _ContainerScreen extends State<ContainerScreen> {
                                     push(context, const AuthScreen());
                                   } else {
                                     setState(() {
-                                      _drawerSelection = DrawerSelection.LikedProduct;
+                                      _drawerSelection =
+                                          DrawerSelection.LikedProduct;
                                       _appBarTitle = 'Favourite Item'.tr();
-                                      _currentWidget = const FavouriteItemScreen();
+                                      _currentWidget =
+                                          const FavouriteItemScreen();
                                     });
                                   }
                                 },
@@ -384,8 +417,10 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 style: ListTileStyle.drawer,
                                 selectedColor: Color(COLOR_PRIMARY),
                                 child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.Wallet,
-                                  leading: const Icon(Icons.account_balance_wallet_outlined),
+                                  selected: _drawerSelection ==
+                                      DrawerSelection.Wallet,
+                                  leading: const Icon(
+                                      Icons.account_balance_wallet_outlined),
                                   title: const Text('Wallet').tr(),
                                   onTap: () {
                                     Navigator.pop(context);
@@ -393,7 +428,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                                       push(context, const AuthScreen());
                                     } else {
                                       setState(() {
-                                        _drawerSelection = DrawerSelection.Wallet;
+                                        _drawerSelection =
+                                            DrawerSelection.Wallet;
                                         _appBarTitle = 'Wallet'.tr();
                                         _currentWidget = const WalletScreen();
                                       });
@@ -406,7 +442,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.Cart,
+                                selected:
+                                    _drawerSelection == DrawerSelection.Cart,
                                 leading: const Icon(CupertinoIcons.cart),
                                 title: const Text('Cart').tr(),
                                 onTap: () {
@@ -427,7 +464,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.giftCard,
+                                  selected: _drawerSelection ==
+                                      DrawerSelection.giftCard,
                                   title: Text('Gift Card').tr(),
                                   leading: Icon(Icons.card_giftcard),
                                   onTap: () async {
@@ -439,7 +477,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.referral,
+                                selected: _drawerSelection ==
+                                    DrawerSelection.referral,
                                 leading: Image.asset(
                                   'assets/images/refer.png',
                                   width: 28,
@@ -461,7 +500,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.Profile,
+                                selected:
+                                    _drawerSelection == DrawerSelection.Profile,
                                 leading: const Icon(CupertinoIcons.person),
                                 title: const Text('profile').tr(),
                                 onTap: () {
@@ -470,7 +510,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                                     push(context, const AuthScreen());
                                   } else {
                                     setState(() {
-                                      _drawerSelection = DrawerSelection.Profile;
+                                      _drawerSelection =
+                                          DrawerSelection.Profile;
                                       _appBarTitle = 'My Profile'.tr();
                                       _currentWidget = const ProfileScreen();
                                     });
@@ -482,14 +523,16 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.Orders,
+                                selected:
+                                    _drawerSelection == DrawerSelection.Orders,
                                 leading: Image.asset(
                                   'assets/images/truck.png',
-                                  color: _drawerSelection == DrawerSelection.Orders
-                                      ? Color(COLOR_PRIMARY)
-                                      : isDarkMode(context)
-                                          ? Colors.grey.shade200
-                                          : Colors.grey.shade600,
+                                  color:
+                                      _drawerSelection == DrawerSelection.Orders
+                                          ? Color(COLOR_PRIMARY)
+                                          : isDarkMode(context)
+                                              ? Colors.grey.shade200
+                                              : Colors.grey.shade600,
                                   width: 24,
                                   height: 24,
                                 ),
@@ -514,10 +557,12 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 style: ListTileStyle.drawer,
                                 selectedColor: Color(COLOR_PRIMARY),
                                 child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.MyBooking,
+                                  selected: _drawerSelection ==
+                                      DrawerSelection.MyBooking,
                                   leading: Image.asset(
                                     'assets/images/your_booking.png',
-                                    color: _drawerSelection == DrawerSelection.MyBooking
+                                    color: _drawerSelection ==
+                                            DrawerSelection.MyBooking
                                         ? Color(COLOR_PRIMARY)
                                         : isDarkMode(context)
                                             ? Colors.grey.shade200
@@ -532,9 +577,11 @@ class _ContainerScreen extends State<ContainerScreen> {
                                       push(context, const AuthScreen());
                                     } else {
                                       setState(() {
-                                        _drawerSelection = DrawerSelection.MyBooking;
+                                        _drawerSelection =
+                                            DrawerSelection.MyBooking;
                                         _appBarTitle = 'Dine-In Bookings'.tr();
-                                        _currentWidget = const MyBookingScreen();
+                                        _currentWidget =
+                                            const MyBookingScreen();
                                       });
                                     }
                                   },
@@ -547,10 +594,12 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 style: ListTileStyle.drawer,
                                 selectedColor: Color(COLOR_PRIMARY),
                                 child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.chooseLanguage,
+                                  selected: _drawerSelection ==
+                                      DrawerSelection.chooseLanguage,
                                   leading: Icon(
                                     Icons.language,
-                                    color: _drawerSelection == DrawerSelection.chooseLanguage
+                                    color: _drawerSelection ==
+                                            DrawerSelection.chooseLanguage
                                         ? Color(COLOR_PRIMARY)
                                         : isDarkMode(context)
                                             ? Colors.grey.shade200
@@ -560,7 +609,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                                   onTap: () {
                                     Navigator.pop(context);
                                     setState(() {
-                                      _drawerSelection = DrawerSelection.chooseLanguage;
+                                      _drawerSelection =
+                                          DrawerSelection.chooseLanguage;
                                       _appBarTitle = 'Language'.tr();
                                       _currentWidget = LanguageChooseScreen(
                                         isContainer: true,
@@ -574,7 +624,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.termsCondition,
+                                selected: _drawerSelection ==
+                                    DrawerSelection.termsCondition,
                                 leading: const Icon(Icons.policy),
                                 title: const Text('Terms and Condition').tr(),
                                 onTap: () async {
@@ -586,7 +637,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.privacyPolicy,
+                                selected: _drawerSelection ==
+                                    DrawerSelection.privacyPolicy,
                                 leading: const Icon(Icons.privacy_tip),
                                 title: const Text('Privacy policy').tr(),
                                 onTap: () async {
@@ -598,8 +650,10 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.inbox,
-                                leading: const Icon(CupertinoIcons.chat_bubble_2_fill),
+                                selected:
+                                    _drawerSelection == DrawerSelection.inbox,
+                                leading: const Icon(
+                                    CupertinoIcons.chat_bubble_2_fill),
                                 title: const Text('Store Inbox').tr(),
                                 onTap: () {
                                   if (MyAppState.currentUser == null) {
@@ -620,8 +674,10 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.driver,
-                                leading: const Icon(CupertinoIcons.chat_bubble_2_fill),
+                                selected:
+                                    _drawerSelection == DrawerSelection.driver,
+                                leading: const Icon(
+                                    CupertinoIcons.chat_bubble_2_fill),
                                 title: const Text('Driver Inbox').tr(),
                                 onTap: () {
                                   if (MyAppState.currentUser == null) {
@@ -632,7 +688,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                                     setState(() {
                                       _drawerSelection = DrawerSelection.driver;
                                       _appBarTitle = 'Driver Inbox'.tr();
-                                      _currentWidget = const InboxDriverScreen();
+                                      _currentWidget =
+                                          const InboxDriverScreen();
                                     });
                                   }
                                 },
@@ -642,23 +699,32 @@ class _ContainerScreen extends State<ContainerScreen> {
                               style: ListTileStyle.drawer,
                               selectedColor: Color(COLOR_PRIMARY),
                               child: ListTile(
-                                selected: _drawerSelection == DrawerSelection.Logout,
+                                selected:
+                                    _drawerSelection == DrawerSelection.Logout,
                                 leading: const Icon(Icons.logout),
-                                title: Text((MyAppState.currentUser == null) ? 'Log In'.tr() : 'Log Out'.tr()),
+                                title: Text((MyAppState.currentUser == null)
+                                    ? 'Log In'.tr()
+                                    : 'Log Out'.tr()),
                                 onTap: () async {
                                   if (MyAppState.currentUser == null) {
-                                    pushAndRemoveUntil(context, const AuthScreen(), false);
+                                    pushAndRemoveUntil(
+                                        context, const AuthScreen(), false);
                                   } else {
                                     Navigator.pop(context);
                                     //MyAppState.currentUser!.active = false;
-                                    MyAppState.currentUser!.lastOnlineTimestamp = Timestamp.now();
+                                    MyAppState.currentUser!
+                                        .lastOnlineTimestamp = Timestamp.now();
                                     MyAppState.currentUser!.fcmToken = "";
-                                    await FireStoreUtils.updateCurrentUser(MyAppState.currentUser!);
+                                    await FireStoreUtils.updateCurrentUser(
+                                        MyAppState.currentUser!);
                                     await auth.FirebaseAuth.instance.signOut();
                                     MyAppState.currentUser = null;
-                                    COLOR_PRIMARY = 0xFF00B761;
-                                    Provider.of<CartDatabase>(context, listen: false).deleteAllProducts();
-                                    pushAndRemoveUntil(context, const AuthScreen(), false);
+                                    // COLOR_PRIMARY = 0xFF00B761;
+                                    Provider.of<CartDatabase>(context,
+                                            listen: false)
+                                        .deleteAllProducts();
+                                    pushAndRemoveUntil(
+                                        context, const AuthScreen(), false);
                                   }
                                 },
                               ),
@@ -675,7 +741,8 @@ class _ContainerScreen extends State<ContainerScreen> {
             ),
             appBar: AppBar(
               elevation: _drawerSelection == DrawerSelection.Wallet ? 0 : 0,
-              centerTitle: _drawerSelection == DrawerSelection.Wallet ? true : false,
+              centerTitle:
+                  _drawerSelection == DrawerSelection.Wallet ? true : false,
               backgroundColor: _drawerSelection == DrawerSelection.Wallet
                   ? Colors.transparent
                   : isDarkMode(context)
@@ -694,7 +761,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                     width: 20,
                     color: _drawerSelection == DrawerSelection.Wallet
                         ? Colors.white
-                        : isDarkMode(context) || _drawerSelection == DrawerSelection.Home
+                        : isDarkMode(context) ||
+                                _drawerSelection == DrawerSelection.Home
                             ? Colors.white
                             : Colors.black,
                   ),
@@ -704,7 +772,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                 _appBarTitle,
                 style: TextStyle(
                     fontSize: 18,
-                    color: _drawerSelection == DrawerSelection.Wallet || _drawerSelection == DrawerSelection.Home
+                    color: _drawerSelection == DrawerSelection.Wallet ||
+                            _drawerSelection == DrawerSelection.Home
                         ? Colors.white
                         : isDarkMode(context)
                             ? Colors.white
@@ -712,18 +781,24 @@ class _ContainerScreen extends State<ContainerScreen> {
                     //isDarkMode(context) ? Colors.white : Colors.black,
                     fontWeight: FontWeight.normal),
               ),
-              actions: _drawerSelection == DrawerSelection.Wallet || _drawerSelection == DrawerSelection.MyBooking
+              actions: _drawerSelection == DrawerSelection.Wallet ||
+                      _drawerSelection == DrawerSelection.MyBooking
                   ? []
                   : _drawerSelection == DrawerSelection.dineIn
                       ? [
                           IconButton(
                               padding: const EdgeInsets.only(right: 20),
-                              visualDensity: const VisualDensity(horizontal: -4),
+                              visualDensity:
+                                  const VisualDensity(horizontal: -4),
                               tooltip: 'QrCode'.tr(),
                               icon: Image(
-                                image: const AssetImage("assets/images/qrscan.png"),
+                                image: const AssetImage(
+                                    "assets/images/qrscan.png"),
                                 width: 20,
-                                color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : Colors.black,
+                                color: isDarkMode(context) ||
+                                        _drawerSelection == DrawerSelection.Home
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                               onPressed: () {
                                 push(
@@ -734,24 +809,35 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 );
                               }),
                           IconButton(
-                              visualDensity: const VisualDensity(horizontal: -4),
+                              visualDensity:
+                                  const VisualDensity(horizontal: -4),
                               padding: const EdgeInsets.only(right: 10),
                               icon: Image(
-                                image: const AssetImage("assets/images/search.png"),
+                                image: const AssetImage(
+                                    "assets/images/search.png"),
                                 width: 20,
-                                color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : null,
+                                color: isDarkMode(context) ||
+                                        _drawerSelection == DrawerSelection.Home
+                                    ? Colors.white
+                                    : null,
                               ),
                               onPressed: () {
                                 push(context, const SearchScreen());
                               }),
-                          if (_currentWidget is! CartScreen || _currentWidget is! ProfileScreen)
+                          if (_currentWidget is! CartScreen ||
+                              _currentWidget is! ProfileScreen)
                             IconButton(
-                              visualDensity: const VisualDensity(horizontal: -4),
+                              visualDensity:
+                                  const VisualDensity(horizontal: -4),
                               padding: const EdgeInsets.only(right: 10),
                               icon: Image(
-                                image: const AssetImage("assets/images/map.png"),
+                                image:
+                                    const AssetImage("assets/images/map.png"),
                                 width: 20,
-                                color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : const Color(0xFF333333),
+                                color: isDarkMode(context) ||
+                                        _drawerSelection == DrawerSelection.Home
+                                    ? Colors.white
+                                    : const Color(0xFF333333),
                               ),
                               onPressed: () => push(
                                 context,
@@ -762,12 +848,17 @@ class _ContainerScreen extends State<ContainerScreen> {
                       : [
                           IconButton(
                               padding: const EdgeInsets.only(right: 20),
-                              visualDensity: const VisualDensity(horizontal: -4),
+                              visualDensity:
+                                  const VisualDensity(horizontal: -4),
                               tooltip: 'QrCode'.tr(),
                               icon: Image(
-                                image: const AssetImage("assets/images/qrscan.png"),
+                                image: const AssetImage(
+                                    "assets/images/qrscan.png"),
                                 width: 20,
-                                color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : Colors.black,
+                                color: isDarkMode(context) ||
+                                        _drawerSelection == DrawerSelection.Home
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                               onPressed: () {
                                 push(
@@ -778,42 +869,60 @@ class _ContainerScreen extends State<ContainerScreen> {
                                 );
                               }),
                           IconButton(
-                              visualDensity: const VisualDensity(horizontal: -4),
+                              visualDensity:
+                                  const VisualDensity(horizontal: -4),
                               padding: const EdgeInsets.only(right: 10),
                               icon: Image(
-                                image: const AssetImage("assets/images/search.png"),
+                                image: const AssetImage(
+                                    "assets/images/search.png"),
                                 width: 20,
-                                color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : null,
+                                color: isDarkMode(context) ||
+                                        _drawerSelection == DrawerSelection.Home
+                                    ? Colors.white
+                                    : null,
                               ),
                               onPressed: () {
                                 push(context, const SearchScreen());
                               }),
-                          if (_currentWidget is! CartScreen || _currentWidget is! ProfileScreen)
+                          if (_currentWidget is! CartScreen ||
+                              _currentWidget is! ProfileScreen)
                             IconButton(
-                              visualDensity: const VisualDensity(horizontal: -4),
+                              visualDensity:
+                                  const VisualDensity(horizontal: -4),
                               padding: const EdgeInsets.only(right: 10),
                               icon: Image(
-                                image: const AssetImage("assets/images/map.png"),
+                                image:
+                                    const AssetImage("assets/images/map.png"),
                                 width: 20,
-                                color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : const Color(0xFF333333),
+                                color: isDarkMode(context) ||
+                                        _drawerSelection == DrawerSelection.Home
+                                    ? Colors.white
+                                    : const Color(0xFF333333),
                               ),
                               onPressed: () => push(
                                 context,
                                 const MapViewScreen(),
                               ),
                             ),
-                          if (_currentWidget is! CartScreen || _currentWidget is! ProfileScreen)
+                          if (_currentWidget is! CartScreen ||
+                              _currentWidget is! ProfileScreen)
                             IconButton(
                                 padding: const EdgeInsets.only(right: 20),
-                                visualDensity: const VisualDensity(horizontal: -4),
+                                visualDensity:
+                                    const VisualDensity(horizontal: -4),
                                 tooltip: 'Cart'.tr(),
                                 icon: Stack(
                                   clipBehavior: Clip.none,
                                   children: [
                                     Image(
-                                      image: const AssetImage("assets/images/cart.png"),
+                                      image: const AssetImage(
+                                          "assets/images/cart.png"),
                                       width: 20,
-                                      color: isDarkMode(context) || _drawerSelection == DrawerSelection.Home ? Colors.white : null,
+                                      color: isDarkMode(context) ||
+                                              _drawerSelection ==
+                                                  DrawerSelection.Home
+                                          ? Colors.white
+                                          : null,
                                     ),
                                     StreamBuilder<List<CartProduct>>(
                                       stream: cartDatabase.watchProducts,
@@ -841,7 +950,9 @@ class _ContainerScreen extends State<ContainerScreen> {
                                               ),
                                               child: Center(
                                                 child: Text(
-                                                  cartCount <= 99 ? '$cartCount' : '+99',
+                                                  cartCount <= 99
+                                                      ? '$cartCount'
+                                                      : '+99',
                                                   style: const TextStyle(
                                                     color: Colors.white,
                                                     // fontSize: 10,

@@ -157,8 +157,8 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
         //SELECTED_CATEGORY = sectionModel.id.toString();
         // SELECTED_SECTION_NAME = sectionModel.name.toString();
         // isDineEnable = sectionModel.dineInActive!;
-        COLOR_PRIMARY =
-            int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
+        // COLOR_PRIMARY =
+        //     int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
         user.fcmToken = await FireStoreUtils.firebaseMessaging.getToken() ?? '';
         await FireStoreUtils.updateCurrentUser(user);
         Navigator.of(context).pop();
@@ -177,8 +177,8 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
         //SELECTED_CATEGORY = sectionModel.id.toString();
         // SELECTED_SECTION_NAME = sectionModel.name.toString();
         // isDineEnable = sectionModel.dineInActive!;
-        COLOR_PRIMARY =
-            int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
+        // COLOR_PRIMARY =
+        //     int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
         push(context, ContainerScreen(user: null));
       } else {
         pushReplacement(context, const AuthScreen());
