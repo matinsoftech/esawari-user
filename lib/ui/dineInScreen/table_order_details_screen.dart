@@ -52,6 +52,7 @@ class _TableOrderDetailsScreenState extends State<TableOrderDetailsScreen> {
     } else if (widget.bookTableModel.status == ORDER_STATUS_ACCEPTED) {
       bookStatus = 'Confirmed'.tr();
       polyLinesFuture = polylinePoints.getRouteBetweenCoordinates(
+        googleApiKey: GOOGLE_API_KEY,
         request: PolylineRequest(
           origin: PointLatLng(widget.bookTableModel.vendor.latitude,
               widget.bookTableModel.vendor.longitude),

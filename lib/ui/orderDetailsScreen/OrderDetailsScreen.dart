@@ -2172,6 +2172,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         List<LatLng> polylineCoordinates = [];
 
         PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+          googleApiKey: GOOGLE_API_KEY,
           request: PolylineRequest(
             origin: PointLatLng(_driverModel!.location.latitude,
                 _driverModel!.location.longitude),
@@ -2211,6 +2212,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         List<LatLng> polylineCoordinates = [];
 
         PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+          googleApiKey: GOOGLE_API_KEY,
           request: PolylineRequest(
             origin: PointLatLng(_driverModel!.location.latitude,
                 _driverModel!.location.longitude),

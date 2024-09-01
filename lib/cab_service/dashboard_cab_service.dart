@@ -4,13 +4,11 @@ import 'package:emartconsumer/cab_service/cab_home_screen.dart';
 import 'package:emartconsumer/cab_service/cab_order_screen.dart';
 import 'package:emartconsumer/constants.dart';
 import 'package:emartconsumer/main.dart';
-import 'package:emartconsumer/model/SectionModel.dart';
 import 'package:emartconsumer/model/User.dart';
 import 'package:emartconsumer/services/FirebaseHelper.dart';
 import 'package:emartconsumer/services/helper.dart';
 import 'package:emartconsumer/services/localDatabase.dart';
 import 'package:emartconsumer/ui/Language/language_choose_screen.dart';
-import 'package:emartconsumer/ui/QrCodeScanner/QrCodeScanner.dart';
 import 'package:emartconsumer/ui/StoreSelection/StoreSelection.dart';
 import 'package:emartconsumer/ui/auth/AuthScreen.dart';
 import 'package:emartconsumer/ui/chat_screen/inbox_driver_screen.dart';
@@ -25,7 +23,6 @@ import 'package:emartconsumer/utils/DarkThemeProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 enum DrawerSelection {
@@ -50,19 +47,19 @@ class DashBoardCabService extends StatefulWidget {
   final String appBarTitle;
   final DrawerSelection drawerSelection;
 
-  DashBoardCabService(
-      {Key? key,
-      required this.user,
-      currentWidget,
-      vendorId,
-      appBarTitle,
-      this.drawerSelection = DrawerSelection.Home})
-      : appBarTitle = appBarTitle ?? 'Home'.tr(),
+  DashBoardCabService({
+    Key? key,
+    required this.user,
+    currentWidget,
+    vendorId,
+    appBarTitle,
+    this.drawerSelection = DrawerSelection.Home,
+  })  : appBarTitle = appBarTitle ?? 'E-sawari',
         vendorId = vendorId ?? "",
-        currentWidget = currentWidget ?? StoreSelection(),
-        // CabHomeScreen(
-        //   user: MyAppState.currentUser,
-        // ),
+        currentWidget = currentWidget ??
+            CabHomeScreen(
+              user: MyAppState.currentUser,
+            ),
         super(key: key);
 
   @override
@@ -84,7 +81,6 @@ class _DashBoardCabService extends State<DashBoardCabService> {
 
   int cartCount = 0;
   bool? isWalletEnable;
-  var preSectionList = <SectionModel>[];
 
   @override
   void initState() {
@@ -113,13 +109,13 @@ class _DashBoardCabService extends State<DashBoardCabService> {
     // getTaxList();
   }
 
-  // getTaxList() async {
-  //   await FireStoreUtils().getTaxList(sectionConstantModel!.id).then((value) {
-  //     if (value != null) {
-  //       taxList = value;
-  //     }
-  //   });
-  // }
+  getTaxList() async {
+    await FireStoreUtils().getTaxList(sectionConstantModel!.id).then((value) {
+      if (value != null) {
+        taxList = value;
+      }
+    });
+  }
 
   @override
   void didChangeDependencies() {
@@ -248,67 +244,54 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                                   ),
                                 );
                               }),
-                              ListTileTheme(
-                                style: ListTileStyle.drawer,
-                                selectedColor: Color(COLOR_PRIMARY),
-                                child: ListTile(
-                                  selected: _drawerSelection ==
-                                      DrawerSelection.Dashboard,
-                                  title: const Text('Home').tr(),
-                                  onTap: () {
-                                    // Navigator.pop(context);
-                                    // if (MyAppState.currentUser == null) {
-                                    //   push(context, const AuthScreen());
-                                    // } else {
-                                    //   setState(() {
-                                    //     _drawerSelection =
-                                    //         DrawerSelection.Dashboard;
-                                    //     // _appBarTitle = 'Wallet'.tr();
-                                    //     _currentWidget = DashBoardCabService(
-                                    //       user: MyAppState.currentUser,
-                                    //     );
-                                    //   });
-                                    // }
-                                    key.currentState!.openEndDrawer();
-                                    push(
-                                        context,
-                                        DashBoardCabService(
-                                          user: user,
-                                        ));
-                                  },
-                                  leading: Image.asset(
-                                    'assets/images/dashboard.png',
-                                    color: _drawerSelection ==
-                                            DrawerSelection.Dashboard
-                                        ? Color(COLOR_PRIMARY)
-                                        : isDarkMode(context)
-                                            ? Colors.grey.shade200
-                                            : Colors.grey.shade600,
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              ),
                               // ListTileTheme(
                               //   style: ListTileStyle.drawer,
                               //   selectedColor: Color(COLOR_PRIMARY),
                               //   child: ListTile(
-                              //     selected:
-                              //         _drawerSelection == DrawerSelection.Home,
-                              //     title: const Text('Book Ride').tr(),
+                              //     selected: _drawerSelection ==
+                              //         DrawerSelection.Dashboard,
+                              //     title: const Text('Dashboard').tr(),
                               //     onTap: () {
                               //       Navigator.pop(context);
-                              //       setState(() {
-                              // _drawerSelection = DrawerSelection.Home;
-                              //         _appBarTitle = 'Stores'.tr();
-                              //         _currentWidget = CabHomeScreen(
-                              //           user: MyAppState.currentUser,
-                              //         );
-                              //       });
+                              //       // pushAndRemoveUntil(
+                              //       //     context, const StoreSelection(), false);
                               //     },
-                              //     leading: const Icon(CupertinoIcons.home),
+                              //     leading: Image.asset(
+                              //       'assets/images/dashboard.png',
+                              //       color: _drawerSelection ==
+                              //               DrawerSelection.Dashboard
+                              //           ? Color(COLOR_PRIMARY)
+                              //           : isDarkMode(context)
+                              //               ? Colors.grey.shade200
+                              //               : Colors.grey.shade600,
+                              //       width: 24,
+                              //       height: 24,
+                              //     ),
                               //   ),
                               // ),
+
+                              ListTileTheme(
+                                style: ListTileStyle.drawer,
+                                selectedColor: Color(COLOR_PRIMARY),
+                                child: ListTile(
+                                  selected:
+                                      _drawerSelection == DrawerSelection.Home,
+                                  title: const Text('Home').tr(),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    setState(
+                                      () {
+                                        _drawerSelection = DrawerSelection.Home;
+                                        _appBarTitle = 'E-sawari';
+                                        _currentWidget = CabHomeScreen(
+                                          user: MyAppState.currentUser,
+                                        );
+                                      },
+                                    );
+                                  },
+                                  leading: const Icon(CupertinoIcons.home),
+                                ),
+                              ),
                               Visibility(
                                 visible:
                                     UserPreference.getWalletData() ?? false,
@@ -369,6 +352,7 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                                         _appBarTitle = 'My Profile'.tr();
                                         _currentWidget = const ProfileScreen();
                                       });
+                                      // push(context, const ProfileScreen());
                                     }
                                   },
                                 ),
@@ -455,38 +439,38 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                                   },
                                 ),
                               ),
-                              // Visibility(
-                              //   visible: isLanguageShown,
-                              //   child: ListTileTheme(
-                              //     style: ListTileStyle.drawer,
-                              //     selectedColor: Color(COLOR_PRIMARY),
-                              //     child: ListTile(
-                              //       selected: _drawerSelection ==
-                              //           DrawerSelection.chooseLanguage,
-                              //       leading: Icon(
-                              //         Icons.language,
-                              //         color: _drawerSelection ==
-                              //                 DrawerSelection.chooseLanguage
-                              //             ? Color(COLOR_PRIMARY)
-                              //             : isDarkMode(context)
-                              //                 ? Colors.grey.shade200
-                              //                 : Colors.grey.shade600,
-                              //       ),
-                              //       title: const Text('Language').tr(),
-                              //       onTap: () {
-                              //         Navigator.pop(context);
-                              //         setState(() {
-                              //           _drawerSelection =
-                              //               DrawerSelection.chooseLanguage;
-                              //           _appBarTitle = 'Language'.tr();
-                              //           _currentWidget = LanguageChooseScreen(
-                              //             isContainer: true,
-                              //           );
-                              //         });
-                              //       },
-                              //     ),
-                              //   ),
-                              // ),
+                              Visibility(
+                                visible: isLanguageShown,
+                                child: ListTileTheme(
+                                  style: ListTileStyle.drawer,
+                                  selectedColor: Color(COLOR_PRIMARY),
+                                  child: ListTile(
+                                    selected: _drawerSelection ==
+                                        DrawerSelection.chooseLanguage,
+                                    leading: Icon(
+                                      Icons.language,
+                                      color: _drawerSelection ==
+                                              DrawerSelection.chooseLanguage
+                                          ? Color(COLOR_PRIMARY)
+                                          : isDarkMode(context)
+                                              ? Colors.grey.shade200
+                                              : Colors.grey.shade600,
+                                    ),
+                                    title: const Text('Language').tr(),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        _drawerSelection =
+                                            DrawerSelection.chooseLanguage;
+                                        _appBarTitle = 'Language'.tr();
+                                        _currentWidget = LanguageChooseScreen(
+                                          isContainer: true,
+                                        );
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
                               ListTileTheme(
                                 style: ListTileStyle.drawer,
                                 selectedColor: Color(COLOR_PRIMARY),
@@ -538,7 +522,7 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                                       await auth.FirebaseAuth.instance
                                           .signOut();
                                       MyAppState.currentUser = null;
-                                      // COLOR_PRIMARY = 0xFF00B761;
+                                      COLOR_PRIMARY = 0xFF00B761;
                                       Provider.of<CartDatabase>(context,
                                               listen: false)
                                           .deleteAllProducts();
@@ -558,157 +542,51 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                       ],
                     )),
               ),
-              appBar: AppBar(
-                leading: Builder(
-                  builder: (context) => IconButton(
+              appBar:
+                  //  _drawerSelection == DrawerSelection.Home
+                  //     ? null
+                  //     :
+                  AppBar(
+                elevation: _drawerSelection == DrawerSelection.Wallet ? 0 : 0,
+                centerTitle:
+                    _drawerSelection == DrawerSelection.Wallet ? true : false,
+                backgroundColor: _drawerSelection == DrawerSelection.Wallet
+                    ? Colors.transparent
+                    : isDarkMode(context)
+                        ? Colors.black
+                        : Colors.white,
+                //isDarkMode(context) ? Color(DARK_COLOR) : null,
+                leading: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: ElevatedButton(
                     onPressed: () {
-                      Scaffold.of(context).openDrawer();
+                      key.currentState!.openDrawer();
                     },
-                    icon: Icon(
-                      Icons.sort,
-                      weight: 1000,
-                      size: 40,
+                    style: ElevatedButton.styleFrom(
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.all(10),
                     ),
-                    color: const Color.fromARGB(255, 246, 48, 34),
+                    child: Image.asset(
+                      "assets/icons/ic_side_menu.png",
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-                centerTitle: false,
-                title: Center(
-                  child: Image(
-                    image: isDarkMode(context)
-                        ? AssetImage("assets/images/ESAWARI_LOGO_white.png")
-                        : AssetImage("assets/images/ESAWARI_LOGO.png"),
-                    width: 110,
-                  ),
+                // iconTheme: IconThemeData(color: Colors.blue),
+                title: Text(
+                  _appBarTitle,
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: _drawerSelection == DrawerSelection.Wallet
+                          ? Colors.white
+                          : isDarkMode(context)
+                              ? Colors.white
+                              : Colors.black,
+                      //isDarkMode(context) ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.normal),
                 ),
-
-                //  Text(
-                //   "Esawari".tr(),
-                //   textAlign: TextAlign.left,
-                //   style: const TextStyle(
-                //       fontSize: 18, fontWeight: FontWeight.normal),
-                // ),
-                actions: [
-                  IconButton(
-                      padding: const EdgeInsets.only(right: 20),
-                      visualDensity: const VisualDensity(horizontal: -4),
-                      tooltip: 'Notification'.tr(),
-                      icon: Icon(
-                        Icons.notifications,
-                        size: 25,
-                      ),
-                      onPressed: () {}),
-                  // IconButton(
-                  //     padding: const EdgeInsets.only(right: 20),
-                  //     visualDensity: const VisualDensity(horizontal: -4),
-                  //     tooltip: 'Cart'.tr(),
-                  //     icon: Stack(
-                  //       clipBehavior: Clip.none,
-                  //       children: [
-                  //         const Image(
-                  //           image: AssetImage("assets/images/cart.png"),
-                  //           width: 20,
-                  //           color: Colors.black,
-                  //         ),
-                  //         StreamBuilder<List<CartProduct>>(
-                  //           stream: cartDatabase.watchProducts,
-                  //           builder: (context, snapshot) {
-                  //             cartCount = 0;
-                  //             if (snapshot.hasData) {
-                  //               for (var element in snapshot.data!) {
-                  //                 cartCount += element.quantity;
-                  //               }
-                  //             }
-                  //             return Visibility(
-                  //               visible: cartCount >= 1,
-                  //               child: Positioned(
-                  //                 right: -6,
-                  //                 top: -8,
-                  //                 child: Container(
-                  //                   padding: const EdgeInsets.all(4),
-                  //                   decoration: BoxDecoration(
-                  //                     shape: BoxShape.circle,
-                  //                     color: Color(COLOR_PRIMARY),
-                  //                   ),
-                  //                   constraints: const BoxConstraints(
-                  //                     minWidth: 12,
-                  //                     minHeight: 12,
-                  //                   ),
-                  //                   child: Center(
-                  //                     child: Text(
-                  //                       cartCount <= 99 ? '$cartCount' : '+99',
-                  //                       style: const TextStyle(
-                  //                         color: Colors.white,
-                  //                         // fontSize: 10,
-                  //                       ),
-                  //                       textAlign: TextAlign.center,
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //               ),
-                  //             );
-                  //           },
-                  //         )
-                  //       ],
-                  //     ),
-                  //     onPressed: () {
-                  //       push(
-                  //         context,
-                  //         const CartScreen(
-                  //           fromContainer: false,
-                  //           fromStoreSelection: true,
-                  //         ),
-                  //       );
-                  //     }),
-                ],
               ),
-
-              // appBar: _drawerSelection == DrawerSelection.Home
-              //     ? null
-              //     : AppBar(
-              //         elevation:
-              //             _drawerSelection == DrawerSelection.Wallet ? 0 : 0,
-              //         centerTitle: _drawerSelection == DrawerSelection.Wallet
-              //             ? true
-              //             : false,
-              //         backgroundColor: _drawerSelection == DrawerSelection.Wallet
-              //             ? Colors.transparent
-              //             : isDarkMode(context)
-              //                 ? Colors.black
-              //                 : Colors.white,
-              //         //isDarkMode(context) ? Color(DARK_COLOR) : null,
-              //         leading: Padding(
-              //           padding: const EdgeInsets.all(8),
-              //           child: ElevatedButton(
-              //             onPressed: () {
-              //               key.currentState!.openDrawer();
-              //             },
-              //             style: ElevatedButton.styleFrom(
-              //               shape: const CircleBorder(),
-              //               backgroundColor: Colors.white,
-              //               padding: const EdgeInsets.all(10),
-              //             ),
-              //             child: Image.asset(
-              //               "assets/icons/ic_side_menu.png",
-              //               color: Colors.black,
-              //             ),
-              //           ),
-              //         ),
-              //         // iconTheme: IconThemeData(color: Colors.blue),
-              //         title: Text(
-              //           _appBarTitle,
-              //           style: TextStyle(
-              //               fontSize: 18,
-              //               color: _drawerSelection == DrawerSelection.Wallet
-              //                   ? Colors.white
-              //                   : isDarkMode(context)
-              //                       ? Colors.white
-              //                       : Colors.black,
-              //               //isDarkMode(context) ? Colors.white : Colors.black,
-              //               fontWeight: FontWeight.normal),
-              //         ),
-              //       ),
-
               body: _currentWidget,
             );
           },

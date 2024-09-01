@@ -52,7 +52,7 @@ class RentalServiceDashBoard extends StatefulWidget {
       currentWidget,
       appBarTitle,
       this.drawerSelection = DrawerSelection.Home})
-      : appBarTitle = appBarTitle ?? 'Home'.tr(),
+      : appBarTitle = appBarTitle ?? 'Rental Service',
         currentWidget = currentWidget ??
             RentalServiceHomeScreen(
               user: MyAppState.currentUser,
@@ -127,19 +127,36 @@ class _RentalServiceDashBoardState extends State<RentalServiceDashBoard> {
 
     return WillPopScope(
       onWillPop: () async {
-        if (_currentWidget is! RentalServiceHomeScreen) {
-          setState(() {
-            _drawerSelection = DrawerSelection.Home;
-            _appBarTitle = 'Home'.tr();
-            _currentWidget = RentalServiceHomeScreen(
-              user: MyAppState.currentUser,
-            );
-          });
-          return false;
+        final timegap = DateTime.now().difference(pre_backpress);
+        final cantExit = timegap >= const Duration(seconds: 2);
+        pre_backpress = DateTime.now();
+        if (cantExit) {
+          SnackBar snack = SnackBar(
+            content: Text(
+              "back-button".tr(),
+              style: const TextStyle(color: Colors.white),
+            ),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.black,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snack);
+          return false; // false will do nothing when back press
         } else {
-          pushAndRemoveUntil(context, const StoreSelection(), false);
-          return true;
+          return true; // true will exit the app
         }
+        // if (_currentWidget is! RentalServiceHomeScreen) {
+        //   setState(() {
+        //     _drawerSelection = DrawerSelection.Home;
+        //     _appBarTitle = 'Home'.tr();
+        //     _currentWidget = RentalServiceHomeScreen(
+        //       user: MyAppState.currentUser,
+        //     );
+        //   });
+        //   return false;
+        // } else {
+        //   pushAndRemoveUntil(context, const StoreSelection(), false);
+        //   return true;
+        // }
       },
       child: ChangeNotifierProvider.value(
         value: user,
@@ -499,7 +516,7 @@ class _RentalServiceDashBoardState extends State<RentalServiceDashBoard> {
                                       await auth.FirebaseAuth.instance
                                           .signOut();
                                       MyAppState.currentUser = null;
-                                      // COLOR_PRIMARY = 0xFF00B761;
+                                      COLOR_PRIMARY = 0xFF00B761;
                                       Provider.of<CartDatabase>(context,
                                               listen: false)
                                           .deleteAllProducts();

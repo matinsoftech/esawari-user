@@ -4,6 +4,7 @@ import 'package:emartconsumer/constants.dart';
 import 'package:emartconsumer/main.dart';
 import 'package:emartconsumer/model/User.dart';
 import 'package:emartconsumer/rental_service/model/rental_order_model.dart';
+import 'package:emartconsumer/services/FirebaseHelper.dart';
 import 'package:emartconsumer/services/helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,8 @@ class RentalServiceHomeScreen extends StatefulWidget {
   const RentalServiceHomeScreen({Key? key, this.user}) : super(key: key);
 
   @override
-  State<RentalServiceHomeScreen> createState() => _RentalServiceHomeScreenState();
+  State<RentalServiceHomeScreen> createState() =>
+      _RentalServiceHomeScreenState();
 }
 
 class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
@@ -39,11 +41,23 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
   @override
   void initState() {
     super.initState();
+    getTaxList();
+  }
+
+  getTaxList() async {
+    await FireStoreUtils().getTaxList(sectionConstantModel!.id).then((value) {
+      if (value != null) {
+        taxList = value;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Rental Service'),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: SingleChildScrollView(
@@ -51,12 +65,20 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
             children: [
               buildBookWithDriver(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                margin: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                margin: const EdgeInsets.only(
+                    left: 10, top: 10, right: 10, bottom: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: isDarkMode(context) ? const Color(DarkContainerBorderColor) : Colors.grey.shade100, width: 1),
-                  color: isDarkMode(context) ? const Color(DarkContainerColor) : Colors.white,
+                  border: Border.all(
+                      color: isDarkMode(context)
+                          ? const Color(DarkContainerBorderColor)
+                          : Colors.grey.shade100,
+                      width: 1),
+                  color: isDarkMode(context)
+                      ? const Color(DarkContainerColor)
+                      : Colors.white,
                   boxShadow: [
                     isDarkMode(context)
                         ? const BoxShadow()
@@ -88,7 +110,12 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                 children: [
                                   Text(
                                     "Start Time".tr(),
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isDarkMode(context) ? Colors.white : Colors.black.withOpacity(0.50)),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: isDarkMode(context)
+                                            ? Colors.white
+                                            : Colors.black.withOpacity(0.50)),
                                   ),
                                   const SizedBox(
                                     height: 10,
@@ -98,18 +125,21 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                       if (startDate != null) {
                                         selectTime(context, isStart: true);
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
                                           content: const Text(
                                             "Please select Date",
                                           ).tr(),
-                                          backgroundColor: Colors.green.shade400,
+                                          backgroundColor:
+                                              Colors.green.shade400,
                                           duration: const Duration(seconds: 6),
                                         ));
                                       }
                                     },
                                     child: TextFormField(
                                       controller: startTimeController,
-                                      textAlignVertical: TextAlignVertical.center,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
                                       textInputAction: TextInputAction.next,
                                       validator: validateEmptyField,
                                       style: const TextStyle(fontSize: 18.0),
@@ -117,11 +147,19 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                       cursorColor: Color(COLOR_PRIMARY),
                                       enabled: false,
                                       decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16),
                                         fillColor: Colors.white,
-                                        errorStyle: const TextStyle(color: Colors.red),
+                                        errorStyle:
+                                            const TextStyle(color: Colors.red),
                                         hintText: "Start Time".tr(),
-                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Color(COLOR_PRIMARY), width: 2.0)),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            borderSide: BorderSide(
+                                                color: Color(COLOR_PRIMARY),
+                                                width: 2.0)),
                                       ),
                                     ),
                                   ),
@@ -137,7 +175,12 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                 children: [
                                   Text(
                                     "End Time".tr(),
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isDarkMode(context) ? Colors.white : Colors.black.withOpacity(0.50)),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: isDarkMode(context)
+                                            ? Colors.white
+                                            : Colors.black.withOpacity(0.50)),
                                   ),
                                   const SizedBox(
                                     height: 10,
@@ -147,18 +190,21 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                       if (startDate != null) {
                                         selectTime(context, isStart: false);
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
                                           content: Text(
                                             "Please select Date".tr(),
                                           ),
-                                          backgroundColor: Colors.green.shade400,
+                                          backgroundColor:
+                                              Colors.green.shade400,
                                           duration: const Duration(seconds: 6),
                                         ));
                                       }
                                     },
                                     child: TextFormField(
                                       controller: endTimeController,
-                                      textAlignVertical: TextAlignVertical.center,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
                                       textInputAction: TextInputAction.next,
                                       validator: validateEmptyField,
                                       style: const TextStyle(fontSize: 18.0),
@@ -166,11 +212,19 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                       cursorColor: Color(COLOR_PRIMARY),
                                       enabled: false,
                                       decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16),
                                         fillColor: Colors.white,
-                                        errorStyle: const TextStyle(color: Colors.red),
+                                        errorStyle:
+                                            const TextStyle(color: Colors.red),
                                         hintText: "End Time".tr(),
-                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Color(COLOR_PRIMARY), width: 2.0)),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            borderSide: BorderSide(
+                                                color: Color(COLOR_PRIMARY),
+                                                width: 2.0)),
                                       ),
                                     ),
                                   ),
@@ -187,7 +241,12 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                           children: [
                             Text(
                               "Pick up location".tr(),
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isDarkMode(context) ? Colors.white : Colors.black.withOpacity(0.50)),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: isDarkMode(context)
+                                      ? Colors.white
+                                      : Colors.black.withOpacity(0.50)),
                             ),
                             const SizedBox(
                               height: 5,
@@ -200,11 +259,17 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                     builder: (context) => PlacePicker(
                                       apiKey: GOOGLE_API_KEY,
                                       onPlacePicked: (result) {
-                                        pickupLocationController.text = result.formattedAddress!;
-                                        pickUpLocation = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
+                                        pickupLocationController.text =
+                                            result.formattedAddress!;
+                                        pickUpLocation = UserLocation(
+                                            latitude:
+                                                result.geometry!.location.lat,
+                                            longitude:
+                                                result.geometry!.location.lng);
                                         Navigator.of(context).pop();
                                       },
-                                      initialPosition: LatLng(-33.8567844, 151.213108),
+                                      initialPosition:
+                                          LatLng(-33.8567844, 151.213108),
                                       useCurrentLocation: true,
                                       selectInitialPosition: true,
                                       usePinPointingSearch: true,
@@ -212,7 +277,8 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                       zoomGesturesEnabled: true,
                                       zoomControlsEnabled: true,
                                       initialMapType: MapType.terrain,
-                                      resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
+                                      resizeToAvoidBottomInset:
+                                          false, // only works in page mode, less flickery, remove if wrong offsets
                                     ),
                                   ),
                                 );
@@ -227,11 +293,17 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                 enabled: false,
                                 cursorColor: Color(COLOR_PRIMARY),
                                 decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   fillColor: Colors.white,
-                                  errorStyle: const TextStyle(color: Colors.red),
+                                  errorStyle:
+                                      const TextStyle(color: Colors.red),
                                   hintText: "PickUp Location".tr(),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Color(COLOR_PRIMARY), width: 2.0)),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: BorderSide(
+                                          color: Color(COLOR_PRIMARY),
+                                          width: 2.0)),
                                 ),
                               ),
                             ),
@@ -273,7 +345,10 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                 children: [
                                   Text(
                                     "Drop up location".tr(),
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black.withOpacity(0.50)),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black.withOpacity(0.50)),
                                   ),
                                   const SizedBox(
                                     height: 5,
@@ -286,11 +361,17 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                           builder: (context) => PlacePicker(
                                             apiKey: GOOGLE_API_KEY,
                                             onPlacePicked: (result) {
-                                              dropLocationController.text = result.formattedAddress!;
-                                              dropLocation = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
+                                              dropLocationController.text =
+                                                  result.formattedAddress!;
+                                              dropLocation = UserLocation(
+                                                  latitude: result
+                                                      .geometry!.location.lat,
+                                                  longitude: result
+                                                      .geometry!.location.lng);
                                               Navigator.of(context).pop();
                                             },
-                                            initialPosition: LatLng(-33.8567844, 151.213108),
+                                            initialPosition:
+                                                LatLng(-33.8567844, 151.213108),
                                             useCurrentLocation: true,
                                             selectInitialPosition: true,
                                             usePinPointingSearch: true,
@@ -298,26 +379,38 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                                             zoomGesturesEnabled: true,
                                             zoomControlsEnabled: true,
                                             initialMapType: MapType.terrain,
-                                            resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
+                                            resizeToAvoidBottomInset:
+                                                false, // only works in page mode, less flickery, remove if wrong offsets
                                           ),
                                         ),
                                       );
                                     },
                                     child: TextFormField(
                                       controller: dropLocationController,
-                                      textAlignVertical: TextAlignVertical.center,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
                                       textInputAction: TextInputAction.next,
-                                      validator: !dropOfAtSameLocation ? validateEmptyField : null,
+                                      validator: !dropOfAtSameLocation
+                                          ? validateEmptyField
+                                          : null,
                                       style: const TextStyle(fontSize: 18.0),
                                       keyboardType: TextInputType.streetAddress,
                                       enabled: false,
                                       cursorColor: Color(COLOR_PRIMARY),
                                       decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16),
                                         fillColor: Colors.white,
-                                        errorStyle: const TextStyle(color: Colors.red),
+                                        errorStyle:
+                                            const TextStyle(color: Colors.red),
                                         hintText: "Drop Location".tr(),
-                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Color(COLOR_PRIMARY), width: 2.0)),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            borderSide: BorderSide(
+                                                color: Color(COLOR_PRIMARY),
+                                                width: 2.0)),
                                       ),
                                     ),
                                   ),
@@ -332,23 +425,46 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: Color(COLOR_PRIMARY), // foreground
+                              backgroundColor:
+                                  Color(COLOR_PRIMARY), // foreground
                             ),
                             onPressed: () {
                               if (_formKey.currentState?.validate() ?? false) {
                                 _formKey.currentState!.save();
-                                RentalOrderModel rentalOrderModel = RentalOrderModel(
-                                    authorID: MyAppState.currentUser!.userID,
-                                    author: MyAppState.currentUser,
-                                    pickupDateTime:
-                                        Timestamp.fromDate(DateTime(startDate!.year, startDate!.month, startDate!.day, selectedTimeStart.hour, selectedTimeStart.minute)),
-                                    dropDateTime: Timestamp.fromDate(DateTime(endDate!.year, endDate!.month, endDate!.day, selectedTimeEnd.hour, selectedTimeEnd.minute)),
-                                    bookWithDriver: isDriverWant,
-                                    pickupAddress: pickupLocationController.text.toString(),
-                                    dropAddress: dropOfAtSameLocation ? pickupLocationController.text.toString() : dropLocationController.text.toString(),
-                                    pickupLatLong: pickUpLocation,
-                                    dropLatLong: dropOfAtSameLocation ? pickUpLocation : dropLocation,
-                                    sectionId: sectionConstantModel!.id);
+                                RentalOrderModel rentalOrderModel =
+                                    RentalOrderModel(
+                                        authorID: MyAppState
+                                            .currentUser!.userID,
+                                        author: MyAppState.currentUser,
+                                        pickupDateTime: Timestamp.fromDate(
+                                            DateTime(
+                                                startDate!.year,
+                                                startDate!.month,
+                                                startDate!.day,
+                                                selectedTimeStart.hour,
+                                                selectedTimeStart.minute)),
+                                        dropDateTime: Timestamp
+                                            .fromDate(DateTime(
+                                                endDate!.year,
+                                                endDate!.month,
+                                                endDate!.day,
+                                                selectedTimeEnd.hour,
+                                                selectedTimeEnd.minute)),
+                                        bookWithDriver: isDriverWant,
+                                        pickupAddress:
+                                            pickupLocationController
+                                                .text
+                                                .toString(),
+                                        dropAddress: dropOfAtSameLocation
+                                            ? pickupLocationController.text
+                                                .toString()
+                                            : dropLocationController.text
+                                                .toString(),
+                                        pickupLatLong: pickUpLocation,
+                                        dropLatLong: dropOfAtSameLocation
+                                            ? pickUpLocation
+                                            : dropLocation,
+                                        sectionId: sectionConstantModel!.id);
 
                                 print(pickUpLocation!.toJson());
                                 push(
@@ -393,8 +509,14 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
         margin: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isDarkMode(context) ? const Color(DarkContainerBorderColor) : Colors.grey.shade100, width: 1),
-          color: isDarkMode(context) ? const Color(DarkContainerColor) : Colors.white,
+          border: Border.all(
+              color: isDarkMode(context)
+                  ? const Color(DarkContainerBorderColor)
+                  : Colors.grey.shade100,
+              width: 1),
+          color: isDarkMode(context)
+              ? const Color(DarkContainerColor)
+              : Colors.white,
           boxShadow: [
             isDarkMode(context)
                 ? const BoxShadow()
@@ -414,7 +536,8 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
                     "Book With Driver".tr(),
                     style: const TextStyle(),
                   ),
-                  Text("Don't have  a driver ? Book car with a Driver".tr(), style: TextStyle(fontSize: 12)),
+                  Text("Don't have  a driver ? Book car with a Driver".tr(),
+                      style: TextStyle(fontSize: 12)),
                 ],
               ),
             ),
@@ -447,24 +570,44 @@ class _RentalServiceHomeScreenState extends State<RentalServiceHomeScreen> {
       setState(() {
         if (isStart) {
           selectedTimeStart = picked;
-          print(DateTime(startDate!.year, startDate!.month, startDate!.day, selectedTimeStart.hour, selectedTimeStart.minute));
-          print(DateTime(endDate!.year, endDate!.month, endDate!.day, selectedTimeEnd.hour, selectedTimeEnd.minute));
+          print(DateTime(startDate!.year, startDate!.month, startDate!.day,
+              selectedTimeStart.hour, selectedTimeStart.minute));
+          print(DateTime(endDate!.year, endDate!.month, endDate!.day,
+              selectedTimeEnd.hour, selectedTimeEnd.minute));
 
-          if (DateTime(startDate!.year, startDate!.month, startDate!.day, selectedTimeStart.hour, selectedTimeStart.minute).isAfter(DateTime.now())) {
-            startTimeController.text = DateFormat('HH:mm').format(DateTime(startDate!.year, startDate!.month, startDate!.day, selectedTimeStart.hour, selectedTimeStart.minute));
+          if (DateTime(startDate!.year, startDate!.month, startDate!.day,
+                  selectedTimeStart.hour, selectedTimeStart.minute)
+              .isAfter(DateTime.now())) {
+            startTimeController.text = DateFormat('HH:mm').format(DateTime(
+                startDate!.year,
+                startDate!.month,
+                startDate!.day,
+                selectedTimeStart.hour,
+                selectedTimeStart.minute));
           } else {
-            showAlertDialog(context, "Alert".tr(), "Start time should be greater than current time", true);
+            showAlertDialog(context, "Alert".tr(),
+                "Start time should be greater than current time", true);
           }
         } else {
           selectedTimeEnd = picked;
-          print(DateTime(startDate!.year, startDate!.month, startDate!.day, selectedTimeStart.hour, selectedTimeStart.minute));
-          print(DateTime(endDate!.year, endDate!.month, endDate!.day, selectedTimeEnd.hour, selectedTimeEnd.minute));
+          print(DateTime(startDate!.year, startDate!.month, startDate!.day,
+              selectedTimeStart.hour, selectedTimeStart.minute));
+          print(DateTime(endDate!.year, endDate!.month, endDate!.day,
+              selectedTimeEnd.hour, selectedTimeEnd.minute));
 
-          if (DateTime(startDate!.year, startDate!.month, startDate!.day, selectedTimeStart.hour, selectedTimeStart.minute)
-              .isBefore(DateTime(endDate!.year, endDate!.month, endDate!.day, selectedTimeEnd.hour, selectedTimeEnd.minute))) {
-            endTimeController.text = DateFormat('HH:mm').format(DateTime(endDate!.year, endDate!.month, endDate!.day, selectedTimeEnd.hour, selectedTimeEnd.minute));
+          if (DateTime(startDate!.year, startDate!.month, startDate!.day,
+                  selectedTimeStart.hour, selectedTimeStart.minute)
+              .isBefore(DateTime(endDate!.year, endDate!.month, endDate!.day,
+                  selectedTimeEnd.hour, selectedTimeEnd.minute))) {
+            endTimeController.text = DateFormat('HH:mm').format(DateTime(
+                endDate!.year,
+                endDate!.month,
+                endDate!.day,
+                selectedTimeEnd.hour,
+                selectedTimeEnd.minute));
           } else {
-            showAlertDialog(context, "Alert".tr(), "End time should be greater than start time".tr(), true);
+            showAlertDialog(context, "Alert".tr(),
+                "End time should be greater than start time".tr(), true);
           }
         }
       });

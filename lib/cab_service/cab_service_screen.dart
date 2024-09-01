@@ -58,12 +58,12 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
 
   @override
   void initState() {
-    getCurrentLocation(true, true);
     setIcons();
     getVehicleType();
     getCurrentOrder();
-    super.initState();
     getTaxList();
+
+    super.initState();
   }
 
   getTaxList() async {
@@ -160,7 +160,7 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
     }
   }
 
-  void getCurrentLocation(bool isDepartureSet, bool isAutoFetchLocation) async {
+  void getCurrentLocation(bool isDepartureSet) async {
     if (isDepartureSet) {
       LocationData location = await currentLocation.getLocation();
       List<get_cord_address.Placemark> placeMarks =
@@ -186,22 +186,11 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
           (placeMarks.first.postalCode!.isEmpty
               ? ''
               : "${placeMarks.first.postalCode}, ");
-
-      isAutoFetchLocation
-          ? Future.delayed(const Duration(seconds: 3), () {
-              setState(() {
-                departureController.text = address;
-                setDepartureMarker(LatLng(
-                    location.latitude ?? 0.0, location.longitude ?? 0.0));
-              });
-            })
-          : setState(
-              () {
-                departureController.text = address;
-                setDepartureMarker(LatLng(
-                    location.latitude ?? 0.0, location.longitude ?? 0.0));
-              },
-            );
+      departureController.text = address;
+      setState(() {
+        setDepartureMarker(
+            LatLng(location.latitude ?? 0.0, location.longitude ?? 0.0));
+      });
     }
   }
 
@@ -341,7 +330,7 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
                                           ),
                                           IconButton(
                                             onPressed: () {
-                                              getCurrentLocation(true, false);
+                                              getCurrentLocation(true);
                                             },
                                             autofocus: false,
                                             icon: Icon(
@@ -1303,14 +1292,13 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
       List<LatLng> polylineCoordinates = [];
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(_cabOrderModel!.sourceLocation.latitude,
-              _cabOrderModel!.sourceLocation.longitude),
-          destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude,
-              _cabOrderModel!.destinationLocation.longitude),
-          mode: TravelMode.driving,
-        ),
-      );
+          request: PolylineRequest(
+        origin: PointLatLng(_cabOrderModel!.sourceLocation.latitude,
+            _cabOrderModel!.sourceLocation.longitude),
+        destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude,
+            _cabOrderModel!.destinationLocation.longitude),
+        mode: TravelMode.driving,
+      ));
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {
@@ -1337,6 +1325,11 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
     } else if (statusOfOrder == ORDER_STATUS_SHIPPED) {
       List<LatLng> polylineCoordinates = [];
 
+      // PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      //   GOOGLE_API_KEY,
+
+      //   travelMode: TravelMode.driving,
+      // );
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         request: PolylineRequest(
           origin: PointLatLng(_driverModel!.location.latitude,
@@ -1386,14 +1379,13 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
       List<LatLng> polylineCoordinates = [];
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(_driverModel!.location.latitude,
-              _driverModel!.location.longitude),
-          destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude,
-              _cabOrderModel!.destinationLocation.longitude),
-          mode: TravelMode.driving,
-        ),
-      );
+          request: PolylineRequest(
+        origin: PointLatLng(
+            _driverModel!.location.latitude, _driverModel!.location.longitude),
+        destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude,
+            _cabOrderModel!.destinationLocation.longitude),
+        mode: TravelMode.driving,
+      ));
 
       print("----?${result.points}");
       if (result.points.isNotEmpty) {
@@ -1433,14 +1425,14 @@ class _CabServiceScreenState extends State<CabServiceScreen> {
         statusOfOrder == "vehicleType") {
       List<LatLng> polylineCoordinates = [];
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(
-              departureLatLong!.latitude, departureLatLong!.longitude),
-          destination: PointLatLng(
-              destinationLatLong!.latitude, destinationLatLong!.longitude),
-          mode: TravelMode.driving,
-        ),
-      );
+          googleApiKey: GOOGLE_API_KEY,
+          request: PolylineRequest(
+            origin: PointLatLng(
+                departureLatLong!.latitude, departureLatLong!.longitude),
+            destination: PointLatLng(
+                destinationLatLong!.latitude, destinationLatLong!.longitude),
+            mode: TravelMode.driving,
+          ));
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {

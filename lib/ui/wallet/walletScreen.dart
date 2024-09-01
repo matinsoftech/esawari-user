@@ -108,7 +108,7 @@ class WalletScreenState extends State<WalletScreen> {
       stripeData = value;
       stripe1.Stripe.publishableKey = stripeData!.clientpublishableKey;
       stripe1.Stripe.merchantIdentifier = 'Emart';
-      // await stripe1.Stripe.instance.applySettings();
+      await stripe1.Stripe.instance.applySettings();
     });
 
     razorPayData = await UserPreference.getRazorPayData();

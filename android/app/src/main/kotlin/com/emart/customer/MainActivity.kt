@@ -1,4 +1,4 @@
-package com.esawari.matinsoftech
+package user.esawari.matinsoftech
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity
