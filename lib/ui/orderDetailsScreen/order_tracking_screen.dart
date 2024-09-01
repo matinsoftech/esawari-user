@@ -159,6 +159,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         List<LatLng> polylineCoordinates = [];
 
         PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+          googleApiKey: GOOGLE_API_KEY,
           request: PolylineRequest(
             origin: PointLatLng(_driverModel!.location.latitude,
                 _driverModel!.location.longitude),
@@ -198,6 +199,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         List<LatLng> polylineCoordinates = [];
 
         PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+          googleApiKey: GOOGLE_API_KEY,
           request: PolylineRequest(
             origin: PointLatLng(_driverModel!.location.latitude,
                 _driverModel!.location.longitude),
@@ -238,6 +240,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         List<LatLng> polylineCoordinates = [];
 
         PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+          googleApiKey: GOOGLE_API_KEY,
           request: PolylineRequest(
             origin: PointLatLng(currentOrder!.address!.location!.latitude,
                 currentOrder!.address!.location!.longitude),

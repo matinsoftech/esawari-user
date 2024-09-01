@@ -86,7 +86,11 @@ class FireStoreUtils {
   static Future<bool?> checkReferralCodeValidOrNot(String referralCode) async {
     bool? isExit;
     try {
-      await firestore.collection(REFERRAL).where("referralCode", isEqualTo: referralCode).get().then((value) {
+      await firestore
+          .collection(REFERRAL)
+          .where("referralCode", isEqualTo: referralCode)
+          .get()
+          .then((value) {
         if (value.size > 0) {
           isExit = true;
         } else {
@@ -100,10 +104,15 @@ class FireStoreUtils {
     return isExit;
   }
 
-  static Future<ReferralModel?> getReferralUserByCode(String referralCode) async {
+  static Future<ReferralModel?> getReferralUserByCode(
+      String referralCode) async {
     ReferralModel? referralModel;
     try {
-      await firestore.collection(REFERRAL).where("referralCode", isEqualTo: referralCode).get().then((value) {
+      await firestore
+          .collection(REFERRAL)
+          .where("referralCode", isEqualTo: referralCode)
+          .get()
+          .then((value) {
         referralModel = ReferralModel.fromJson(value.docs.first.data());
       });
     } catch (e, s) {
@@ -117,7 +126,11 @@ class FireStoreUtils {
     ReferralModel? referralModel;
     try {
       print(MyAppState.currentUser!.userID);
-      await firestore.collection(REFERRAL).doc(MyAppState.currentUser!.userID).get().then((value) {
+      await firestore
+          .collection(REFERRAL)
+          .doc(MyAppState.currentUser!.userID)
+          .get()
+          .then((value) {
         referralModel = ReferralModel.fromJson(value.data()!);
       });
     } catch (e, s) {
@@ -131,8 +144,12 @@ class FireStoreUtils {
 
   Future<List<StoryModel>> getStory() async {
     List<StoryModel> story = [];
-    QuerySnapshot<Map<String, dynamic>> storyQuery = await firestore.collection(STORY).where('sectionID', isEqualTo: sectionConstantModel!.id).get();
-    await Future.forEach(storyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> storyQuery = await firestore
+        .collection(STORY)
+        .where('sectionID', isEqualTo: sectionConstantModel!.id)
+        .get();
+    await Future.forEach(storyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         story.add(StoryModel.fromJson(document.data()));
       } catch (e) {
@@ -144,8 +161,10 @@ class FireStoreUtils {
 
   static Future<List<AttributesModel>> getAttributes() async {
     List<AttributesModel> attributesList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(VENDOR_ATTRIBUTES).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery =
+        await firestore.collection(VENDOR_ATTRIBUTES).get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         attributesList.add(AttributesModel.fromJson(document.data()));
@@ -158,8 +177,12 @@ class FireStoreUtils {
 
   static Future<List<BrandsModel>> getBrands() async {
     List<BrandsModel> brandList = [];
-    QuerySnapshot<Map<String, dynamic>> brandQuery = await firestore.collection(BRANDS).where('is_publish', isEqualTo: true).get();
-    await Future.forEach(brandQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> brandQuery = await firestore
+        .collection(BRANDS)
+        .where('is_publish', isEqualTo: true)
+        .get();
+    await Future.forEach(brandQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("------>");
         print(document.data());
@@ -172,33 +195,57 @@ class FireStoreUtils {
   }
 
   static Future addRestaurantInbox(InboxModel inboxModel) async {
-    return await firestore.collection("chat_store").doc(inboxModel.orderId).set(inboxModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_store")
+        .doc(inboxModel.orderId)
+        .set(inboxModel.toJson())
+        .then((document) {
       return inboxModel;
     });
   }
 
   static Future addRestaurantChat(ConversationModel conversationModel) async {
-    return await firestore.collection("chat_store").doc(conversationModel.orderId).collection("thread").doc(conversationModel.id).set(conversationModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_store")
+        .doc(conversationModel.orderId)
+        .collection("thread")
+        .doc(conversationModel.id)
+        .set(conversationModel.toJson())
+        .then((document) {
       return conversationModel;
     });
   }
 
   static Future addDriverInbox(InboxModel inboxModel) async {
-    return await firestore.collection("chat_driver").doc(inboxModel.orderId).set(inboxModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_driver")
+        .doc(inboxModel.orderId)
+        .set(inboxModel.toJson())
+        .then((document) {
       return inboxModel;
     });
   }
 
   static Future addDriverChat(ConversationModel conversationModel) async {
-    return await firestore.collection("chat_driver").doc(conversationModel.orderId).collection("thread").doc(conversationModel.id).set(conversationModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_driver")
+        .doc(conversationModel.orderId)
+        .collection("thread")
+        .doc(conversationModel.id)
+        .set(conversationModel.toJson())
+        .then((document) {
       return conversationModel;
     });
   }
 
   Future<List<RatingModel>> getReviewList(String productId) async {
     List<RatingModel> reviewList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(Order_Rating).where('productId', isEqualTo: productId).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(Order_Rating)
+        .where('productId', isEqualTo: productId)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         reviewList.add(RatingModel.fromJson(document.data()));
@@ -209,10 +256,16 @@ class FireStoreUtils {
     return reviewList;
   }
 
-  static Future<List<ProductModel>> getProductListByCategoryId(String categoryId) async {
+  static Future<List<ProductModel>> getProductListByCategoryId(
+      String categoryId) async {
     List<ProductModel> productList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(PRODUCTS).where('categoryID', isEqualTo: categoryId).where('publish', isEqualTo: true).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(PRODUCTS)
+        .where('categoryID', isEqualTo: categoryId)
+        .where('publish', isEqualTo: true)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         productList.add(ProductModel.fromJson(document.data()));
@@ -225,8 +278,14 @@ class FireStoreUtils {
 
   static Future<List<ProductModel>> getStoreProduct(String storeId) async {
     List<ProductModel> productList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(PRODUCTS).where('vendorID', isEqualTo: storeId).where('publish', isEqualTo: true).limit(6).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(PRODUCTS)
+        .where('vendorID', isEqualTo: storeId)
+        .where('publish', isEqualTo: true)
+        .limit(6)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         productList.add(ProductModel.fromJson(document.data()));
@@ -237,10 +296,16 @@ class FireStoreUtils {
     return productList;
   }
 
-  static Future<List<ProductModel>> getProductListByBrandId(String brandId) async {
+  static Future<List<ProductModel>> getProductListByBrandId(
+      String brandId) async {
     List<ProductModel> productList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(PRODUCTS).where('brandID', isEqualTo: brandId).where('publish', isEqualTo: true).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(PRODUCTS)
+        .where('brandID', isEqualTo: brandId)
+        .where('publish', isEqualTo: true)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         productList.add(ProductModel.fromJson(document.data()));
@@ -253,11 +318,14 @@ class FireStoreUtils {
 
   static Future<List<ReviewAttributeModel>> getAllReviewAttributes() async {
     List<ReviewAttributeModel> reviewAttributesList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(REVIEW_ATTRIBUTES).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery =
+        await firestore.collection(REVIEW_ATTRIBUTES).get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
-        reviewAttributesList.add(ReviewAttributeModel.fromJson(document.data()));
+        reviewAttributesList
+            .add(ReviewAttributeModel.fromJson(document.data()));
       } catch (e) {
         print('FireStoreUtils.getCurrencys Parse error $e');
       }
@@ -270,7 +338,11 @@ class FireStoreUtils {
 
   Stream<OrderModel?> getOrderByID(String inProgressOrderID) async* {
     ordersByIdStreamController = StreamController();
-    ordersByIdStreamSub = firestore.collection(ORDERS).doc(inProgressOrderID).snapshots().listen((onData) async {
+    ordersByIdStreamSub = firestore
+        .collection(ORDERS)
+        .doc(inProgressOrderID)
+        .snapshots()
+        .listen((onData) async {
       if (onData.data() != null) {
         OrderModel? orderModel = OrderModel.fromJson(onData.data()!);
         ordersByIdStreamController.sink.add(orderModel);
@@ -280,7 +352,8 @@ class FireStoreUtils {
   }
 
   static Future<VendorModel?> getVendor(String vid) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(VENDORS).doc(vid).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(VENDORS).doc(vid).get();
     if (userDocument.data() != null && userDocument.exists) {
       print("dataaaaaa aaa ");
       return VendorModel.fromJson(userDocument.data()!);
@@ -293,17 +366,25 @@ class FireStoreUtils {
   final geo = GeoFlutterFire();
   late StreamController<List<User>> nearestDriverStreamController;
 
-  Stream<List<User>> getRentalCompanyDriver(RentalOrderModel? orderModel, String vehicleType, Timestamp date, Timestamp end) async* {
+  Stream<List<User>> getRentalCompanyDriver(RentalOrderModel? orderModel,
+      String vehicleType, Timestamp date, Timestamp end) async* {
     nearestDriverStreamController = StreamController<List<User>>.broadcast();
 
     List<User> driverList = [];
 
-    var collectionReference = firestore.collection(USERS).where('vehicleType', isEqualTo: vehicleType).where('serviceType', isEqualTo: "rental-service");
+    var collectionReference = firestore
+        .collection(USERS)
+        .where('vehicleType', isEqualTo: vehicleType)
+        .where('serviceType', isEqualTo: "rental-service");
 
     String field = 'g';
-    GeoFirePoint center = geo.point(latitude: orderModel!.pickupLatLong!.latitude, longitude: orderModel.pickupLatLong!.longitude);
+    GeoFirePoint center = geo.point(
+        latitude: orderModel!.pickupLatLong!.latitude,
+        longitude: orderModel.pickupLatLong!.longitude);
 
-    Stream<List<DocumentSnapshot>> stream = geo.collection(collectionRef: collectionReference).within(center: center, radius: 100, field: field, strictMode: true);
+    Stream<List<DocumentSnapshot>> stream = geo
+        .collection(collectionRef: collectionReference)
+        .within(center: center, radius: 100, field: field, strictMode: true);
     stream.listen((List<DocumentSnapshot> documentList) {
       if (documentList.isNotEmpty) {
         for (var element in documentList) {
@@ -320,7 +401,8 @@ class FireStoreUtils {
     yield* nearestDriverStreamController.stream;
   }
 
-  Future<CabOrderModel> cabOrderPlace(CabOrderModel orderModel, bool isPaymentComplete) async {
+  Future<CabOrderModel> cabOrderPlace(
+      CabOrderModel orderModel, bool isPaymentComplete) async {
     DocumentReference documentReference;
     if (orderModel.id.isEmpty) {
       documentReference = firestore.collection(RIDESORDER).doc();
@@ -339,7 +421,8 @@ class FireStoreUtils {
     return orderModel;
   }
 
-  Future<ParcelOrderModel> parcelOrderPlace(ParcelOrderModel orderModel, double totalAmount) async {
+  Future<ParcelOrderModel> parcelOrderPlace(
+      ParcelOrderModel orderModel, double totalAmount) async {
     DocumentReference documentReference;
     if (orderModel.id.isEmpty) {
       documentReference = firestore.collection(PARCELORDER).doc();
@@ -347,7 +430,8 @@ class FireStoreUtils {
     } else {
       documentReference = firestore.collection(PARCELORDER).doc(orderModel.id);
     }
-    if (orderModel.paymentCollectByReceiver == false && orderModel.paymentMethod == "wallet") {
+    if (orderModel.paymentCollectByReceiver == false &&
+        orderModel.paymentMethod == "wallet") {
       TopupTranHistoryModel wallet = TopupTranHistoryModel(
           amount: totalAmount,
           order_id: orderModel.id,
@@ -361,8 +445,13 @@ class FireStoreUtils {
           transactionUser: "customer",
           note: 'Parcel Amount Payment');
 
-      await FireStoreUtils.firestore.collection("wallet").doc(wallet.id).set(wallet.toJson()).then((value) async {
-        await FireStoreUtils.updateWalletAmount(amount: -totalAmount).then((value) {});
+      await FireStoreUtils.firestore
+          .collection("wallet")
+          .doc(wallet.id)
+          .set(wallet.toJson())
+          .then((value) async {
+        await FireStoreUtils.updateWalletAmount(amount: -totalAmount)
+            .then((value) {});
       });
     }
     await documentReference.set(orderModel.toJson());
@@ -370,7 +459,8 @@ class FireStoreUtils {
     return orderModel;
   }
 
-  Future<RentalOrderModel> rentalOrderPlace(RentalOrderModel orderModel, double totalAmount) async {
+  Future<RentalOrderModel> rentalOrderPlace(
+      RentalOrderModel orderModel, double totalAmount) async {
     DocumentReference documentReference;
     if (orderModel.id.isEmpty) {
       documentReference = firestore.collection(RENTALORDER).doc();
@@ -392,8 +482,13 @@ class FireStoreUtils {
           transactionUser: "customer",
           note: 'Booking Amount Payment');
 
-      await FireStoreUtils.firestore.collection("wallet").doc(wallet.id).set(wallet.toJson()).then((value) async {
-        await FireStoreUtils.updateWalletAmount(amount: -totalAmount).then((value) {});
+      await FireStoreUtils.firestore
+          .collection("wallet")
+          .doc(wallet.id)
+          .set(wallet.toJson())
+          .then((value) async {
+        await FireStoreUtils.updateWalletAmount(amount: -totalAmount)
+            .then((value) {});
       });
     }
 
@@ -404,7 +499,12 @@ class FireStoreUtils {
 
   Future setSos(String orderId, UserLocation userLocation) async {
     DocumentReference documentReference = firestore.collection(SOS).doc();
-    Map<String, dynamic> sosMap = {'id': documentReference.id, 'orderId': orderId, 'status': "Initiated", 'latLong': userLocation.toJson()};
+    Map<String, dynamic> sosMap = {
+      'id': documentReference.id,
+      'orderId': orderId,
+      'status': "Initiated",
+      'latLong': userLocation.toJson()
+    };
 
     print("------->------->" + sosMap.toString());
     await documentReference.set(sosMap);
@@ -412,7 +512,10 @@ class FireStoreUtils {
 
   Future<bool> getSOS(String orderId) async {
     bool isAdded = false;
-    QuerySnapshot documentReference = await firestore.collection(SOS).where('orderId', isEqualTo: orderId).get();
+    QuerySnapshot documentReference = await firestore
+        .collection(SOS)
+        .where('orderId', isEqualTo: orderId)
+        .get();
     documentReference.docs.forEach((element) {
       if (element['orderId'] == orderId) {
         isAdded = true;
@@ -430,7 +533,8 @@ class FireStoreUtils {
       required String driverName,
       required String customerID,
       required String customerName}) async {
-    DocumentReference documentReference = firestore.collection(complaints).doc();
+    DocumentReference documentReference =
+        firestore.collection(complaints).doc();
     Map<String, dynamic> sosMap = {
       'id': documentReference.id,
       'createdAt': Timestamp.now(),
@@ -449,7 +553,10 @@ class FireStoreUtils {
 
   Future<bool> getRideComplain(String orderId) async {
     bool isAdded = false;
-    QuerySnapshot documentReference = await firestore.collection(complaints).where('orderId', isEqualTo: orderId).get();
+    QuerySnapshot documentReference = await firestore
+        .collection(complaints)
+        .where('orderId', isEqualTo: orderId)
+        .get();
     documentReference.docs.forEach((element) {
       if (element['orderId'] == orderId) {
         isAdded = true;
@@ -461,7 +568,10 @@ class FireStoreUtils {
 
   Future<QueryDocumentSnapshot?> getRideComplainData(String orderId) async {
     QueryDocumentSnapshot? isAdded;
-    QuerySnapshot documentReference = await firestore.collection(complaints).where('orderId', isEqualTo: orderId).get();
+    QuerySnapshot documentReference = await firestore
+        .collection(complaints)
+        .where('orderId', isEqualTo: orderId)
+        .get();
     documentReference.docs.forEach((element) {
       if (element['orderId'] == orderId) {
         isAdded = element;
@@ -473,8 +583,13 @@ class FireStoreUtils {
   Future<List<CabOrderModel>> getCabDriverOrders(String userID) async {
     List<CabOrderModel> orders = [];
 
-    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore.collection(RIDESORDER).where('authorID', isEqualTo: userID).orderBy('createdAt', descending: true).get();
-    await Future.forEach(ordersQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore
+        .collection(RIDESORDER)
+        .where('authorID', isEqualTo: userID)
+        .orderBy('createdAt', descending: true)
+        .get();
+    await Future.forEach(ordersQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         orders.add(CabOrderModel.fromJson(document.data()));
       } catch (e, stacksTrace) {
@@ -488,8 +603,13 @@ class FireStoreUtils {
   Future<List<ParcelCategory>?> getParcelServiceCategory() async {
     List<ParcelCategory> parcelCategory = [];
 
-    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore.collection(PARCELCATEGORY).where('publish', isEqualTo: true).orderBy('set_order', descending: false).get();
-    await Future.forEach(ordersQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore
+        .collection(PARCELCATEGORY)
+        .where('publish', isEqualTo: true)
+        .orderBy('set_order', descending: false)
+        .get();
+    await Future.forEach(ordersQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("---->${document.data()}");
         parcelCategory.add(ParcelCategory.fromJson(document.data()));
@@ -504,8 +624,10 @@ class FireStoreUtils {
   Future<List<ParcelWeightModel>?> getParcelWeight() async {
     List<ParcelWeightModel> parcelCategory = [];
 
-    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore.collection(PARCELWEIGHT).get();
-    await Future.forEach(ordersQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> ordersQuery =
+        await firestore.collection(PARCELWEIGHT).get();
+    await Future.forEach(ordersQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("---->${document.data()}");
         parcelCategory.add(ParcelWeightModel.fromJson(document.data()));
@@ -520,8 +642,13 @@ class FireStoreUtils {
   Future<List<ParcelOrderModel>> getParcelOrdes(String userID) async {
     List<ParcelOrderModel> orders = [];
 
-    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore.collection(PARCELORDER).where('authorID', isEqualTo: userID).orderBy('createdAt', descending: true).get();
-    await Future.forEach(ordersQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore
+        .collection(PARCELORDER)
+        .where('authorID', isEqualTo: userID)
+        .orderBy('createdAt', descending: true)
+        .get();
+    await Future.forEach(ordersQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         orders.add(ParcelOrderModel.fromJson(document.data()));
       } catch (e, stacksTrace) {
@@ -532,12 +659,18 @@ class FireStoreUtils {
     return orders;
   }
 
-  Future<List<RentalOrderModel>> getRentalBook(String userID, String orderStatus) async {
+  Future<List<RentalOrderModel>> getRentalBook(
+      String userID, String orderStatus) async {
     List<RentalOrderModel> orders = [];
 
     if (orderStatus.isEmpty) {
-      QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore.collection(RENTALORDER).where('authorID', isEqualTo: userID).orderBy('createdAt', descending: true).get();
-      await Future.forEach(ordersQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore
+          .collection(RENTALORDER)
+          .where('authorID', isEqualTo: userID)
+          .orderBy('createdAt', descending: true)
+          .get();
+      await Future.forEach(ordersQuery.docs,
+          (QueryDocumentSnapshot<Map<String, dynamic>> document) {
         try {
           orders.add(RentalOrderModel.fromJson(document.data()));
         } catch (e, stacksTrace) {
@@ -546,9 +679,14 @@ class FireStoreUtils {
         }
       });
     } else {
-      QuerySnapshot<Map<String, dynamic>> ordersQuery =
-          await firestore.collection(RENTALORDER).where('authorID', isEqualTo: userID).where("status", isEqualTo: orderStatus).orderBy('createdAt', descending: true).get();
-      await Future.forEach(ordersQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      QuerySnapshot<Map<String, dynamic>> ordersQuery = await firestore
+          .collection(RENTALORDER)
+          .where('authorID', isEqualTo: userID)
+          .where("status", isEqualTo: orderStatus)
+          .orderBy('createdAt', descending: true)
+          .get();
+      await Future.forEach(ordersQuery.docs,
+          (QueryDocumentSnapshot<Map<String, dynamic>> document) {
         try {
           orders.add(RentalOrderModel.fromJson(document.data()));
         } catch (e, stacksTrace) {
@@ -562,7 +700,10 @@ class FireStoreUtils {
   }
 
   static Future updateRentalOrder(RentalOrderModel orderModel) async {
-    await firestore.collection(RENTALORDER).doc(orderModel.id).set(orderModel.toJson(), SetOptions(merge: true));
+    await firestore
+        .collection(RENTALORDER)
+        .doc(orderModel.id)
+        .set(orderModel.toJson(), SetOptions(merge: true));
   }
 
   late StreamController<CabOrderModel> cabOrdersStreamController;
@@ -570,7 +711,11 @@ class FireStoreUtils {
 
   Stream<CabOrderModel> getCabOrder(String orderId) async* {
     cabOrdersStreamController = StreamController();
-    cabOrdersStreamSub = firestore.collection(RIDESORDER).doc(orderId).snapshots().listen((onData) async {
+    cabOrdersStreamSub = firestore
+        .collection(RIDESORDER)
+        .doc(orderId)
+        .snapshots()
+        .listen((onData) async {
       if (onData.data() != null) {
         CabOrderModel? orderModel = CabOrderModel.fromJson(onData.data()!);
         if (orderModel.rideType == "ride") {
@@ -586,7 +731,11 @@ class FireStoreUtils {
 
   Stream<CabOrderModel> getIntercityOrder(String orderId) async* {
     intercityOrdersStreamController = StreamController();
-    intercityOrdersStreamSub = firestore.collection(RIDESORDER).doc(orderId).snapshots().listen((onData) async {
+    intercityOrdersStreamSub = firestore
+        .collection(RIDESORDER)
+        .doc(orderId)
+        .snapshots()
+        .listen((onData) async {
       if (onData.data() != null) {
         CabOrderModel? orderModel = CabOrderModel.fromJson(onData.data()!);
         if (orderModel.rideType == "intercity") {
@@ -599,7 +748,10 @@ class FireStoreUtils {
 
   static Future updateCabOrder(CabOrderModel orderModel) async {
     print("------->${orderModel.adminCommission}");
-    await firestore.collection(RIDESORDER).doc(orderModel.id).set(orderModel.toJson(), SetOptions(merge: true));
+    await firestore
+        .collection(RIDESORDER)
+        .doc(orderModel.id)
+        .set(orderModel.toJson(), SetOptions(merge: true));
   }
 
   late StreamController<ParcelOrderModel> parcelOrdersStreamController;
@@ -607,9 +759,14 @@ class FireStoreUtils {
 
   Stream<ParcelOrderModel> getParcelOrder(String orderId) async* {
     parcelOrdersStreamController = StreamController();
-    parcelOrdersStreamSub = firestore.collection(PARCELORDER).doc(orderId).snapshots().listen((onData) async {
+    parcelOrdersStreamSub = firestore
+        .collection(PARCELORDER)
+        .doc(orderId)
+        .snapshots()
+        .listen((onData) async {
       if (onData.data() != null) {
-        ParcelOrderModel? orderModel = ParcelOrderModel.fromJson(onData.data()!);
+        ParcelOrderModel? orderModel =
+            ParcelOrderModel.fromJson(onData.data()!);
         parcelOrdersStreamController.sink.add(orderModel);
       }
     });
@@ -618,7 +775,10 @@ class FireStoreUtils {
 
   static Future updateParcelOrder(ParcelOrderModel orderModel) async {
     print("------->${orderModel.adminCommission}");
-    await firestore.collection(PARCELORDER).doc(orderModel.id).set(orderModel.toJson(), SetOptions(merge: true));
+    await firestore
+        .collection(PARCELORDER)
+        .doc(orderModel.id)
+        .set(orderModel.toJson(), SetOptions(merge: true));
   }
 
   late StreamController<User> driverStreamController;
@@ -626,7 +786,11 @@ class FireStoreUtils {
 
   Stream<User> getDriver(String userId) async* {
     driverStreamController = StreamController();
-    driverStreamSub = firestore.collection(USERS).doc(userId).snapshots().listen((onData) async {
+    driverStreamSub = firestore
+        .collection(USERS)
+        .doc(userId)
+        .snapshots()
+        .listen((onData) async {
       if (onData.data() != null) {
         User? user = User.fromJson(onData.data()!);
         driverStreamController.sink.add(user);
@@ -637,9 +801,13 @@ class FireStoreUtils {
 
   static Future<List<VehicleType>> getVehicleType() async {
     List<VehicleType> vehicleType = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery =
-        await firestore.collection(VEHICLETYPE).where('sectionId', isEqualTo: sectionConstantModel!.id).where("isActive", isEqualTo: true).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(VEHICLETYPE)
+        .where('sectionId', isEqualTo: sectionConstantModel!.id)
+        .where("isActive", isEqualTo: true)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         vehicleType.add(VehicleType.fromJson(document.data()));
@@ -652,8 +820,12 @@ class FireStoreUtils {
 
   static Future<List<PopularDestination>> getPopularDestination() async {
     List<PopularDestination> popularDestination = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(POPULAR_DESTINATION).where('is_publish', isEqualTo: true).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(POPULAR_DESTINATION)
+        .where('is_publish', isEqualTo: true)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         popularDestination.add(PopularDestination.fromJson(document.data()));
@@ -666,8 +838,12 @@ class FireStoreUtils {
 
   static Future<List<RentalVehicleType>> getRentalVehicleType() async {
     List<RentalVehicleType> vehicleType = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(RENTALVEHICLETYPE).where("isActive", isEqualTo: true).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(RENTALVEHICLETYPE)
+        .where("isActive", isEqualTo: true)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print(document.data());
         vehicleType.add(RentalVehicleType.fromJson(document.data()));
@@ -679,7 +855,8 @@ class FireStoreUtils {
   }
 
   static Future<User?> getCurrentUser(String uid) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(USERS).doc(uid).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(USERS).doc(uid).get();
     if (userDocument.data() != null && userDocument.exists) {
       return User.fromJson(userDocument.data()!);
     } else {
@@ -689,15 +866,22 @@ class FireStoreUtils {
 
   Future<User?> getNearestDriver(LatLng? sourceLateLong) async {
     User? user;
-    var collectionReference = firestore.collection(USERS).where("role", isEqualTo: "driver");
+    var collectionReference =
+        firestore.collection(USERS).where("role", isEqualTo: "driver");
 
-    GeoFirePoint center = geo.point(latitude: sourceLateLong!.latitude, longitude: sourceLateLong.longitude);
+    GeoFirePoint center = geo.point(
+        latitude: sourceLateLong!.latitude,
+        longitude: sourceLateLong.longitude);
 
     String field = 'g';
 
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionReference)
-        .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+        .within(
+            center: center,
+            radius: double.parse(sectionConstantModel!.nearByRadius.toString()),
+            field: field,
+            strictMode: true);
 
     stream.listen((List<DocumentSnapshot> documentList) {
       for (var document in documentList) {
@@ -712,22 +896,30 @@ class FireStoreUtils {
 
   static Future<NotificationModel?> getNotificationContent(String type) async {
     NotificationModel? notificationModel;
-    await firestore.collection(dynamicNotification).where('type', isEqualTo: type).get().then((value) {
+    await firestore
+        .collection(dynamicNotification)
+        .where('type', isEqualTo: type)
+        .get()
+        .then((value) {
       print("------>");
       if (value.docs.isNotEmpty) {
         print(value.docs.first.data());
 
         notificationModel = NotificationModel.fromJson(value.docs.first.data());
       } else {
-        notificationModel = NotificationModel(id: "", message: "Notification setup is pending".tr(), subject: "setup notification".tr(), type: "");
+        notificationModel = NotificationModel(
+            id: "",
+            message: "Notification setup is pending".tr(),
+            subject: "setup notification".tr(),
+            type: "");
       }
     });
     return notificationModel;
   }
 
-
   Future<TaxModel?> getTaxSetting() async {
-    DocumentSnapshot<Map<String, dynamic>> taxQuery = await firestore.collection(Setting).doc('taxSetting').get();
+    DocumentSnapshot<Map<String, dynamic>> taxQuery =
+        await firestore.collection(Setting).doc('taxSetting').get();
     if (taxQuery.data() != null) {
       return TaxModel.fromJson(taxQuery.data()!);
     }
@@ -745,7 +937,13 @@ class FireStoreUtils {
   }*/
   Future<List<TaxModel>?> getTaxList(String? sectionId) async {
     List<TaxModel> taxList = [];
-    await firestore.collection(tax).where('country', isEqualTo: country).where('sectionId', isEqualTo: sectionId).where('enable', isEqualTo: true).get().then((value) {
+    await firestore
+        .collection(tax)
+        .where('country', isEqualTo: country)
+        .where('sectionId', isEqualTo: sectionId)
+        .where('enable', isEqualTo: true)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         TaxModel taxModel = TaxModel.fromJson(element.data());
         taxList.add(taxModel);
@@ -762,21 +960,30 @@ class FireStoreUtils {
         '/productImages/$uniqueID'
             '.png');
     UploadTask uploadTask = upload.putFile(image);
-    uploadTask.whenComplete(() {}).catchError((onError) => print((onError as PlatformException).message));
+    uploadTask
+        .whenComplete(() {})
+        .catchError((onError) => print((onError as PlatformException).message));
     var storageRef = (await uploadTask.whenComplete(() {})).ref;
     var downloadUrl = await storageRef.getDownloadURL();
     return downloadUrl.toString();
   }
 
   static Future<User?> updateCurrentUser(User user) async {
-    return await firestore.collection(USERS).doc(user.userID).set(user.toJson()).then((document) {
+    return await firestore
+        .collection(USERS)
+        .doc(user.userID)
+        .set(user.toJson())
+        .then((document) {
       return user;
     });
   }
 
   static Future<void> updateCurrentUserAddress(AddressModel userAddress) async {
     //UserPreference.setUserId(userID: user.userID);
-    return await firestore.collection(USERS).doc(MyAppState.currentUser!.userID).update(
+    return await firestore
+        .collection(USERS)
+        .doc(MyAppState.currentUser!.userID)
+        .update(
       {"shippingAddress": userAddress.toJson()},
     ).then((document) {
       print("AAADDDDDD");
@@ -784,74 +991,101 @@ class FireStoreUtils {
   }
 
   static Future<ProductModel?> updateProduct(ProductModel prodduct) async {
-    return await firestore.collection(PRODUCTS).doc(prodduct.id).set(prodduct.toJson()).then((document) {
+    return await firestore
+        .collection(PRODUCTS)
+        .doc(prodduct.id)
+        .set(prodduct.toJson())
+        .then((document) {
       return prodduct;
     });
   }
 
   static Future<VendorModel?> updateVendor(VendorModel vendor) async {
-    return await firestore.collection(VENDORS).doc(vendor.id).set(vendor.toJson()).then((document) {
+    return await firestore
+        .collection(VENDORS)
+        .doc(vendor.id)
+        .set(vendor.toJson())
+        .then((document) {
       return vendor;
     });
   }
 
-  static Future<String> uploadUserImageToFireStorage(File image, String userID) async {
+  static Future<String> uploadUserImageToFireStorage(
+      File image, String userID) async {
     Reference upload = storage.child(STORAGE_ROOT + '/User/images/$userID.png');
     File compressedImage = await compressImage(image);
     UploadTask uploadTask = upload.putFile(compressedImage);
-    var downloadUrl = await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
+    var downloadUrl =
+        await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
     return downloadUrl.toString();
   }
 
-  Future<Url> uploadChatImageToFireStorage(File image, BuildContext context) async {
+  Future<Url> uploadChatImageToFireStorage(
+      File image, BuildContext context) async {
     showProgress(context, 'Uploading image...'.tr(), false);
     var uniqueID = const Uuid().v4();
-    Reference upload = storage.child(STORAGE_ROOT + '/chat/images/$uniqueID.png');
+    Reference upload =
+        storage.child(STORAGE_ROOT + '/chat/images/$uniqueID.png');
     File compressedImage = await compressImage(image);
     UploadTask uploadTask = upload.putFile(compressedImage);
     uploadTask.snapshotEvents.listen((event) {
-      updateProgress('${"Uploading image".tr()} ${(event.bytesTransferred.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} /'
-              '${(event.totalBytes.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} '
-              'KB'
-          .tr());
+      updateProgress(
+          '${"Uploading image".tr()} ${(event.bytesTransferred.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} /'
+                  '${(event.totalBytes.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} '
+                  'KB'
+              .tr());
     });
-    uploadTask.whenComplete(() {}).catchError((onError) => print((onError as PlatformException).message));
+    uploadTask
+        .whenComplete(() {})
+        .catchError((onError) => print((onError as PlatformException).message));
     var storageRef = (await uploadTask.whenComplete(() {})).ref;
     var downloadUrl = await storageRef.getDownloadURL();
     var metaData = await storageRef.getMetadata();
     hideProgress();
-    return Url(mime: metaData.contentType ?? 'image', url: downloadUrl.toString());
+    return Url(
+        mime: metaData.contentType ?? 'image', url: downloadUrl.toString());
   }
 
-  Future<ChatVideoContainer> uploadChatVideoToFireStorage(File video, BuildContext context) async {
+  Future<ChatVideoContainer> uploadChatVideoToFireStorage(
+      File video, BuildContext context) async {
     showProgress(context, 'Uploading video...'.tr(), false);
     var uniqueID = const Uuid().v4();
-    Reference upload = storage.child(STORAGE_ROOT + '/chat/videos/$uniqueID.mp4');
+    Reference upload =
+        storage.child(STORAGE_ROOT + '/chat/videos/$uniqueID.mp4');
     File compressedVideo = await _compressVideo(video);
     SettableMetadata metadata = SettableMetadata(contentType: 'video');
     UploadTask uploadTask = upload.putFile(compressedVideo, metadata);
     uploadTask.snapshotEvents.listen((event) {
-      updateProgress('${"Uploading video".tr()} ${(event.bytesTransferred.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} /'
-              '${(event.totalBytes.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} '
-              'KB'
-          .tr());
+      updateProgress(
+          '${"Uploading video".tr()} ${(event.bytesTransferred.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} /'
+                  '${(event.totalBytes.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} '
+                  'KB'
+              .tr());
     });
     var storageRef = (await uploadTask.whenComplete(() {})).ref;
     var downloadUrl = await storageRef.getDownloadURL();
     var metaData = await storageRef.getMetadata();
-    final uint8list = await VideoThumbnail.thumbnailFile(video: downloadUrl, thumbnailPath: (await getTemporaryDirectory()).path, imageFormat: ImageFormat.PNG);
+    final uint8list = await VideoThumbnail.thumbnailFile(
+        video: downloadUrl,
+        thumbnailPath: (await getTemporaryDirectory()).path,
+        imageFormat: ImageFormat.PNG);
     final file = File(uint8list ?? '');
     String thumbnailDownloadUrl = await uploadVideoThumbnailToFireStorage(file);
     hideProgress();
-    return ChatVideoContainer(videoUrl: Url(url: downloadUrl.toString(), mime: metaData.contentType ?? 'video'), thumbnailUrl: thumbnailDownloadUrl);
+    return ChatVideoContainer(
+        videoUrl: Url(
+            url: downloadUrl.toString(), mime: metaData.contentType ?? 'video'),
+        thumbnailUrl: thumbnailDownloadUrl);
   }
 
   Future<String> uploadVideoThumbnailToFireStorage(File file) async {
     var uniqueID = const Uuid().v4();
-    Reference upload = storage.child(STORAGE_ROOT + '/thumbnails/$uniqueID.png');
+    Reference upload =
+        storage.child(STORAGE_ROOT + '/thumbnails/$uniqueID.png');
     File compressedImage = await compressImage(file);
     UploadTask uploadTask = upload.putFile(compressedImage);
-    var downloadUrl = await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
+    var downloadUrl =
+        await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
     return downloadUrl.toString();
   }
 
@@ -862,7 +1096,8 @@ class FireStoreUtils {
         User userModel = User.fromJson(user.data() ?? {});
         userStreamController.sink.add(userModel);
       } catch (e) {
-        print('FireStoreUtils.getUserByID failed to parse user object ${user.id}');
+        print(
+            'FireStoreUtils.getUserByID failed to parse user object ${user.id}');
       }
     });
     yield* userStreamController.stream;
@@ -871,14 +1106,23 @@ class FireStoreUtils {
   Future<List> getVendorCusions(String id) async {
     List tagList = [];
     List prodtagList = [];
-    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore.collection(PRODUCTS).where('vendorID', isEqualTo: id).get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
-      if (document.data().containsKey("categoryID") && document.data()['categoryID'].toString().isNotEmpty) {
+    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore
+        .collection(PRODUCTS)
+        .where('vendorID', isEqualTo: id)
+        .get();
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+      if (document.data().containsKey("categoryID") &&
+          document.data()['categoryID'].toString().isNotEmpty) {
         prodtagList.add(document.data()['categoryID']);
       }
     });
-    QuerySnapshot<Map<String, dynamic>> catQuery = await firestore.collection(CATEGORIES).where('publish', isEqualTo: true).get();
-    await Future.forEach(catQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> catQuery = await firestore
+        .collection(CATEGORIES)
+        .where('publish', isEqualTo: true)
+        .get();
+    await Future.forEach(catQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       Map<String, dynamic> catDoc = document.data();
       if (catDoc.containsKey("id") &&
           catDoc['id'].toString().isNotEmpty &&
@@ -894,13 +1138,15 @@ class FireStoreUtils {
 
   Stream<StripeKeyModel> getStripe() async* {
     // ignore: close_sinks
-    StreamController<StripeKeyModel> stripeStreamController = StreamController();
+    StreamController<StripeKeyModel> stripeStreamController =
+        StreamController();
     firestore.collection(Setting).doc(StripeSetting).snapshots().listen((user) {
       try {
         StripeKeyModel userModel = StripeKeyModel.fromJson(user.data() ?? {});
         stripeStreamController.sink.add(userModel);
       } catch (e) {
-        print('FireStoreUtils.getUserByID failed to parse user object ${user.id}');
+        print(
+            'FireStoreUtils.getUserByID failed to parse user object ${user.id}');
       }
     });
     yield* stripeStreamController.stream;
@@ -919,17 +1165,23 @@ class FireStoreUtils {
         razorpaySecret = userModel.razorpaySecret;
         stripeStreamController.sink.add(userModel);
       } catch (e) {
-        print('FireStoreUtils.getUserByID failed to parse user object ${user.id}');
+        print(
+            'FireStoreUtils.getUserByID failed to parse user object ${user.id}');
       }
     });
     yield* stripeStreamController.stream;
   }
 
   static getPayFastSettingData() async {
-    firestore.collection(Setting).doc("payFastSettings").get().then((payFastData) {
+    firestore
+        .collection(Setting)
+        .doc("payFastSettings")
+        .get()
+        .then((payFastData) {
       print(payFastData.data().toString());
       try {
-        PayFastSettingData payFastSettingData = PayFastSettingData.fromJson(payFastData.data() ?? {});
+        PayFastSettingData payFastSettingData =
+            PayFastSettingData.fromJson(payFastData.data() ?? {});
         print(payFastData);
         UserPreference.setPayFastData(payFastSettingData);
       } catch (error) {
@@ -940,9 +1192,14 @@ class FireStoreUtils {
   }
 
   static getPaypalSettingData() async {
-    firestore.collection(Setting).doc("paypalSettings").get().then((paypalData) {
+    firestore
+        .collection(Setting)
+        .doc("paypalSettings")
+        .get()
+        .then((paypalData) {
       try {
-        PaypalSettingData payplaDataModel = PaypalSettingData.fromJson(paypalData.data() ?? {});
+        PaypalSettingData payplaDataModel =
+            PaypalSettingData.fromJson(paypalData.data() ?? {});
         UserPreference.setPayPalData(payplaDataModel);
       } catch (error) {
         print(error.toString());
@@ -954,7 +1211,8 @@ class FireStoreUtils {
     firestore.collection(Setting).doc("MercadoPago").get().then((mercadoPago) {
       print(mercadoPago.data());
       try {
-        MercadoPagoSettingData mercadoPagoDataModel = MercadoPagoSettingData.fromJson(mercadoPago.data() ?? {});
+        MercadoPagoSettingData mercadoPagoDataModel =
+            MercadoPagoSettingData.fromJson(mercadoPago.data() ?? {});
         UserPreference.setMercadoPago(mercadoPagoDataModel);
       } catch (error) {
         print(error.toString());
@@ -963,9 +1221,14 @@ class FireStoreUtils {
   }
 
   static getStripeSettingData() async {
-    firestore.collection(Setting).doc("stripeSettings").get().then((stripeData) {
+    firestore
+        .collection(Setting)
+        .doc("stripeSettings")
+        .get()
+        .then((stripeData) {
       try {
-        StripeSettingData stripeSettingData = StripeSettingData.fromJson(stripeData.data() ?? {});
+        StripeSettingData stripeSettingData =
+            StripeSettingData.fromJson(stripeData.data() ?? {});
         UserPreference.setStripeData(stripeSettingData);
       } catch (error) {
         print(error.toString());
@@ -974,9 +1237,14 @@ class FireStoreUtils {
   }
 
   static getFlutterWaveSettingData() async {
-    firestore.collection(Setting).doc("flutterWave").get().then((flutterWaveData) {
+    firestore
+        .collection(Setting)
+        .doc("flutterWave")
+        .get()
+        .then((flutterWaveData) {
       try {
-        FlutterWaveSettingData flutterWaveSettingData = FlutterWaveSettingData.fromJson(flutterWaveData.data() ?? {});
+        FlutterWaveSettingData flutterWaveSettingData =
+            FlutterWaveSettingData.fromJson(flutterWaveData.data() ?? {});
 
         UserPreference.setFlutterWaveData(flutterWaveSettingData);
       } catch (error) {}
@@ -986,7 +1254,8 @@ class FireStoreUtils {
   static getPayStackSettingData() async {
     firestore.collection(Setting).doc("payStack").get().then((payStackData) {
       try {
-        PayStackSettingData payStackSettingData = PayStackSettingData.fromJson(payStackData.data() ?? {});
+        PayStackSettingData payStackSettingData =
+            PayStackSettingData.fromJson(payStackData.data() ?? {});
         print(payStackSettingData);
         UserPreference.setPayStackData(payStackSettingData);
       } catch (error) {
@@ -998,7 +1267,8 @@ class FireStoreUtils {
   static getPaytmSettingData() async {
     firestore.collection(Setting).doc("PaytmSettings").get().then((paytmData) {
       try {
-        PaytmSettingData paytmSettingData = PaytmSettingData.fromJson(paytmData.data() ?? {});
+        PaytmSettingData paytmSettingData =
+            PaytmSettingData.fromJson(paytmData.data() ?? {});
         UserPreference.setPaytmData(paytmSettingData);
       } catch (error) {
         print(error.toString());
@@ -1007,7 +1277,11 @@ class FireStoreUtils {
   }
 
   static getWalletSettingData() {
-    firestore.collection(Setting).doc('walletSettings').get().then((walletSetting) {
+    firestore
+        .collection(Setting)
+        .doc('walletSettings')
+        .get()
+        .then((walletSetting) {
       try {
         bool walletEnable = walletSetting.data()!['isEnabled'];
         UserPreference.setWalletData(walletEnable);
@@ -1036,7 +1310,8 @@ class FireStoreUtils {
         razorpayKey = userModel.razorpayKey;
         razorpaySecret = userModel.razorpaySecret;
       } catch (e) {
-        print('FireStoreUtils.getUserByID failed to parse user object ${user.id}');
+        print(
+            'FireStoreUtils.getUserByID failed to parse user object ${user.id}');
       }
     });
 
@@ -1044,7 +1319,8 @@ class FireStoreUtils {
   }
 
   Future<CodModel?> getCod() async {
-    DocumentSnapshot<Map<String, dynamic>> codQuery = await firestore.collection(Setting).doc('CODSettings').get();
+    DocumentSnapshot<Map<String, dynamic>> codQuery =
+        await firestore.collection(Setting).doc('CODSettings').get();
     if (codQuery.data() != null) {
       print("dataaaaaa");
       return CodModel.fromJson(codQuery.data()!);
@@ -1055,7 +1331,8 @@ class FireStoreUtils {
   }
 
   Future<DeliveryChargeModel?> getDeliveryCharges() async {
-    DocumentSnapshot<Map<String, dynamic>> codQuery = await firestore.collection(Setting).doc('DeliveryCharge').get();
+    DocumentSnapshot<Map<String, dynamic>> codQuery =
+        await firestore.collection(Setting).doc('DeliveryCharge').get();
     if (codQuery.data() != null) {
       return DeliveryChargeModel.fromJson(codQuery.data()!);
     } else {
@@ -1065,9 +1342,13 @@ class FireStoreUtils {
 
   Future<List<SectionModel>> getSections() async {
     List<SectionModel> sections = [];
-    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore.collection(SECTION).where("isActive", isEqualTo: true).get();
+    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore
+        .collection(SECTION)
+        .where("isActive", isEqualTo: true)
+        .get();
 
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("--->${document.data()}");
         sections.add(SectionModel.fromJson(document.data()));
@@ -1080,7 +1361,8 @@ class FireStoreUtils {
   }
 
   Future<SectionModel?> getSectionsById(String? sectionId) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(SECTION).doc(sectionId).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(SECTION).doc(sectionId).get();
     if (userDocument.data() != null && userDocument.exists) {
       return SectionModel.fromJson(userDocument.data()!);
     } else {
@@ -1091,9 +1373,13 @@ class FireStoreUtils {
   Future<List<ProductModel>> getAllProducts() async {
     List<ProductModel> products = [];
 
-    QuerySnapshot<Map<String, dynamic>> productsQuery =
-        await firestore.collection(PRODUCTS).where("section_id", isEqualTo: sectionConstantModel!.id).where('publish', isEqualTo: true).get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore
+        .collection(PRODUCTS)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .where('publish', isEqualTo: true)
+        .get();
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print('${document.data()}');
         products.add(ProductModel.fromJson(document.data()));
@@ -1114,7 +1400,8 @@ class FireStoreUtils {
         .where("section_id", isEqualTo: sectionConstantModel!.id)
         .where('publish', isEqualTo: true)
         .get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("================selctedOrderTypeValue ${document.data()}");
 
@@ -1136,11 +1423,13 @@ class FireStoreUtils {
         .where("section_id", isEqualTo: sectionConstantModel!.id)
         .where('publish', isEqualTo: true)
         .get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         products.add(ProductModel.fromJson(document.data()));
       } catch (e) {
-        print('productspppp**-123--FireStoreUtils.getAllProducts Parse error $e');
+        print(
+            'productspppp**-123--FireStoreUtils.getAllProducts Parse error $e');
       }
     });
     print('****TAKEAproductspppp**-123--' + products.length.toString());
@@ -1149,8 +1438,15 @@ class FireStoreUtils {
 
   Future<bool> blockUser(User blockedUser, String type) async {
     bool isSuccessful = false;
-    BlockUserModel blockUserModel = BlockUserModel(type: type, source: MyAppState.currentUser!.userID, dest: blockedUser.userID, createdAt: Timestamp.now());
-    await firestore.collection(REPORTS).add(blockUserModel.toJson()).then((onValue) {
+    BlockUserModel blockUserModel = BlockUserModel(
+        type: type,
+        source: MyAppState.currentUser!.userID,
+        dest: blockedUser.userID,
+        createdAt: Timestamp.now());
+    await firestore
+        .collection(REPORTS)
+        .add(blockUserModel.toJson())
+        .then((onValue) {
       isSuccessful = true;
     });
     return isSuccessful;
@@ -1158,7 +1454,11 @@ class FireStoreUtils {
 
   Stream<bool> getBlocks() async* {
     StreamController<bool> refreshStreamController = StreamController();
-    firestore.collection(REPORTS).where('source', isEqualTo: MyAppState.currentUser!.userID).snapshots().listen((onData) {
+    firestore
+        .collection(REPORTS)
+        .where('source', isEqualTo: MyAppState.currentUser!.userID)
+        .snapshots()
+        .listen((onData) {
       List<BlockUserModel> list = [];
       for (DocumentSnapshot<Map<String, dynamic>> block in onData.docs) {
         list.add(BlockUserModel.fromJson(block.data() ?? {}));
@@ -1185,23 +1485,31 @@ class FireStoreUtils {
     SettableMetadata metadata = SettableMetadata(contentType: 'audio');
     UploadTask uploadTask = upload.putFile(file, metadata);
     uploadTask.snapshotEvents.listen((event) {
-      updateProgress('${"Uploading Audio".tr()} ${(event.bytesTransferred.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} /'
+      updateProgress(
+          '${"Uploading Audio".tr()} ${(event.bytesTransferred.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} /'
           '${(event.totalBytes.toDouble() / 1000).toStringAsFixed(currencyData!.decimal)} '
           'KB');
     });
-    uploadTask.whenComplete(() {}).catchError((onError) => print((onError as PlatformException).message));
+    uploadTask
+        .whenComplete(() {})
+        .catchError((onError) => print((onError as PlatformException).message));
     var storageRef = (await uploadTask.whenComplete(() {})).ref;
     var downloadUrl = await storageRef.getDownloadURL();
     var metaData = await storageRef.getMetadata();
     hideProgress();
-    return Url(mime: metaData.contentType ?? 'audio', url: downloadUrl.toString());
+    return Url(
+        mime: metaData.contentType ?? 'audio', url: downloadUrl.toString());
   }
 
   Future<List<VendorCategoryModel>> getCuisines() async {
     List<VendorCategoryModel> cuisines = [];
-    QuerySnapshot<Map<String, dynamic>> cuisinesQuery =
-        await firestore.collection(CATEGORIES).where("section_id", isEqualTo: sectionConstantModel!.id).where('publish', isEqualTo: true).get();
-    await Future.forEach(cuisinesQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> cuisinesQuery = await firestore
+        .collection(CATEGORIES)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .where('publish', isEqualTo: true)
+        .get();
+    await Future.forEach(cuisinesQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         cuisines.add(VendorCategoryModel.fromJson(document.data()));
       } catch (e) {
@@ -1219,7 +1527,8 @@ class FireStoreUtils {
         .where("show_in_homepage", isEqualTo: true)
         .where('publish', isEqualTo: true)
         .get();
-    await Future.forEach(cuisinesQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(cuisinesQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         cuisines.add(VendorCategoryModel.fromJson(document.data()));
       } catch (e) {
@@ -1234,15 +1543,27 @@ class FireStoreUtils {
   Stream<List<VendorModel>> getAllDineInRestaurants() async* {
     List<VendorModel> vendors = [];
 
-    allDineInResaturantStreamController = StreamController<List<VendorModel>>.broadcast();
-    var collectionReference = firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id).where("enabledDiveInFuture", isEqualTo: true);
-    GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+    allDineInResaturantStreamController =
+        StreamController<List<VendorModel>>.broadcast();
+    var collectionReference = firestore
+        .collection(VENDORS)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .where("enabledDiveInFuture", isEqualTo: true);
+    GeoFirePoint center = geo.point(
+        latitude: MyAppState.selectedPosotion.location!.latitude,
+        longitude: MyAppState.selectedPosotion.location!.longitude);
 
     String field = 'g';
-    print(double.parse(sectionConstantModel!.nearByRadius.toString()).toString() + "===RADIUSgetVendorsForNewArrival");
+    print(
+        double.parse(sectionConstantModel!.nearByRadius.toString()).toString() +
+            "===RADIUSgetVendorsForNewArrival");
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionReference)
-        .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+        .within(
+            center: center,
+            radius: double.parse(sectionConstantModel!.nearByRadius.toString()),
+            field: field,
+            strictMode: true);
 
     stream.listen((List<DocumentSnapshot> documentList) {
       if (documentList.isEmpty) {
@@ -1268,16 +1589,29 @@ class FireStoreUtils {
     vendorStreamController = StreamController<List<VendorModel>>.broadcast();
     List<VendorModel> vendors = [];
     var collectionReference = (path == null || path.isEmpty)
-        ? firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id)
-        : firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id).where("enabledDiveInFuture", isEqualTo: true);
-    firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id);
+        ? firestore
+            .collection(VENDORS)
+            .where("section_id", isEqualTo: sectionConstantModel!.id)
+        : firestore
+            .collection(VENDORS)
+            .where("section_id", isEqualTo: sectionConstantModel!.id)
+            .where("enabledDiveInFuture", isEqualTo: true);
+    firestore
+        .collection(VENDORS)
+        .where("section_id", isEqualTo: sectionConstantModel!.id);
 
-    GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+    GeoFirePoint center = geo.point(
+        latitude: MyAppState.selectedPosotion.location!.latitude,
+        longitude: MyAppState.selectedPosotion.location!.longitude);
 
     String field = 'g';
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionReference)
-        .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+        .within(
+            center: center,
+            radius: double.parse(sectionConstantModel!.nearByRadius.toString()),
+            field: field,
+            strictMode: true);
 
     stream.listen((List<DocumentSnapshot> documentList) {
       for (var document in documentList) {
@@ -1296,8 +1630,12 @@ class FireStoreUtils {
 
   Future<List<VendorModel>> getVendors() async {
     List<VendorModel> vendors = [];
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id).get();
-    await Future.forEach(vendorsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(VENDORS)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .get();
+    await Future.forEach(vendorsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         vendors.add(VendorModel.fromJson(document.data()));
         print("*-*-/*-*-" + document["title"].toString());
@@ -1308,11 +1646,13 @@ class FireStoreUtils {
     return vendors;
   }
 
-  Stream<List<BookTableModel>> getBookingOrders(String userID, bool isUpComing) async* {
+  Stream<List<BookTableModel>> getBookingOrders(
+      String userID, bool isUpComing) async* {
     List<BookTableModel> orders = [];
 
     if (isUpComing) {
-      StreamController<List<BookTableModel>> upcomingordersStreamController = StreamController();
+      StreamController<List<BookTableModel>> upcomingordersStreamController =
+          StreamController();
       firestore
           .collection(ORDERS_TABLE)
           .where('author.id', isEqualTo: userID)
@@ -1322,7 +1662,8 @@ class FireStoreUtils {
           .orderBy('createdAt', descending: true)
           .snapshots()
           .listen((onData) async {
-        await Future.forEach(onData.docs, (QueryDocumentSnapshot<Map<String, dynamic>> element) {
+        await Future.forEach(onData.docs,
+            (QueryDocumentSnapshot<Map<String, dynamic>> element) {
           try {
             orders.add(BookTableModel.fromJson(element.data()));
           } catch (e, s) {
@@ -1333,7 +1674,8 @@ class FireStoreUtils {
       });
       yield* upcomingordersStreamController.stream;
     } else {
-      StreamController<List<BookTableModel>> bookedordersStreamController = StreamController();
+      StreamController<List<BookTableModel>> bookedordersStreamController =
+          StreamController();
       firestore
           .collection(ORDERS_TABLE)
           .where('author.id', isEqualTo: userID)
@@ -1343,7 +1685,8 @@ class FireStoreUtils {
           .orderBy('createdAt', descending: true)
           .snapshots()
           .listen((onData) async {
-        await Future.forEach(onData.docs, (QueryDocumentSnapshot<Map<String, dynamic>> element) {
+        await Future.forEach(onData.docs,
+            (QueryDocumentSnapshot<Map<String, dynamic>> element) {
           try {
             orders.add(BookTableModel.fromJson(element.data()));
           } catch (e, s) {
@@ -1371,7 +1714,8 @@ class FireStoreUtils {
         .listen((onData) async {
       orders.clear();
 
-      await Future.forEach(onData.docs, (QueryDocumentSnapshot<Map<String, dynamic>> element) {
+      await Future.forEach(onData.docs,
+          (QueryDocumentSnapshot<Map<String, dynamic>> element) {
         try {
           OrderModel orderModel = OrderModel.fromJson(element.data());
           if (!orders.contains(orderModel)) {
@@ -1392,7 +1736,10 @@ class FireStoreUtils {
   }
 
   void setFavouriteStore(FavouriteModel favouriteModel) {
-    firestore.collection(FavouriteStore).add(favouriteModel.toJson()).then((value) {
+    firestore
+        .collection(FavouriteStore)
+        .add(favouriteModel.toJson())
+        .then((value) {
       print("===FAVOURITE ADDED===");
     });
   }
@@ -1405,19 +1752,28 @@ class FireStoreUtils {
         .get()
         .then((value) {
       for (var element in value.docs) {
-        FirebaseFirestore.instance.collection(FavouriteStore).doc(element.id).delete().then((value) {
+        FirebaseFirestore.instance
+            .collection(FavouriteStore)
+            .doc(element.id)
+            .delete()
+            .then((value) {
           print("Success!");
         });
       }
     });
   }
 
-  Future<List<FavouriteItemModel>> getFavouritesProductList(String userId) async {
+  Future<List<FavouriteItemModel>> getFavouritesProductList(
+      String userId) async {
     List<FavouriteItemModel> lstFavourites = [];
 
-    QuerySnapshot<Map<String, dynamic>> favourites =
-        await firestore.collection(FavouriteItem).where('user_id', isEqualTo: userId).where("section_id", isEqualTo: sectionConstantModel!.id).get();
-    await Future.forEach(favourites.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> favourites = await firestore
+        .collection(FavouriteItem)
+        .where('user_id', isEqualTo: userId)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .get();
+    await Future.forEach(favourites.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print('------------> ${document.data()}');
         lstFavourites.add(FavouriteItemModel.fromJson(document.data()));
@@ -1433,12 +1789,17 @@ class FireStoreUtils {
   ) async {
     List<FavouriteOndemandServiceModel> lstFavourites = [];
 
-    QuerySnapshot<Map<String, dynamic>> favourites =
-        await firestore.collection(FavouriteOndemandItem).where('user_id', isEqualTo: userId).where("section_id", isEqualTo: sectionConstantModel!.id).get();
-    await Future.forEach(favourites.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> favourites = await firestore
+        .collection(FavouriteOndemandItem)
+        .where('user_id', isEqualTo: userId)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .get();
+    await Future.forEach(favourites.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print('------------> ${document.data()}');
-        lstFavourites.add(FavouriteOndemandServiceModel.fromJson(document.data()));
+        lstFavourites
+            .add(FavouriteOndemandServiceModel.fromJson(document.data()));
       } catch (e) {
         print('FavouriteModel.getCurrencys Parse error $e');
       }
@@ -1447,13 +1808,20 @@ class FireStoreUtils {
   }
 
   Future<void> setFavouriteStoreItem(FavouriteItemModel favouriteModel) async {
-    await firestore.collection(FavouriteItem).add(favouriteModel.toJson()).then((value) {
+    await firestore
+        .collection(FavouriteItem)
+        .add(favouriteModel.toJson())
+        .then((value) {
       print("===FAVOURITE ADDED===");
     });
   }
 
-  Future<void> setFavouriteOndemandSection(FavouriteOndemandServiceModel favouriteModel) async {
-    await firestore.collection(FavouriteOndemandItem).add(favouriteModel.toJson()).then((value) {
+  Future<void> setFavouriteOndemandSection(
+      FavouriteOndemandServiceModel favouriteModel) async {
+    await firestore
+        .collection(FavouriteOndemandItem)
+        .add(favouriteModel.toJson())
+        .then((value) {
       print("===FAVOURITE ADDED===");
     });
   }
@@ -1466,14 +1834,19 @@ class FireStoreUtils {
         .get()
         .then((value) {
       for (var element in value.docs) {
-        FirebaseFirestore.instance.collection(FavouriteItem).doc(element.id).delete().then((value) {
+        FirebaseFirestore.instance
+            .collection(FavouriteItem)
+            .doc(element.id)
+            .delete()
+            .then((value) {
           print("Success!");
         });
       }
     });
   }
 
-  void removeFavouriteOndemandService(FavouriteOndemandServiceModel favouriteModel) {
+  void removeFavouriteOndemandService(
+      FavouriteOndemandServiceModel favouriteModel) {
     FirebaseFirestore.instance
         .collection(FavouriteOndemandItem)
         .where("user_id", isEqualTo: favouriteModel.user_id)
@@ -1481,7 +1854,11 @@ class FireStoreUtils {
         .get()
         .then((value) {
       for (var element in value.docs) {
-        FirebaseFirestore.instance.collection(FavouriteOndemandItem).doc(element.id).delete().then((value) {
+        FirebaseFirestore.instance
+            .collection(FavouriteOndemandItem)
+            .doc(element.id)
+            .delete()
+            .then((value) {
           print("Remove Success!");
         });
       }
@@ -1496,19 +1873,29 @@ class FireStoreUtils {
   StreamController<List<VendorModel>>? allResaturantStreamController;
 
   Stream<List<VendorModel>> getAllStores() async* {
-    allResaturantStreamController = StreamController<List<VendorModel>>.broadcast();
+    allResaturantStreamController =
+        StreamController<List<VendorModel>>.broadcast();
     List<VendorModel> vendors = [];
     print("sectionID---->$sectionConstantModel!.id");
 
     try {
-      var collectionReference = firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id);
+      var collectionReference = firestore
+          .collection(VENDORS)
+          .where("section_id", isEqualTo: sectionConstantModel!.id);
 
-      GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+      GeoFirePoint center = geo.point(
+          latitude: MyAppState.selectedPosotion.location!.latitude,
+          longitude: MyAppState.selectedPosotion.location!.longitude);
 
       String field = 'g';
       Stream<List<DocumentSnapshot>> stream = geo
           .collection(collectionRef: collectionReference)
-          .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+          .within(
+              center: center,
+              radius:
+                  double.parse(sectionConstantModel!.nearByRadius.toString()),
+              field: field,
+              strictMode: true);
 
       stream.listen((List<DocumentSnapshot> documentList) {
         if (documentList.isEmpty) {
@@ -1548,14 +1935,27 @@ class FireStoreUtils {
 
     popularStreamController = StreamController<List<VendorModel>>.broadcast();
     var collectionReference = (path == null || path.isEmpty)
-        ? firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id)
-        : firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id).where("enabledDiveInFuture", isEqualTo: true);
-    GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+        ? firestore
+            .collection(VENDORS)
+            .where("section_id", isEqualTo: sectionConstantModel!.id)
+        : firestore
+            .collection(VENDORS)
+            .where("section_id", isEqualTo: sectionConstantModel!.id)
+            .where("enabledDiveInFuture", isEqualTo: true);
+    GeoFirePoint center = geo.point(
+        latitude: MyAppState.selectedPosotion.location!.latitude,
+        longitude: MyAppState.selectedPosotion.location!.longitude);
     String field = 'g';
-    print(double.parse(sectionConstantModel!.nearByRadius.toString()).toString() + "===RADIUSgetVendorsForNewArrival");
+    print(
+        double.parse(sectionConstantModel!.nearByRadius.toString()).toString() +
+            "===RADIUSgetVendorsForNewArrival");
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionReference)
-        .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+        .within(
+            center: center,
+            radius: double.parse(sectionConstantModel!.nearByRadius.toString()),
+            field: field,
+            strictMode: true);
     stream.listen((List<DocumentSnapshot> documentList) {
       if (documentList.isEmpty) {
         popularStreamController.close();
@@ -1579,18 +1979,30 @@ class FireStoreUtils {
   Stream<List<VendorModel>> getVendorsForNewArrival({String? path}) async* {
     List<VendorModel> vendors = [];
 
-    newArrivalStreamController = StreamController<List<VendorModel>>.broadcast();
+    newArrivalStreamController =
+        StreamController<List<VendorModel>>.broadcast();
     var collectionReference = (path == null || path.isEmpty)
-        ? firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id)
-        : firestore.collection(VENDORS).where("section_id", isEqualTo: sectionConstantModel!.id).where("enabledDiveInFuture", isEqualTo: true);
+        ? firestore
+            .collection(VENDORS)
+            .where("section_id", isEqualTo: sectionConstantModel!.id)
+        : firestore
+            .collection(VENDORS)
+            .where("section_id", isEqualTo: sectionConstantModel!.id)
+            .where("enabledDiveInFuture", isEqualTo: true);
 
-    GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+    GeoFirePoint center = geo.point(
+        latitude: MyAppState.selectedPosotion.location!.latitude,
+        longitude: MyAppState.selectedPosotion.location!.longitude);
 
     String field = 'g';
 
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionReference)
-        .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+        .within(
+            center: center,
+            radius: double.parse(sectionConstantModel!.nearByRadius.toString()),
+            field: field,
+            strictMode: true);
 
     stream.listen((List<DocumentSnapshot> documentList) {
       if (documentList.isEmpty) {
@@ -1616,18 +2028,30 @@ class FireStoreUtils {
 
   late StreamController<List<VendorModel>> cusionStreamController;
 
-  Stream<List<VendorModel>> getVendorsByCuisineID(String cuisineID, {bool? isDinein}) async* {
+  Stream<List<VendorModel>> getVendorsByCuisineID(String cuisineID,
+      {bool? isDinein}) async* {
     cusionStreamController = StreamController<List<VendorModel>>.broadcast();
     List<VendorModel> vendors = [];
     var collectionReference = isDinein!
-        ? firestore.collection(VENDORS).where('categoryID', isEqualTo: cuisineID).where("enabledDiveInFuture", isEqualTo: true)
-        : firestore.collection(VENDORS).where('categoryID', isEqualTo: cuisineID);
+        ? firestore
+            .collection(VENDORS)
+            .where('categoryID', isEqualTo: cuisineID)
+            .where("enabledDiveInFuture", isEqualTo: true)
+        : firestore
+            .collection(VENDORS)
+            .where('categoryID', isEqualTo: cuisineID);
 
     String field = 'g';
-    GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+    GeoFirePoint center = geo.point(
+        latitude: MyAppState.selectedPosotion.location!.latitude,
+        longitude: MyAppState.selectedPosotion.location!.longitude);
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionReference)
-        .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+        .within(
+            center: center,
+            radius: double.parse(sectionConstantModel!.nearByRadius.toString()),
+            field: field,
+            strictMode: true);
     stream.listen((List<DocumentSnapshot> documentList) {
       Future.forEach(documentList, (DocumentSnapshot element) {
         final data = element.data() as Map<String, dynamic>;
@@ -1643,9 +2067,13 @@ class FireStoreUtils {
   Future<List<OfferModel>> getViewAllOffer() async {
     List<OfferModel> offersData = [];
 
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery =
-        await firestore.collection(COUPONS).where("isEnabled", isEqualTo: true).where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now()).get();
-    await Future.forEach(vendorsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(COUPONS)
+        .where("isEnabled", isEqualTo: true)
+        .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
+        .get();
+    await Future.forEach(vendorsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         offersData.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -1700,7 +2128,8 @@ class FireStoreUtils {
         .snapshots()
         .listen((event) async {
       offers.clear();
-      await Future.forEach(event.docs, (QueryDocumentSnapshot<Map<String, dynamic>> element) {
+      await Future.forEach(event.docs,
+          (QueryDocumentSnapshot<Map<String, dynamic>> element) {
         try {
           offers.add(OfferModel.fromJson(element.data()));
           print(element.data().toString());
@@ -1726,7 +2155,8 @@ class FireStoreUtils {
         .get();
 
     print("-------->${bannerHomeQuery.docs}");
-    await Future.forEach(bannerHomeQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(bannerHomeQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("-------->");
         print(document.data());
@@ -1757,7 +2187,8 @@ class FireStoreUtils {
         .orderBy("set_order", descending: false)
         .get();
 
-    await Future.forEach(bannerHomeQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(bannerHomeQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         bannerHome.add(BannerModel.fromJson(document.data()));
       } catch (e) {
@@ -1779,7 +2210,8 @@ class FireStoreUtils {
         .get();
 
     print("-------->${bannerHomeQuery.docs}");
-    await Future.forEach(bannerHomeQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(bannerHomeQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("-------->");
         print(document.data());
@@ -1807,7 +2239,11 @@ class FireStoreUtils {
   }*/
   Future<CurrencyModel?> getCurrency() async {
     CurrencyModel? currency;
-    await firestore.collection(Currency).where("isActive", isEqualTo: true).get().then((value) {
+    await firestore
+        .collection(Currency)
+        .where("isActive", isEqualTo: true)
+        .get()
+        .then((value) {
       if (value.docs.isNotEmpty) {
         currency = CurrencyModel.fromJson(value.docs.first.data());
       }
@@ -1818,9 +2254,14 @@ class FireStoreUtils {
   Future<List<OfferModel>> getPublicCoupons() async {
     List<OfferModel> coupon = [];
 
-    QuerySnapshot<Map<String, dynamic>> couponsQuery =
-        await firestore.collection(COUPON).where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now()).where("isEnabled", isEqualTo: true).where("isPublic", isEqualTo: true).get();
-    await Future.forEach(couponsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> couponsQuery = await firestore
+        .collection(COUPON)
+        .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
+        .where("isEnabled", isEqualTo: true)
+        .where("isPublic", isEqualTo: true)
+        .get();
+    await Future.forEach(couponsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         coupon.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -1833,9 +2274,13 @@ class FireStoreUtils {
   Future<List<OfferModel>> getAllCoupons() async {
     List<OfferModel> coupon = [];
 
-    QuerySnapshot<Map<String, dynamic>> couponsQuery =
-        await firestore.collection(COUPON).where('isEnabled', isEqualTo: true).where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now()).get();
-    await Future.forEach(couponsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> couponsQuery = await firestore
+        .collection(COUPON)
+        .where('isEnabled', isEqualTo: true)
+        .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
+        .get();
+    await Future.forEach(couponsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         coupon.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -1856,7 +2301,8 @@ class FireStoreUtils {
         .get();
 
     print("-------->${offerQuery.docs}");
-    await Future.forEach(offerQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(offerQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("-------->");
         print(document.data());
@@ -1871,9 +2317,13 @@ class FireStoreUtils {
   Future<List<OfferModel>> getCabCoupons() async {
     List<OfferModel> coupon = [];
 
-    QuerySnapshot<Map<String, dynamic>> couponsQuery =
-        await firestore.collection(CAB_COUPONS).where('isEnabled', isEqualTo: true).where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now()).get();
-    await Future.forEach(couponsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> couponsQuery = await firestore
+        .collection(CAB_COUPONS)
+        .where('isEnabled', isEqualTo: true)
+        .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
+        .get();
+    await Future.forEach(couponsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         coupon.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -1894,7 +2344,8 @@ class FireStoreUtils {
         .get();
 
     print("-------->${offerQuery.docs}");
-    await Future.forEach(offerQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(offerQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("-------->");
         print(document.data());
@@ -1909,9 +2360,13 @@ class FireStoreUtils {
   Future<List<OfferModel>> getParcelCoupan() async {
     List<OfferModel> coupon = [];
 
-    QuerySnapshot<Map<String, dynamic>> couponsQuery =
-        await firestore.collection(PARCELCOUPONS).where('isEnabled', isEqualTo: true).where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now()).get();
-    await Future.forEach(couponsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> couponsQuery = await firestore
+        .collection(PARCELCOUPONS)
+        .where('isEnabled', isEqualTo: true)
+        .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
+        .get();
+    await Future.forEach(couponsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         coupon.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -1932,7 +2387,8 @@ class FireStoreUtils {
         .get();
 
     print("-------->${offerQuery.docs}");
-    await Future.forEach(offerQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(offerQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("-------->");
         print(document.data());
@@ -1947,9 +2403,13 @@ class FireStoreUtils {
   Future<List<OfferModel>> getRentalCoupons() async {
     List<OfferModel> coupon = [];
 
-    QuerySnapshot<Map<String, dynamic>> couponsQuery =
-        await firestore.collection(RENTALCOUPONS).where('isEnabled', isEqualTo: true).where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now()).get();
-    await Future.forEach(couponsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> couponsQuery = await firestore
+        .collection(RENTALCOUPONS)
+        .where('isEnabled', isEqualTo: true)
+        .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
+        .get();
+    await Future.forEach(couponsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         coupon.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -1966,10 +2426,15 @@ class FireStoreUtils {
     List<ProductModel> products = [];
     print('we are Enter getVendorProducts');
 
-    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore.collection(PRODUCTS).where('vendorID', isEqualTo: vendorID).where('publish', isEqualTo: true).get();
+    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore
+        .collection(PRODUCTS)
+        .where('vendorID', isEqualTo: vendorID)
+        .where('publish', isEqualTo: true)
+        .get();
     print(productsQuery.docs.length);
     print('we are Enter getVendorProducts--.');
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print('dmolk');
         products.add(ProductModel.fromJson(document.data()));
@@ -1991,7 +2456,8 @@ class FireStoreUtils {
         //.where("takeawayOption", isEqualTo: true)
         .where('publish', isEqualTo: true)
         .get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         products.add(ProductModel.fromJson(document.data()));
         //print('=====TP+++++ ${document.data().toString()}');
@@ -2006,9 +2472,14 @@ class FireStoreUtils {
   Future<List<ProductModel>> getVendorProductsDelivery(String vendorID) async {
     List<ProductModel> products = [];
 
-    QuerySnapshot<Map<String, dynamic>> productsQuery =
-        await firestore.collection(PRODUCTS).where('vendorID', isEqualTo: vendorID).where("takeawayOption", isEqualTo: false).where('publish', isEqualTo: true).get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore
+        .collection(PRODUCTS)
+        .where('vendorID', isEqualTo: vendorID)
+        .where("takeawayOption", isEqualTo: false)
+        .where('publish', isEqualTo: true)
+        .get();
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         products.add(ProductModel.fromJson(document.data()));
       } catch (e) {
@@ -2038,7 +2509,8 @@ class FireStoreUtils {
 //     });
 //   }
 
-  Future<VendorCategoryModel?> getVendorCategoryById(String vendorCategoryID) async {
+  Future<VendorCategoryModel?> getVendorCategoryById(
+      String vendorCategoryID) async {
     print('we are enter-->${vendorCategoryID}');
     VendorCategoryModel? vendorCategoryModel;
     QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
@@ -2051,7 +2523,8 @@ class FireStoreUtils {
       if (vendorsQuery.docs.isNotEmpty) {
         print('we are enter-->${vendorsQuery.docs.first.data()}');
 
-        vendorCategoryModel = VendorCategoryModel.fromJson(vendorsQuery.docs.first.data());
+        vendorCategoryModel =
+            VendorCategoryModel.fromJson(vendorsQuery.docs.first.data());
       }
     } catch (e) {
       print('FireStoreUtils.getVendorByVendorID Parse error $e');
@@ -2059,8 +2532,10 @@ class FireStoreUtils {
     return vendorCategoryModel;
   }
 
-  Future<VendorCategoryModel?> getVendorCategoryByCategoryId(String vendorCategoryID) async {
-    DocumentSnapshot<Map<String, dynamic>> documentReference = await firestore.collection(CATEGORIES).doc(vendorCategoryID).get();
+  Future<VendorCategoryModel?> getVendorCategoryByCategoryId(
+      String vendorCategoryID) async {
+    DocumentSnapshot<Map<String, dynamic>> documentReference =
+        await firestore.collection(CATEGORIES).doc(vendorCategoryID).get();
     if (documentReference.data() != null && documentReference.exists) {
       print("dataaaaaa aaa ");
       return VendorCategoryModel.fromJson(documentReference.data()!);
@@ -2070,8 +2545,10 @@ class FireStoreUtils {
     }
   }
 
-  Future<ReviewAttributeModel?> getVendorReviewAttribute(String attrubuteId) async {
-    DocumentSnapshot<Map<String, dynamic>> documentReference = await firestore.collection(REVIEW_ATTRIBUTES).doc(attrubuteId).get();
+  Future<ReviewAttributeModel?> getVendorReviewAttribute(
+      String attrubuteId) async {
+    DocumentSnapshot<Map<String, dynamic>> documentReference =
+        await firestore.collection(REVIEW_ATTRIBUTES).doc(attrubuteId).get();
     if (documentReference.data() != null && documentReference.exists) {
       print("dataaaaaa aaa ");
       return ReviewAttributeModel.fromJson(documentReference.data()!);
@@ -2084,7 +2561,10 @@ class FireStoreUtils {
   Future<VendorModel> getVendorByVendorID(String vendorID) async {
     late VendorModel vendor;
     print(vendorID.toString() + "----VENDORIDPLACEORDER");
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore.collection(VENDORS).where('id', isEqualTo: vendorID).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(VENDORS)
+        .where('id', isEqualTo: vendorID)
+        .get();
     try {
       if (vendorsQuery.docs.isNotEmpty) {
         vendor = VendorModel.fromJson(vendorsQuery.docs.first.data());
@@ -2097,7 +2577,11 @@ class FireStoreUtils {
 
   Future<ProductModel> getProductByProductID(String productId) async {
     late ProductModel productModel;
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore.collection(PRODUCTS).where('id', isEqualTo: productId).where('publish', isEqualTo: true).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(PRODUCTS)
+        .where('id', isEqualTo: productId)
+        .where('publish', isEqualTo: true)
+        .get();
     try {
       if (vendorsQuery.docs.isNotEmpty) {
         productModel = ProductModel.fromJson(vendorsQuery.docs.first.data());
@@ -2110,7 +2594,10 @@ class FireStoreUtils {
 
   Future<ProductModel> getProductByID(String productId) async {
     late ProductModel productModel;
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore.collection(PRODUCTS).where('id', isEqualTo: productId).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(PRODUCTS)
+        .where('id', isEqualTo: productId)
+        .get();
     try {
       if (vendorsQuery.docs.isNotEmpty) {
         productModel = ProductModel.fromJson(vendorsQuery.docs.first.data());
@@ -2123,7 +2610,10 @@ class FireStoreUtils {
 
   Future<RatingModel?> getReviewsbyID(String ordertId) async {
     RatingModel? ratingproduct;
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore.collection(Order_Rating).where('orderid', isEqualTo: ordertId).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(Order_Rating)
+        .where('orderid', isEqualTo: ordertId)
+        .get();
     if (vendorsQuery.docs.isNotEmpty) {
       try {
         if (vendorsQuery.docs.isNotEmpty) {
@@ -2136,10 +2626,14 @@ class FireStoreUtils {
     return ratingproduct;
   }
 
-  Future<RatingModel?> getReviewsbyProviderID(String ordertId, String providerId) async {
+  Future<RatingModel?> getReviewsbyProviderID(
+      String ordertId, String providerId) async {
     RatingModel? ratingproduct;
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery =
-        await firestore.collection(Order_Rating).where('orderid', isEqualTo: ordertId).where('VendorId', isEqualTo: providerId).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(Order_Rating)
+        .where('orderid', isEqualTo: ordertId)
+        .where('VendorId', isEqualTo: providerId)
+        .get();
     if (vendorsQuery.docs.isNotEmpty) {
       try {
         if (vendorsQuery.docs.isNotEmpty) {
@@ -2152,9 +2646,14 @@ class FireStoreUtils {
     return ratingproduct;
   }
 
-  Future<RatingModel?> getReviewsbyWorkerID(String ordertId, String workerId) async {
+  Future<RatingModel?> getReviewsbyWorkerID(
+      String ordertId, String workerId) async {
     RatingModel? ratingproduct;
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore.collection(Order_Rating).where('orderid', isEqualTo: ordertId).where('driverId', isEqualTo: workerId).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(Order_Rating)
+        .where('orderid', isEqualTo: ordertId)
+        .where('driverId', isEqualTo: workerId)
+        .get();
     if (vendorsQuery.docs.isNotEmpty) {
       try {
         if (vendorsQuery.docs.isNotEmpty) {
@@ -2167,10 +2666,14 @@ class FireStoreUtils {
     return ratingproduct;
   }
 
-  Future<RatingModel?> getOrderReviewsbyID(String ordertId, String productId) async {
+  Future<RatingModel?> getOrderReviewsbyID(
+      String ordertId, String productId) async {
     RatingModel? ratingproduct;
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery =
-        await firestore.collection(Order_Rating).where('orderid', isEqualTo: ordertId).where('productId', isEqualTo: productId).get();
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(Order_Rating)
+        .where('orderid', isEqualTo: ordertId)
+        .where('productId', isEqualTo: productId)
+        .get();
     if (vendorsQuery.docs.isNotEmpty) {
       try {
         if (vendorsQuery.docs.isNotEmpty) {
@@ -2205,7 +2708,8 @@ class FireStoreUtils {
         .where('VendorId', isEqualTo: vendorId)
         // .orderBy('createdAt', descending: true)
         .get();
-    await Future.forEach(vendorsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(vendorsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       print(document);
       try {
         vendorreview.add(RatingModel.fromJson(document.data()));
@@ -2224,7 +2728,8 @@ class FireStoreUtils {
         .where('driverId', isEqualTo: driverId)
         // .orderBy('createdAt', descending: true)
         .get();
-    await Future.forEach(vendorsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(vendorsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       print(document);
       try {
         vendorreview.add(RatingModel.fromJson(document.data()));
@@ -2235,8 +2740,13 @@ class FireStoreUtils {
     return vendorreview;
   }
 
-  static Future<RatingModel?> updateReviewbyId(RatingModel ratingproduct) async {
-    return await firestore.collection(Order_Rating).doc(ratingproduct.id).set(ratingproduct.toJson()).then((document) {
+  static Future<RatingModel?> updateReviewbyId(
+      RatingModel ratingproduct) async {
+    return await firestore
+        .collection(Order_Rating)
+        .doc(ratingproduct.id)
+        .set(ratingproduct.toJson())
+        .then((document) {
       return ratingproduct;
     });
   }
@@ -2244,9 +2754,13 @@ class FireStoreUtils {
   Future<List<FavouriteModel>> getFavouriteStore(String userId) async {
     List<FavouriteModel> favouriteItem = [];
 
-    QuerySnapshot<Map<String, dynamic>> vendorsQuery =
-        await firestore.collection(FavouriteStore).where('user_id', isEqualTo: userId).where("section_id", isEqualTo: sectionConstantModel!.id).get();
-    await Future.forEach(vendorsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> vendorsQuery = await firestore
+        .collection(FavouriteStore)
+        .where('user_id', isEqualTo: userId)
+        .where("section_id", isEqualTo: sectionConstantModel!.id)
+        .get();
+    await Future.forEach(vendorsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         favouriteItem.add(FavouriteModel.fromJson(document.data()));
       } catch (e) {
@@ -2258,14 +2772,16 @@ class FireStoreUtils {
   }
 
   Future<BookTableModel> bookTable(BookTableModel orderModel) async {
-    DocumentReference documentReference = firestore.collection(ORDERS_TABLE).doc();
+    DocumentReference documentReference =
+        firestore.collection(ORDERS_TABLE).doc();
     orderModel.id = documentReference.id;
     await documentReference.set(orderModel.toJson());
     return orderModel;
   }
 
   Future<OrderModel> placeOrder(OrderModel orderModel) async {
-    DocumentReference documentReference = firestore.collection(ORDERS).doc(orderModel.id);
+    DocumentReference documentReference =
+        firestore.collection(ORDERS).doc(orderModel.id);
     orderModel.id = documentReference.id;
     await documentReference.set(orderModel.toJson());
     return orderModel;
@@ -2286,8 +2802,12 @@ class FireStoreUtils {
   static Future<List<TopupTranHistoryModel>> getTopUpTransaction() async {
     final userId = MyAppState.currentUser!.userID; //UserPreference.getUserId();
     List<TopupTranHistoryModel> topUpHistoryList = [];
-    QuerySnapshot<Map<String, dynamic>> documentReference = await firestore.collection(Wallet).where('user_id', isEqualTo: userId).get();
-    await Future.forEach(documentReference.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> documentReference = await firestore
+        .collection(Wallet)
+        .where('user_id', isEqualTo: userId)
+        .get();
+    await Future.forEach(documentReference.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         topUpHistoryList.add(TopupTranHistoryModel.fromJson(document.data()));
       } catch (e) {
@@ -2335,7 +2855,13 @@ class FireStoreUtils {
   //   return "updated Amount".tr();
   // }
 
-  static Future topUpOtherWalletAmount({required String userId, String paymentMethod = "test", bool isTopup = true, required amount, required id, orderId = ""}) async {
+  static Future topUpOtherWalletAmount(
+      {required String userId,
+      String paymentMethod = "test",
+      bool isTopup = true,
+      required amount,
+      required id,
+      orderId = ""}) async {
     print("this is te payment id");
     print(id);
     print(MyAppState.currentUser!.userID);
@@ -2353,7 +2879,11 @@ class FireStoreUtils {
         note: paymentMethod,
         serviceType: 'ondemand-service');
 
-    await firestore.collection("wallet").doc(id).set(adminCommission.toJson()).then((value) {
+    await firestore
+        .collection("wallet")
+        .doc(id)
+        .set(adminCommission.toJson())
+        .then((value) {
       firestore.collection("wallet").doc(id).get().then((value) {
         DocumentSnapshot<Map<String, dynamic>> documentData = value;
         print("nato");
@@ -2363,7 +2893,8 @@ class FireStoreUtils {
     return "updated Amount".tr();
   }
 
-  static Future updateOtherWalletAmount({required String userId, required amount}) async {
+  static Future updateOtherWalletAmount(
+      {required String userId, required amount}) async {
     dynamic walletAmount = 0;
 
     await firestore.collection(USERS).doc(userId).get().then((value) async {
@@ -2371,12 +2902,19 @@ class FireStoreUtils {
       if (userDocument.data() != null && userDocument.exists) {
         try {
           print(userDocument.data());
-          await firestore.collection(USERS).doc(userId).update({"wallet_amount": (num.parse(userDocument.data()!['wallet_amount'].toString()) + amount)}).then((value) {
-            MyAppState.currentUser!.wallet_amount = num.parse(userDocument.data()!['wallet_amount'].toString()) + amount;
+          await firestore.collection(USERS).doc(userId).update({
+            "wallet_amount":
+                (num.parse(userDocument.data()!['wallet_amount'].toString()) +
+                    amount)
+          }).then((value) {
+            MyAppState.currentUser!.wallet_amount =
+                num.parse(userDocument.data()!['wallet_amount'].toString()) +
+                    amount;
           });
         } catch (error) {
           print(error);
-          if (error.toString() == "Bad state: field does not exist within the DocumentSnapshotPlatform") {
+          if (error.toString() ==
+              "Bad state: field does not exist within the DocumentSnapshotPlatform") {
             print("does not exist");
           } else {
             print("went wrong!!");
@@ -2403,14 +2941,20 @@ class FireStoreUtils {
           User user = User.fromJson(userDocument.data()!);
           MyAppState.currentUser = user;
 
-          await firestore.collection(USERS).doc(userId).update({"wallet_amount": user.wallet_amount + amount}).then((value) => print("north"));
+          await firestore
+              .collection(USERS)
+              .doc(userId)
+              .update({"wallet_amount": user.wallet_amount + amount}).then(
+                  (value) => print("north"));
 
-          DocumentSnapshot<Map<String, dynamic>> newUserDocument = await firestore.collection(USERS).doc(userId).get();
+          DocumentSnapshot<Map<String, dynamic>> newUserDocument =
+              await firestore.collection(USERS).doc(userId).get();
           MyAppState.currentUser = User.fromJson(newUserDocument.data()!);
           print(MyAppState.currentUser);
         } catch (error) {
           print(error);
-          if (error.toString() == "Bad state: field does not exist within the DocumentSnapshotPlatform") {
+          if (error.toString() ==
+              "Bad state: field does not exist within the DocumentSnapshotPlatform") {
             print("does not exist");
             //await firestore.collection(USERS).doc(userId).update({"wallet_amount": 0});
             //walletAmount = 0;
@@ -2428,17 +2972,32 @@ class FireStoreUtils {
     });
   }
 
-  static sendTopUpMail({required String amount, required String paymentMethod, required String tractionId}) async {
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(walletTopup);
+  static sendTopUpMail(
+      {required String amount,
+      required String paymentMethod,
+      required String tractionId}) async {
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(walletTopup);
 
     String newString = emailTemplateModel!.message.toString();
-    newString = newString.replaceAll("{username}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
-    newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(Timestamp.now().toDate()));
+    newString = newString.replaceAll(
+        "{username}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll(
+        "{date}", DateFormat('dd-MM-yyyy').format(Timestamp.now().toDate()));
     newString = newString.replaceAll("{amount}", amountShow(amount: amount));
-    newString = newString.replaceAll("{paymentmethod}", paymentMethod.toString());
+    newString =
+        newString.replaceAll("{paymentmethod}", paymentMethod.toString());
     newString = newString.replaceAll("{transactionid}", tractionId.toString());
-    newString = newString.replaceAll("{newwalletbalance}.", amountShow(amount: MyAppState.currentUser!.wallet_amount.toString()));
-    await sendMail(subject: emailTemplateModel.subject, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [MyAppState.currentUser!.email]);
+    newString = newString.replaceAll("{newwalletbalance}.",
+        amountShow(amount: MyAppState.currentUser!.wallet_amount.toString()));
+    await sendMail(
+        subject: emailTemplateModel.subject,
+        isAdmin: emailTemplateModel.isSendToAdmin,
+        body: newString,
+        recipients: [MyAppState.currentUser!.email]);
   }
 
   static sendOrderEmail({required OrderModel orderModel}) async {
@@ -2456,12 +3015,18 @@ class FireStoreUtils {
     <tbody>
     """;
 
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(newOrderPlaced);
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(newOrderPlaced);
 
     String newString = emailTemplateModel!.message.toString();
-    newString = newString.replaceAll("{username}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll(
+        "{username}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
     newString = newString.replaceAll("{orderid}", orderModel.id);
-    newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(orderModel.createdAt.toDate()));
+    newString = newString.replaceAll("{date}",
+        DateFormat('dd-MM-yyyy').format(orderModel.createdAt.toDate()));
     newString = newString.replaceAll(
       "{address}",
       '${orderModel.address!.getFullAddress()}',
@@ -2477,7 +3042,8 @@ class FireStoreUtils {
     double discount = 0.0;
     double taxAmount = 0.0;
     double tipValue = 0.0;
-    String specialLabel = '(${orderModel.specialDiscount!['special_discount_label']}${orderModel.specialDiscount!['specialType'] == "amount" ? currencyData!.symbol : "%"})';
+    String specialLabel =
+        '(${orderModel.specialDiscount!['special_discount_label']}${orderModel.specialDiscount!['specialType'] == "amount" ? currencyData!.symbol : "%"})';
     List<String> htmlList = [];
 
     if (orderModel.deliveryCharge != null) {
@@ -2487,7 +3053,9 @@ class FireStoreUtils {
       tipValue = double.parse(orderModel.tipValue.toString());
     }
     orderModel.products.forEach((element) {
-      if (element.extras_price != null && element.extras_price!.isNotEmpty && double.parse(element.extras_price!) != 0.0) {
+      if (element.extras_price != null &&
+          element.extras_price!.isNotEmpty &&
+          double.parse(element.extras_price!) != 0.0) {
         total += element.quantity * double.parse(element.extras_price!);
       }
       total += element.quantity * double.parse(element.price);
@@ -2495,7 +3063,8 @@ class FireStoreUtils {
       List<dynamic>? addon = element.extras;
       String extrasDisVal = '';
       for (int i = 0; i < addon!.length; i++) {
-        extrasDisVal += '${addon[i].toString().replaceAll("\"", "")} ${(i == addon.length - 1) ? "" : ","}';
+        extrasDisVal +=
+            '${addon[i].toString().replaceAll("\"", "")} ${(i == addon.length - 1) ? "" : ","}';
       }
       String product = """
         <tr>
@@ -2513,7 +3082,8 @@ class FireStoreUtils {
     });
 
     if (orderModel.specialDiscount!.isNotEmpty) {
-      specialDiscount = double.parse(orderModel.specialDiscount!['special_discount'].toString());
+      specialDiscount = double.parse(
+          orderModel.specialDiscount!['special_discount'].toString());
     }
 
     if (orderModel.couponId != null && orderModel.couponId!.isNotEmpty) {
@@ -2523,47 +3093,77 @@ class FireStoreUtils {
     List<String> taxHtmlList = [];
     if (taxList != null) {
       for (var element in taxList!) {
-        taxAmount = taxAmount + getTaxValue(amount: (total - discount - specialDiscount).toString(), taxModel: element);
+        taxAmount = taxAmount +
+            getTaxValue(
+                amount: (total - discount - specialDiscount).toString(),
+                taxModel: element);
         String taxHtml =
             """<span style="font-size: 1rem;">${element.title}: ${amountShow(amount: getTaxValue(amount: (total - discount - specialDiscount).toString(), taxModel: element).toString())}${taxList!.indexOf(element) == taxList!.length - 1 ? "</span>" : "<br></span>"}""";
         taxHtmlList.add(taxHtml);
       }
     }
 
-    var totalamount = orderModel.deliveryCharge == null || orderModel.deliveryCharge!.isEmpty
-        ? total + taxAmount - discount - specialDiscount
-        : total + taxAmount + double.parse(orderModel.deliveryCharge!) + double.parse(orderModel.tipValue!) - discount - specialDiscount;
+    var totalamount =
+        orderModel.deliveryCharge == null || orderModel.deliveryCharge!.isEmpty
+            ? total + taxAmount - discount - specialDiscount
+            : total +
+                taxAmount +
+                double.parse(orderModel.deliveryCharge!) +
+                double.parse(orderModel.tipValue!) -
+                discount -
+                specialDiscount;
 
-    newString = newString.replaceAll("{subtotal}", amountShow(amount: total.toString()));
-    newString = newString.replaceAll("{coupon}", '(${orderModel.couponCode.toString()})');
-    newString = newString.replaceAll("{discountamount}", amountShow(amount: orderModel.discount.toString()));
+    newString = newString.replaceAll(
+        "{subtotal}", amountShow(amount: total.toString()));
+    newString = newString.replaceAll(
+        "{coupon}", '(${orderModel.couponCode.toString()})');
+    newString = newString.replaceAll(
+        "{discountamount}", amountShow(amount: orderModel.discount.toString()));
     newString = newString.replaceAll("{specialcoupon}", specialLabel);
-    newString = newString.replaceAll("{specialdiscountamount}", amountShow(amount: specialDiscount.toString()));
-    newString = newString.replaceAll("{shippingcharge}", amountShow(amount: deliveryCharge.toString()));
-    newString = newString.replaceAll("{tipamount}", amountShow(amount: tipValue.toString()));
-    newString = newString.replaceAll("{totalAmount}", amountShow(amount: totalamount.toString()));
+    newString = newString.replaceAll("{specialdiscountamount}",
+        amountShow(amount: specialDiscount.toString()));
+    newString = newString.replaceAll(
+        "{shippingcharge}", amountShow(amount: deliveryCharge.toString()));
+    newString = newString.replaceAll(
+        "{tipamount}", amountShow(amount: tipValue.toString()));
+    newString = newString.replaceAll(
+        "{totalAmount}", amountShow(amount: totalamount.toString()));
 
     String tableHTML = htmlList.join();
     String lastHTML = "</tbody></table>";
-    newString = newString.replaceAll("{productdetails}", firstHTML + tableHTML + lastHTML);
+    newString = newString.replaceAll(
+        "{productdetails}", firstHTML + tableHTML + lastHTML);
     newString = newString.replaceAll("{taxdetails}", taxHtmlList.join());
-    newString = newString.replaceAll("{newwalletbalance}.", amountShow(amount: MyAppState.currentUser!.wallet_amount.toString()));
+    newString = newString.replaceAll("{newwalletbalance}.",
+        amountShow(amount: MyAppState.currentUser!.wallet_amount.toString()));
 
     String subjectNewString = emailTemplateModel.subject.toString();
     subjectNewString = subjectNewString.replaceAll("{orderid}", orderModel.id);
-    await sendMail(subject: subjectNewString, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [MyAppState.currentUser!.email]);
+    await sendMail(
+        subject: subjectNewString,
+        isAdmin: emailTemplateModel.isSendToAdmin,
+        body: newString,
+        recipients: [MyAppState.currentUser!.email]);
   }
 
   static sendRideBookEmail({required CabOrderModel? orderModel}) async {
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(newRideBook);
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(newRideBook);
 
-    var dt = DateTime.fromMillisecondsSinceEpoch(orderModel!.createdAt.seconds * 1000);
+    var dt = DateTime.fromMillisecondsSinceEpoch(
+        orderModel!.createdAt.seconds * 1000);
 
     String newString = emailTemplateModel!.message.toString();
-    newString = newString.replaceAll("{passengername}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll(
+        "{passengername}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
     newString = newString.replaceAll("{rideid}", orderModel.id);
-    newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(orderModel.createdAt.toDate()));
-    newString = newString.replaceAll("{time}", DateFormat("hh:mm:ss a").format(dt));
+    newString = newString.replaceAll("{date}",
+        DateFormat('dd-MM-yyyy').format(orderModel.createdAt.toDate()));
+    newString =
+        newString.replaceAll("{time}", DateFormat("hh:mm:ss a").format(dt));
     newString = newString.replaceAll(
       "{pickuplocation}",
       orderModel.sourceLocationName.toString(),
@@ -2574,7 +3174,8 @@ class FireStoreUtils {
     );
     newString = newString.replaceAll(
       "{drivername}",
-      orderModel.driver!.firstName.toString() + orderModel.driver!.lastName.toString(),
+      orderModel.driver!.firstName.toString() +
+          orderModel.driver!.lastName.toString(),
     );
     newString = newString.replaceAll(
       "{vehicle}",
@@ -2591,17 +3192,28 @@ class FireStoreUtils {
 
     String subjectNewString = emailTemplateModel.subject.toString();
     subjectNewString = subjectNewString.replaceAll("{orderid}", orderModel.id);
-    await sendMail(subject: subjectNewString, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [MyAppState.currentUser!.email]);
+    await sendMail(
+        subject: subjectNewString,
+        isAdmin: emailTemplateModel.isSendToAdmin,
+        body: newString,
+        recipients: [MyAppState.currentUser!.email]);
   }
 
   static sendParcelBookEmail({required ParcelOrderModel orderModel}) async {
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(newParcelBook);
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(newParcelBook);
 
     String newString = emailTemplateModel!.message.toString();
-    newString = newString.replaceAll("{passengername}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll(
+        "{passengername}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
     newString = newString.replaceAll("{parcelid}", orderModel.id);
-    newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(orderModel.createdAt!.toDate()));
-    newString = newString.replaceAll("{sendername}", orderModel.sender!.name.toString());
+    newString = newString.replaceAll("{date}",
+        DateFormat('dd-MM-yyyy').format(orderModel.createdAt!.toDate()));
+    newString = newString.replaceAll(
+        "{sendername}", orderModel.sender!.name.toString());
     newString = newString.replaceAll(
       "{senderphone}",
       orderModel.sender!.phone.toString(),
@@ -2612,24 +3224,41 @@ class FireStoreUtils {
     );
     newString = newString.replaceAll(
       "{deliverydate}",
-      DateFormat('dd-MM-yyyy').format(orderModel.receiverPickupDateTime!.toDate()),
+      DateFormat('dd-MM-yyyy')
+          .format(orderModel.receiverPickupDateTime!.toDate()),
     );
 
     String subjectNewString = emailTemplateModel.subject.toString();
     subjectNewString = subjectNewString.replaceAll("{orderid}", orderModel.id);
-    await sendMail(subject: subjectNewString, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [MyAppState.currentUser!.email]);
+    await sendMail(
+        subject: subjectNewString,
+        isAdmin: emailTemplateModel.isSendToAdmin,
+        body: newString,
+        recipients: [MyAppState.currentUser!.email]);
   }
 
   static sendRentalBookEmail({required RentalOrderModel orderModel}) async {
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(newCarBook);
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(newCarBook);
 
-    var dt = DateTime.fromMillisecondsSinceEpoch(orderModel.createdAt!.seconds * 1000);
+    var dt = DateTime.fromMillisecondsSinceEpoch(
+        orderModel.createdAt!.seconds * 1000);
 
     String newString = emailTemplateModel!.message.toString();
-    newString = newString.replaceAll("{username}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
-    newString = newString.replaceAll("{passengername}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
-    newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(orderModel.createdAt!.toDate()));
-    newString = newString.replaceAll("{time}", DateFormat("hh:mm:ss a").format(dt));
+    newString = newString.replaceAll(
+        "{username}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll(
+        "{passengername}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll("{date}",
+        DateFormat('dd-MM-yyyy').format(orderModel.createdAt!.toDate()));
+    newString =
+        newString.replaceAll("{time}", DateFormat("hh:mm:ss a").format(dt));
     newString = newString.replaceAll(
       "{pickuplocation}",
       orderModel.pickupAddress.toString(),
@@ -2649,7 +3278,8 @@ class FireStoreUtils {
     );
     newString = newString.replaceAll(
       "{drivername}",
-      orderModel.driver!.firstName.toString() + orderModel.driver!.lastName.toString(),
+      orderModel.driver!.firstName.toString() +
+          orderModel.driver!.lastName.toString(),
     );
     newString = newString.replaceAll(
       "{driverphone}",
@@ -2657,19 +3287,33 @@ class FireStoreUtils {
     );
 
     String subjectNewString = emailTemplateModel.subject.toString();
-    await sendMail(subject: subjectNewString, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [MyAppState.currentUser!.email]);
+    await sendMail(
+        subject: subjectNewString,
+        isAdmin: emailTemplateModel.isSendToAdmin,
+        body: newString,
+        recipients: [MyAppState.currentUser!.email]);
   }
 
-  static sendRentalBookDriverEmail({required RentalOrderModel orderModel}) async {
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(newCarBook);
+  static sendRentalBookDriverEmail(
+      {required RentalOrderModel orderModel}) async {
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(newCarBook);
 
-    var dt = DateTime.fromMillisecondsSinceEpoch(orderModel.createdAt!.seconds * 1000);
+    var dt = DateTime.fromMillisecondsSinceEpoch(
+        orderModel.createdAt!.seconds * 1000);
 
     String newString = emailTemplateModel!.message.toString();
-    newString = newString.replaceAll("{username}", orderModel.driver!.firstName + " " + orderModel.driver!.lastName);
-    newString = newString.replaceAll("{passengername}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
-    newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(orderModel.createdAt!.toDate()));
-    newString = newString.replaceAll("{time}", DateFormat("hh:mm:ss a").format(dt));
+    newString = newString.replaceAll("{username}",
+        orderModel.driver!.firstName + " " + orderModel.driver!.lastName);
+    newString = newString.replaceAll(
+        "{passengername}",
+        MyAppState.currentUser!.firstName +
+            " " +
+            MyAppState.currentUser!.lastName);
+    newString = newString.replaceAll("{date}",
+        DateFormat('dd-MM-yyyy').format(orderModel.createdAt!.toDate()));
+    newString =
+        newString.replaceAll("{time}", DateFormat("hh:mm:ss a").format(dt));
     newString = newString.replaceAll(
       "{pickuplocation}",
       orderModel.pickupAddress.toString(),
@@ -2689,7 +3333,8 @@ class FireStoreUtils {
     );
     newString = newString.replaceAll(
       "{drivername}",
-      orderModel.driver!.firstName.toString() + orderModel.driver!.lastName.toString(),
+      orderModel.driver!.firstName.toString() +
+          orderModel.driver!.lastName.toString(),
     );
     newString = newString.replaceAll(
       "{driverphone}",
@@ -2697,23 +3342,33 @@ class FireStoreUtils {
     );
 
     String subjectNewString = emailTemplateModel.subject.toString();
-    await sendMail(subject: subjectNewString, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [orderModel.driver!.email]);
+    await sendMail(
+        subject: subjectNewString,
+        isAdmin: emailTemplateModel.isSendToAdmin,
+        body: newString,
+        recipients: [orderModel.driver!.email]);
   }
 
   static Future<EmailTemplateModel?> getEmailTemplates(String type) async {
     EmailTemplateModel? emailTemplateModel;
-    await firestore.collection(emailTemplates).where('type', isEqualTo: type).get().then((value) {
+    await firestore
+        .collection(emailTemplates)
+        .where('type', isEqualTo: type)
+        .get()
+        .then((value) {
       print("------>");
       if (value.docs.isNotEmpty) {
         print("getEmailTemplates");
         print(value.docs.first.data());
-        emailTemplateModel = EmailTemplateModel.fromJson(value.docs.first.data());
+        emailTemplateModel =
+            EmailTemplateModel.fromJson(value.docs.first.data());
       }
     });
     return emailTemplateModel;
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> watchOrderStatus(String orderID) async* {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> watchOrderStatus(
+      String orderID) async* {
     yield* firestore.collection(ORDERS).doc(orderID).snapshots();
   }
 
@@ -2723,7 +3378,8 @@ class FireStoreUtils {
   /// @param file the image file that will be compressed
   /// @return File a new compressed file with smaller size
   static Future<File> compressImage(File file) async {
-    File compressedImage = await FlutterNativeImage.compressImage(file.path, quality: 25, targetWidth: 300, targetHeight: 300);
+    File compressedImage = await FlutterNativeImage.compressImage(file.path,
+        quality: 25, targetWidth: 300, targetHeight: 300);
     return compressedImage;
   }
 
@@ -2733,7 +3389,11 @@ class FireStoreUtils {
   /// @param file the video file that will be compressed
   /// @return File a new compressed file with smaller size
   Future<File> _compressVideo(File file) async {
-    MediaInfo? info = await VideoCompress.compressVideo(file.path, quality: VideoQuality.DefaultQuality, deleteOrigin: false, includeAudio: true, frameRate: 24);
+    MediaInfo? info = await VideoCompress.compressVideo(file.path,
+        quality: VideoQuality.DefaultQuality,
+        deleteOrigin: false,
+        includeAudio: true,
+        frameRate: 24);
     if (info != null) {
       File compressedVideo = File(info.path!);
       return compressedVideo;
@@ -2758,16 +3418,21 @@ class FireStoreUtils {
       if (result.status == LoginStatus.success) {
         // you are logged
         AccessToken? token = await facebookAuth.accessToken;
-        return await handleFacebookLogin(await facebookAuth.getUserData(), token!);
+        return await handleFacebookLogin(
+            await facebookAuth.getUserData(), token!);
       }
     } else {
       AccessToken? token = await facebookAuth.accessToken;
-      return await handleFacebookLogin(await facebookAuth.getUserData(), token!);
+      return await handleFacebookLogin(
+          await facebookAuth.getUserData(), token!);
     }
   }
 
-  static handleFacebookLogin(Map<String, dynamic> userData, AccessToken token) async {
-    auth.UserCredential authResult = await auth.FirebaseAuth.instance.signInWithCredential(auth.FacebookAuthProvider.credential(token.tokenString));
+  static handleFacebookLogin(
+      Map<String, dynamic> userData, AccessToken token) async {
+    auth.UserCredential authResult = await auth.FirebaseAuth.instance
+        .signInWithCredential(
+            auth.FacebookAuthProvider.credential(token.tokenString));
     User? user = await getCurrentUser(authResult.user?.uid ?? ' ');
     List<String> fullName = (userData['name'] as String).split(' ');
     String firstName = '';
@@ -2811,16 +3476,20 @@ class FireStoreUtils {
 
   static loginWithApple() async {
     final appleCredential = await apple.TheAppleSignIn.performRequests([
-      const apple.AppleIdRequest(requestedScopes: [apple.Scope.email, apple.Scope.fullName])
+      const apple.AppleIdRequest(
+          requestedScopes: [apple.Scope.email, apple.Scope.fullName])
     ]);
     if (appleCredential.error != null) {
       return "Couldn't login with apple.".tr();
     }
 
     if (appleCredential.status == apple.AuthorizationStatus.authorized) {
-      final auth.AuthCredential credential = auth.OAuthProvider('apple.com').credential(
-        accessToken: String.fromCharCodes(appleCredential.credential?.authorizationCode ?? []),
-        idToken: String.fromCharCodes(appleCredential.credential?.identityToken ?? []),
+      final auth.AuthCredential credential =
+          auth.OAuthProvider('apple.com').credential(
+        accessToken: String.fromCharCodes(
+            appleCredential.credential?.authorizationCode ?? []),
+        idToken: String.fromCharCodes(
+            appleCredential.credential?.identityToken ?? []),
       );
       return await handleAppleLogin(credential, appleCredential.credential!);
     } else {
@@ -2832,7 +3501,8 @@ class FireStoreUtils {
     auth.AuthCredential credential,
     apple.AppleIdCredential appleIdCredential,
   ) async {
-    auth.UserCredential authResult = await auth.FirebaseAuth.instance.signInWithCredential(credential);
+    auth.UserCredential authResult =
+        await auth.FirebaseAuth.instance.signInWithCredential(credential);
     User? user = await getCurrentUser(authResult.user?.uid ?? '');
     if (user != null) {
       //user.active = true;
@@ -2864,20 +3534,29 @@ class FireStoreUtils {
 
   /// save a new user document in the USERS table in firebase firestore
   /// returns an error message on failure or null on success
-  static Future<String?> firebaseCreateNewUser(User user, String referralCode) async {
+  static Future<String?> firebaseCreateNewUser(
+      User user, String referralCode) async {
     try {
       if (referralCode.isNotEmpty) {
-        FireStoreUtils.getReferralUserByCode(referralCode.toString()).then((value) async {
+        FireStoreUtils.getReferralUserByCode(referralCode.toString())
+            .then((value) async {
           if (value != null) {
-            ReferralModel ownReferralModel = ReferralModel(id: user.userID, referralBy: value.id, referralCode: getReferralCode());
+            ReferralModel ownReferralModel = ReferralModel(
+                id: user.userID,
+                referralBy: value.id,
+                referralCode: getReferralCode());
             await referralAdd(ownReferralModel);
           } else {
-            ReferralModel referralModel = ReferralModel(id: user.userID, referralBy: "", referralCode: getReferralCode());
+            ReferralModel referralModel = ReferralModel(
+                id: user.userID,
+                referralBy: "",
+                referralCode: getReferralCode());
             await referralAdd(referralModel);
           }
         });
       } else {
-        ReferralModel referralModel = ReferralModel(id: user.userID, referralBy: "", referralCode: getReferralCode());
+        ReferralModel referralModel = ReferralModel(
+            id: user.userID, referralBy: "", referralCode: getReferralCode());
         await referralAdd(referralModel);
       }
 
@@ -2891,7 +3570,10 @@ class FireStoreUtils {
 
   static Future<String?> referralAdd(ReferralModel ratingModel) async {
     try {
-      await firestore.collection(REFERRAL).doc(ratingModel.id).set(ratingModel.toJson());
+      await firestore
+          .collection(REFERRAL)
+          .doc(ratingModel.id)
+          .set(ratingModel.toJson());
     } catch (e, s) {
       print('FireStoreUtils.firebaseCreateNewUser $e $s');
       return 'Couldn\'t review'.tr();
@@ -2902,12 +3584,15 @@ class FireStoreUtils {
   /// login with email and password with firebase
   /// @param email user email
   /// @param password user password
-  static Future<dynamic> loginWithEmailAndPassword(String email, String password) async {
+  static Future<dynamic> loginWithEmailAndPassword(
+      String email, String password) async {
     try {
       print('FireStoreUtils.loginWithEmailAndPassword');
-      auth.UserCredential result = await auth.FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      auth.UserCredential result = await auth.FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
       // result.user.
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await firestore.collection(USERS).doc(result.user?.uid ?? '').get();
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await firestore.collection(USERS).doc(result.user?.uid ?? '').get();
       User? user;
 
       if (documentSnapshot.exists) {
@@ -2965,10 +3650,16 @@ class FireStoreUtils {
 
   /// submit the received code to firebase to complete the phone number
   /// verification process
-  static Future<dynamic> firebaseSubmitPhoneNumberCode(String verificationID, String code, String phoneNumber,
-      {String firstName = 'Anonymous', String lastName = 'User', File? image, String referralCode = ''}) async {
-    auth.AuthCredential authCredential = auth.PhoneAuthProvider.credential(verificationId: verificationID, smsCode: code);
-    auth.UserCredential userCredential = await auth.FirebaseAuth.instance.signInWithCredential(authCredential);
+  static Future<dynamic> firebaseSubmitPhoneNumberCode(
+      String verificationID, String code, String phoneNumber,
+      {String firstName = 'Anonymous',
+      String lastName = 'User',
+      File? image,
+      String referralCode = ''}) async {
+    auth.AuthCredential authCredential = auth.PhoneAuthProvider.credential(
+        verificationId: verificationID, smsCode: code);
+    auth.UserCredential userCredential =
+        await auth.FirebaseAuth.instance.signInWithCredential(authCredential);
     User? user = await getCurrentUser(userCredential.user?.uid ?? '');
     if (user != null && user.role == USER_ROLE_CUSTOMER) {
       user.fcmToken = await firebaseMessaging.getToken() ?? '';
@@ -2980,7 +3671,8 @@ class FireStoreUtils {
       /// create a new user from phone login
       String profileImageUrl = '';
       if (image != null) {
-        profileImageUrl = await uploadUserImageToFireStorage(image, userCredential.user?.uid ?? '');
+        profileImageUrl = await uploadUserImageToFireStorage(
+            image, userCredential.user?.uid ?? '');
       }
       User user = User(
         firstName: firstName,
@@ -3004,13 +3696,23 @@ class FireStoreUtils {
     }
   }
 
-  static firebaseSignUpWithEmailAndPassword(String emailAddress, String password, File? image, String firstName, String lastName, String mobile, String referralCode) async {
+  static firebaseSignUpWithEmailAndPassword(
+      String emailAddress,
+      String password,
+      File? image,
+      String firstName,
+      String lastName,
+      String mobile,
+      String referralCode) async {
     try {
-      auth.UserCredential result = await auth.FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailAddress, password: password);
+      auth.UserCredential result = await auth.FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: emailAddress, password: password);
       String profilePicUrl = '';
       if (image != null) {
         updateProgress('Uploading image, Please wait...'.tr());
-        profilePicUrl = await uploadUserImageToFireStorage(image, result.user?.uid ?? '');
+        profilePicUrl =
+            await uploadUserImageToFireStorage(image, result.user?.uid ?? '');
       }
       User user = User(
           email: emailAddress,
@@ -3058,33 +3760,49 @@ class FireStoreUtils {
   }
 
   static Future<auth.UserCredential?> reAuthUser(AuthProviders provider,
-      {String? email, String? password, String? smsCode, String? verificationId, AccessToken? accessToken, apple.AuthorizationResult? appleCredential}) async {
+      {String? email,
+      String? password,
+      String? smsCode,
+      String? verificationId,
+      AccessToken? accessToken,
+      apple.AuthorizationResult? appleCredential}) async {
     late auth.AuthCredential credential;
     switch (provider) {
       case AuthProviders.PASSWORD:
-        credential = auth.EmailAuthProvider.credential(email: email!, password: password!);
+        credential = auth.EmailAuthProvider.credential(
+            email: email!, password: password!);
         break;
       case AuthProviders.PHONE:
-        credential = auth.PhoneAuthProvider.credential(smsCode: smsCode!, verificationId: verificationId!);
+        credential = auth.PhoneAuthProvider.credential(
+            smsCode: smsCode!, verificationId: verificationId!);
         break;
       case AuthProviders.FACEBOOK:
-        credential = auth.FacebookAuthProvider.credential(accessToken!.tokenString);
+        credential =
+            auth.FacebookAuthProvider.credential(accessToken!.tokenString);
         break;
       case AuthProviders.APPLE:
         credential = auth.OAuthProvider('apple.com').credential(
-          accessToken: String.fromCharCodes(appleCredential!.credential?.authorizationCode ?? []),
-          idToken: String.fromCharCodes(appleCredential.credential?.identityToken ?? []),
+          accessToken: String.fromCharCodes(
+              appleCredential!.credential?.authorizationCode ?? []),
+          idToken: String.fromCharCodes(
+              appleCredential.credential?.identityToken ?? []),
         );
         break;
     }
-    return await auth.FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(credential);
+    return await auth.FirebaseAuth.instance.currentUser!
+        .reauthenticateWithCredential(credential);
   }
 
-  static resetPassword(String emailAddress) async => await auth.FirebaseAuth.instance.sendPasswordResetEmail(email: emailAddress);
+  static resetPassword(String emailAddress) async =>
+      await auth.FirebaseAuth.instance
+          .sendPasswordResetEmail(email: emailAddress);
 
   static deleteUser() async {
     try {
-      await firestore.collection(USERS).doc(auth.FirebaseAuth.instance.currentUser!.uid).delete();
+      await firestore
+          .collection(USERS)
+          .doc(auth.FirebaseAuth.instance.currentUser!.uid)
+          .delete();
 
       await auth.FirebaseAuth.instance.currentUser!.delete();
     } catch (e, s) {
@@ -3093,7 +3811,8 @@ class FireStoreUtils {
   }
 
   Future<OrderModel?> getOrderById(String? orderId) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(ORDERS).doc(orderId).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(ORDERS).doc(orderId).get();
     if (userDocument.data() != null && userDocument.exists) {
       return OrderModel.fromJson(userDocument.data()!);
     } else {
@@ -3102,7 +3821,8 @@ class FireStoreUtils {
   }
 
   Future<CabOrderModel?> getCabOrderById(String? orderId) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(RIDESORDER).doc(orderId).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(RIDESORDER).doc(orderId).get();
     if (userDocument.data() != null && userDocument.exists) {
       return CabOrderModel.fromJson(userDocument.data()!);
     } else {
@@ -3111,7 +3831,8 @@ class FireStoreUtils {
   }
 
   Future<ParcelOrderModel?> getParcelOrderById(String? orderId) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(PARCELORDER).doc(orderId).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(PARCELORDER).doc(orderId).get();
     if (userDocument.data() != null && userDocument.exists) {
       return ParcelOrderModel.fromJson(userDocument.data()!);
     } else {
@@ -3120,7 +3841,8 @@ class FireStoreUtils {
   }
 
   Future<RentalOrderModel?> getRentalOrderById(String? orderId) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(RENTALORDER).doc(orderId).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(RENTALORDER).doc(orderId).get();
     if (userDocument.data() != null && userDocument.exists) {
       return RentalOrderModel.fromJson(userDocument.data()!);
     } else {
@@ -3137,16 +3859,25 @@ class FireStoreUtils {
     return contactData;
   }
 
-  Future<GiftCardsOrderModel> placeGiftCardOrder(GiftCardsOrderModel giftCardsOrderModel) async {
-    await firestore.collection(GIFT_PURCHASES).doc(giftCardsOrderModel.id).set(giftCardsOrderModel.toJson());
+  Future<GiftCardsOrderModel> placeGiftCardOrder(
+      GiftCardsOrderModel giftCardsOrderModel) async {
+    await firestore
+        .collection(GIFT_PURCHASES)
+        .doc(giftCardsOrderModel.id)
+        .set(giftCardsOrderModel.toJson());
     return giftCardsOrderModel;
   }
 
   Future<List<GiftCardsOrderModel>> getGiftHistory() async {
     List<GiftCardsOrderModel> giftCardsOrderList = [];
-    await firestore.collection(GIFT_PURCHASES).where("userid", isEqualTo: MyAppState.currentUser!.userID).get().then((value) {
+    await firestore
+        .collection(GIFT_PURCHASES)
+        .where("userid", isEqualTo: MyAppState.currentUser!.userID)
+        .get()
+        .then((value) {
       for (var element in value.docs) {
-        GiftCardsOrderModel giftCardsOrderModel = GiftCardsOrderModel.fromJson(element.data());
+        GiftCardsOrderModel giftCardsOrderModel =
+            GiftCardsOrderModel.fromJson(element.data());
         giftCardsOrderList.add(giftCardsOrderModel);
       }
     });
@@ -3155,9 +3886,14 @@ class FireStoreUtils {
 
   Future<GiftCardsOrderModel?> checkRedeemCode(String giftCode) async {
     GiftCardsOrderModel? giftCardsOrderModel;
-    await firestore.collection(GIFT_PURCHASES).where("giftCode", isEqualTo: giftCode).get().then((value) {
+    await firestore
+        .collection(GIFT_PURCHASES)
+        .where("giftCode", isEqualTo: giftCode)
+        .get()
+        .then((value) {
       if (value.docs.isNotEmpty) {
-        giftCardsOrderModel = GiftCardsOrderModel.fromJson(value.docs.first.data());
+        giftCardsOrderModel =
+            GiftCardsOrderModel.fromJson(value.docs.first.data());
       }
     });
     return giftCardsOrderModel;
@@ -3165,8 +3901,12 @@ class FireStoreUtils {
 
   static Future<List<GiftCardsModel>> getGiftCard() async {
     List<GiftCardsModel> giftCardModelList = [];
-    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore.collection(GIFT_CARDS).where("isEnable", isEqualTo: true).get();
-    await Future.forEach(currencyQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> currencyQuery = await firestore
+        .collection(GIFT_CARDS)
+        .where("isEnable", isEqualTo: true)
+        .get();
+    await Future.forEach(currencyQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         log(document.data().toString());
         giftCardModelList.add(GiftCardsModel.fromJson(document.data()));
@@ -3187,7 +3927,8 @@ class FireStoreUtils {
         .where("level", isEqualTo: 0)
         .where("publish", isEqualTo: true)
         .get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         category.add(CategoryModel.fromJson(document.data()));
       } catch (e) {
@@ -3200,7 +3941,11 @@ class FireStoreUtils {
 
   Future<CategoryModel?> getCategoryById(String categoryId) async {
     CategoryModel? categoryModel;
-    await firestore.collection(PROVIDER_CATEGORIES).doc(categoryId).get().then((value) {
+    await firestore
+        .collection(PROVIDER_CATEGORIES)
+        .doc(categoryId)
+        .get()
+        .then((value) {
       if (value.exists) {
         categoryModel = CategoryModel.fromJson(value.data()!);
       }
@@ -3210,7 +3955,11 @@ class FireStoreUtils {
 
   Future<CategoryModel?> getSubCategoryById(String categoryId) async {
     CategoryModel? categoryModel;
-    await firestore.collection(PROVIDER_CATEGORIES).doc(categoryId).get().then((value) {
+    await firestore
+        .collection(PROVIDER_CATEGORIES)
+        .doc(categoryId)
+        .get()
+        .then((value) {
       if (value.exists) {
         categoryModel = CategoryModel.fromJson(value.data()!);
       }
@@ -3218,33 +3967,44 @@ class FireStoreUtils {
     return categoryModel;
   }
 
-  Future<OnProviderOrderModel> onDemandOrderPlace(OnProviderOrderModel orderModel, double totalAmount) async {
+  Future<OnProviderOrderModel> onDemandOrderPlace(
+      OnProviderOrderModel orderModel, double totalAmount) async {
     DocumentReference documentReference;
     if (orderModel.id.isEmpty) {
       documentReference = firestore.collection(PROVIDERORDER).doc();
       orderModel.id = documentReference.id;
     } else {
-      documentReference = firestore.collection(PROVIDERORDER).doc(orderModel.id);
+      documentReference =
+          firestore.collection(PROVIDERORDER).doc(orderModel.id);
     }
     await documentReference.set(orderModel.toJson());
 
     return orderModel;
   }
 
-  static Future updateOnDemandOrder(OnProviderOrderModel onProviderOrderModel) async {
+  static Future updateOnDemandOrder(
+      OnProviderOrderModel onProviderOrderModel) async {
     DocumentReference documentReference;
-    documentReference = firestore.collection(PROVIDERORDER).doc(onProviderOrderModel.id);
-    await documentReference.set(onProviderOrderModel.toJson(), SetOptions(merge: true));
+    documentReference =
+        firestore.collection(PROVIDERORDER).doc(onProviderOrderModel.id);
+    await documentReference.set(
+        onProviderOrderModel.toJson(), SetOptions(merge: true));
   }
 
-  static Future<ProviderServiceModel?> updateProvider(ProviderServiceModel provider) async {
-    return await firestore.collection(PROVIDERS_SERVICES).doc(provider.id).set(provider.toJson()).then((document) {
+  static Future<ProviderServiceModel?> updateProvider(
+      ProviderServiceModel provider) async {
+    return await firestore
+        .collection(PROVIDERS_SERVICES)
+        .doc(provider.id)
+        .set(provider.toJson())
+        .then((document) {
       return provider;
     });
   }
 
   static Future<ProviderServiceModel?> getCurrentProvider(String uid) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(PROVIDERS_SERVICES).doc(uid).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(PROVIDERS_SERVICES).doc(uid).get();
     if (userDocument.data() != null && userDocument.exists) {
       return ProviderServiceModel.fromJson(userDocument.data()!);
     } else {
@@ -3252,39 +4012,55 @@ class FireStoreUtils {
     }
   }
 
-  Future<List<ProviderServiceModel>> getCurrentProviderService(FavouriteOndemandServiceModel model) async {
+  Future<List<ProviderServiceModel>> getCurrentProviderService(
+      FavouriteOndemandServiceModel model) async {
     List<ProviderServiceModel> providerService = [];
 
-    QuerySnapshot<Map<String, dynamic>> reviewQuery =
-        await firestore.collection(PROVIDERS_SERVICES).where('id', isEqualTo: model.service_id).where('sectionId', isEqualTo: model.section_id).get();
-    await Future.forEach(reviewQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> reviewQuery = await firestore
+        .collection(PROVIDERS_SERVICES)
+        .where('id', isEqualTo: model.service_id)
+        .where('sectionId', isEqualTo: model.section_id)
+        .get();
+    await Future.forEach(reviewQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       print(document);
       try {
         providerService.add(ProviderServiceModel.fromJson(document.data()));
       } catch (e) {
-        print('FireStoreUtils.getReviewByProviderServiceId Parse error ${document.id} $e');
+        print(
+            'FireStoreUtils.getReviewByProviderServiceId Parse error ${document.id} $e');
       }
     });
     return providerService;
   }
 
-  Future<List<RatingModel>> getReviewByProviderServiceId(String serviceId) async {
+  Future<List<RatingModel>> getReviewByProviderServiceId(
+      String serviceId) async {
     List<RatingModel> providerReview = [];
 
-    QuerySnapshot<Map<String, dynamic>> reviewQuery = await firestore.collection(Order_Rating).where('productId', isEqualTo: serviceId).get();
-    await Future.forEach(reviewQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> reviewQuery = await firestore
+        .collection(Order_Rating)
+        .where('productId', isEqualTo: serviceId)
+        .get();
+    await Future.forEach(reviewQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       print(document);
       try {
         providerReview.add(RatingModel.fromJson(document.data()));
       } catch (e) {
-        print('FireStoreUtils.getReviewByProviderServiceId Parse error ${document.id} $e');
+        print(
+            'FireStoreUtils.getReviewByProviderServiceId Parse error ${document.id} $e');
       }
     });
     return providerReview;
   }
 
   static Future addProviderInbox(InboxModel inboxModel) async {
-    return await firestore.collection("chat_provider").doc(inboxModel.orderId).set(inboxModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_provider")
+        .doc(inboxModel.orderId)
+        .set(inboxModel.toJson())
+        .then((document) {
       return inboxModel;
     });
   }
@@ -3302,21 +4078,33 @@ class FireStoreUtils {
   }
 
   static Future addWorkerInbox(InboxModel inboxModel) async {
-    return await firestore.collection("chat_worker").doc(inboxModel.orderId).set(inboxModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_worker")
+        .doc(inboxModel.orderId)
+        .set(inboxModel.toJson())
+        .then((document) {
       return inboxModel;
     });
   }
 
   static Future addWorkerChat(ConversationModel conversationModel) async {
-    return await firestore.collection("chat_worker").doc(conversationModel.orderId).collection("thread").doc(conversationModel.id).set(conversationModel.toJson()).then((document) {
+    return await firestore
+        .collection("chat_worker")
+        .doc(conversationModel.orderId)
+        .collection("thread")
+        .doc(conversationModel.id)
+        .set(conversationModel.toJson())
+        .then((document) {
       return conversationModel;
     });
   }
 
   StreamController<List<ProviderServiceModel>>? allProviderStreamController;
 
-  Stream<List<ProviderServiceModel>> getProvider({String categoryId = ''}) async* {
-    allProviderStreamController = StreamController<List<ProviderServiceModel>>.broadcast();
+  Stream<List<ProviderServiceModel>> getProvider(
+      {String categoryId = ''}) async* {
+    allProviderStreamController =
+        StreamController<List<ProviderServiceModel>>.broadcast();
     List<ProviderServiceModel> providerList = [];
     try {
       var collectionReference;
@@ -3327,15 +4115,25 @@ class FireStoreUtils {
             .where('categoryId', isEqualTo: categoryId)
             .where("publish", isEqualTo: true);
       } else {
-        collectionReference = firestore.collection(PROVIDERS_SERVICES).where("sectionId", isEqualTo: sectionConstantModel!.id).where("publish", isEqualTo: true);
+        collectionReference = firestore
+            .collection(PROVIDERS_SERVICES)
+            .where("sectionId", isEqualTo: sectionConstantModel!.id)
+            .where("publish", isEqualTo: true);
       }
 
-      GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+      GeoFirePoint center = geo.point(
+          latitude: MyAppState.selectedPosotion.location!.latitude,
+          longitude: MyAppState.selectedPosotion.location!.longitude);
 
       String field = 'g';
       Stream<List<DocumentSnapshot>> stream = geo
           .collection(collectionRef: collectionReference)
-          .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+          .within(
+              center: center,
+              radius:
+                  double.parse(sectionConstantModel!.nearByRadius.toString()),
+              field: field,
+              strictMode: true);
 
       stream.listen((List<DocumentSnapshot> documentList) {
         providerList.clear();
@@ -3356,22 +4154,35 @@ class FireStoreUtils {
     yield* allProviderStreamController!.stream;
   }
 
-  StreamController<List<ProviderServiceModel>>? allProviderServiceByProvideIdStreamController;
+  StreamController<List<ProviderServiceModel>>?
+      allProviderServiceByProvideIdStreamController;
 
-  Stream<List<ProviderServiceModel>> getProviderServiceByProvideId(String providerId) async* {
-    allProviderServiceByProvideIdStreamController = StreamController<List<ProviderServiceModel>>.broadcast();
+  Stream<List<ProviderServiceModel>> getProviderServiceByProvideId(
+      String providerId) async* {
+    allProviderServiceByProvideIdStreamController =
+        StreamController<List<ProviderServiceModel>>.broadcast();
     List<ProviderServiceModel> providerList = [];
     try {
-      var collectionReference =
-          firestore.collection(PROVIDERS_SERVICES).where("author", isEqualTo: providerId).where("sectionId", isEqualTo: sectionConstantModel!.id).where("publish", isEqualTo: true);
+      var collectionReference = firestore
+          .collection(PROVIDERS_SERVICES)
+          .where("author", isEqualTo: providerId)
+          .where("sectionId", isEqualTo: sectionConstantModel!.id)
+          .where("publish", isEqualTo: true);
 
-      GeoFirePoint center = geo.point(latitude: MyAppState.selectedPosotion.location!.latitude, longitude: MyAppState.selectedPosotion.location!.longitude);
+      GeoFirePoint center = geo.point(
+          latitude: MyAppState.selectedPosotion.location!.latitude,
+          longitude: MyAppState.selectedPosotion.location!.longitude);
 
       print("======>${sectionConstantModel!.nearByRadius.toString()}");
       String field = 'g';
       Stream<List<DocumentSnapshot>> stream = geo
           .collection(collectionRef: collectionReference)
-          .within(center: center, radius: double.parse(sectionConstantModel!.nearByRadius.toString()), field: field, strictMode: true);
+          .within(
+              center: center,
+              radius:
+                  double.parse(sectionConstantModel!.nearByRadius.toString()),
+              field: field,
+              strictMode: true);
 
       stream.listen((List<DocumentSnapshot> documentList) {
         providerList.clear();
@@ -3393,7 +4204,7 @@ class FireStoreUtils {
     yield* allProviderServiceByProvideIdStreamController!.stream;
   }
 
-  Future<List<OfferModel>> getProviderCoupon(String providerId ) async {
+  Future<List<OfferModel>> getProviderCoupon(String providerId) async {
     List<OfferModel> offers = [];
 
     QuerySnapshot<Map<String, dynamic>> offerQuery = await firestore
@@ -3405,7 +4216,8 @@ class FireStoreUtils {
         .get();
 
     print("-------->${offerQuery.docs}");
-    await Future.forEach(offerQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(offerQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         print("-------->");
         print(document.data());
@@ -3417,7 +4229,8 @@ class FireStoreUtils {
     return offers;
   }
 
-  Future<List<OfferModel>> getProviderCouponAfterExpire(String providerId) async {
+  Future<List<OfferModel>> getProviderCouponAfterExpire(
+      String providerId) async {
     List<OfferModel> coupon = [];
 
     QuerySnapshot<Map<String, dynamic>> couponsQuery = await firestore
@@ -3428,7 +4241,8 @@ class FireStoreUtils {
         .where('isPublic', isEqualTo: true)
         .where('expiresAt', isGreaterThanOrEqualTo: Timestamp.now())
         .get();
-    await Future.forEach(couponsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    await Future.forEach(couponsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         coupon.add(OfferModel.fromJson(document.data()));
       } catch (e) {
@@ -3440,8 +4254,12 @@ class FireStoreUtils {
 
   static Future<WorkerModel?>? getWorker(id) async {
     WorkerModel? workerModel;
-    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore.collection(PROVIDER_WORKERS).where('id', isEqualTo: id).get();
-    await Future.forEach(productsQuery.docs, (QueryDocumentSnapshot<Map<String, dynamic>> document) {
+    QuerySnapshot<Map<String, dynamic>> productsQuery = await firestore
+        .collection(PROVIDER_WORKERS)
+        .where('id', isEqualTo: id)
+        .get();
+    await Future.forEach(productsQuery.docs,
+        (QueryDocumentSnapshot<Map<String, dynamic>> document) {
       try {
         workerModel = WorkerModel.fromJson(document.data());
       } catch (e) {
@@ -3452,13 +4270,18 @@ class FireStoreUtils {
   }
 
   static Future<WorkerModel?> updateWorker(WorkerModel provider) async {
-    return await firestore.collection(PROVIDER_WORKERS).doc(provider.id).set(provider.toJson()).then((document) {
+    return await firestore
+        .collection(PROVIDER_WORKERS)
+        .doc(provider.id)
+        .set(provider.toJson())
+        .then((document) {
       return provider;
     });
   }
 
   Future<OnProviderOrderModel?> getProviderOrderById(String? orderId) async {
-    DocumentSnapshot<Map<String, dynamic>> userDocument = await firestore.collection(PROVIDERORDER).doc(orderId).get();
+    DocumentSnapshot<Map<String, dynamic>> userDocument =
+        await firestore.collection(PROVIDERORDER).doc(orderId).get();
     if (userDocument.data() != null && userDocument.exists) {
       return OnProviderOrderModel.fromJson(userDocument.data()!);
     } else {
@@ -3466,7 +4289,8 @@ class FireStoreUtils {
     }
   }
 
-  static sendOrderOnDemandServiceEmail({required OnProviderOrderModel orderModel}) async {
+  static sendOrderOnDemandServiceEmail(
+      {required OnProviderOrderModel orderModel}) async {
     String firstHTML = """
        <table style="width: 100%; border-collapse: collapse; border: 1px solid rgb(0, 0, 0);">
     <thead>
@@ -3480,13 +4304,19 @@ class FireStoreUtils {
     <tbody>
     """;
 
-    EmailTemplateModel? emailTemplateModel = await FireStoreUtils.getEmailTemplates(newOnDemandBook);
+    EmailTemplateModel? emailTemplateModel =
+        await FireStoreUtils.getEmailTemplates(newOnDemandBook);
 
     if (emailTemplateModel != null) {
       String newString = emailTemplateModel.message.toString();
-      newString = newString.replaceAll("{username}", MyAppState.currentUser!.firstName + " " + MyAppState.currentUser!.lastName);
+      newString = newString.replaceAll(
+          "{username}",
+          MyAppState.currentUser!.firstName +
+              " " +
+              MyAppState.currentUser!.lastName);
       newString = newString.replaceAll("{orderid}", orderModel.id);
-      newString = newString.replaceAll("{date}", DateFormat('dd-MM-yyyy').format(orderModel.createdAt.toDate()));
+      newString = newString.replaceAll("{date}",
+          DateFormat('dd-MM-yyyy').format(orderModel.createdAt.toDate()));
       newString = newString.replaceAll(
         "{address}",
         '${orderModel.address!.getFullAddress()}',
@@ -3501,10 +4331,13 @@ class FireStoreUtils {
       double taxAmount = 0.0;
       List<String> htmlList = [];
 
-      if (orderModel.provider.disPrice == "" || orderModel.provider.disPrice == "0") {
-        total = double.parse(orderModel.provider.price.toString()) * orderModel.quantity;
+      if (orderModel.provider.disPrice == "" ||
+          orderModel.provider.disPrice == "0") {
+        total = double.parse(orderModel.provider.price.toString()) *
+            orderModel.quantity;
       } else {
-        total = double.parse(orderModel.provider.disPrice.toString()) * orderModel.quantity;
+        total = double.parse(orderModel.provider.disPrice.toString()) *
+            orderModel.quantity;
       }
 
       String product = """
@@ -3523,7 +4356,9 @@ class FireStoreUtils {
       List<String> taxHtmlList = [];
       if (orderModel.taxModel != null) {
         for (var element in orderModel.taxModel!) {
-          taxAmount = taxAmount + getTaxValue(amount: (total - discount).toString(), taxModel: element);
+          taxAmount = taxAmount +
+              getTaxValue(
+                  amount: (total - discount).toString(), taxModel: element);
           String taxHtml =
               """<span style="font-size: 1rem;">${element.title}: ${amountShow(amount: getTaxValue(amount: (total - discount).toString(), taxModel: element).toString())}${taxList!.indexOf(element) == taxList!.length - 1 ? "</span>" : "<br></span>"}""";
           taxHtmlList.add(taxHtml);
@@ -3532,20 +4367,34 @@ class FireStoreUtils {
 
       var totalamount = total + taxAmount - discount;
 
-      newString = newString.replaceAll("{subtotal}", amountShow(amount: total.toString()));
-      newString = newString.replaceAll("{coupon}", '(${orderModel.couponCode.toString()})');
-      newString = newString.replaceAll("{discountamount}", orderModel.couponCode == null ? "0.0" : amountShow(amount: orderModel.discount.toString()));
-      newString = newString.replaceAll("{totalAmount}", amountShow(amount: totalamount.toString()));
+      newString = newString.replaceAll(
+          "{subtotal}", amountShow(amount: total.toString()));
+      newString = newString.replaceAll(
+          "{coupon}", '(${orderModel.couponCode.toString()})');
+      newString = newString.replaceAll(
+          "{discountamount}",
+          orderModel.couponCode == null
+              ? "0.0"
+              : amountShow(amount: orderModel.discount.toString()));
+      newString = newString.replaceAll(
+          "{totalAmount}", amountShow(amount: totalamount.toString()));
 
       String tableHTML = htmlList.join();
       String lastHTML = "</tbody></table>";
-      newString = newString.replaceAll("{productdetails}", firstHTML + tableHTML + lastHTML);
+      newString = newString.replaceAll(
+          "{productdetails}", firstHTML + tableHTML + lastHTML);
       newString = newString.replaceAll("{taxdetails}", taxHtmlList.join());
-      newString = newString.replaceAll("{newwalletbalance}.", amountShow(amount: MyAppState.currentUser!.wallet_amount.toString()));
+      newString = newString.replaceAll("{newwalletbalance}.",
+          amountShow(amount: MyAppState.currentUser!.wallet_amount.toString()));
 
       String subjectNewString = emailTemplateModel.subject.toString();
-      subjectNewString = subjectNewString.replaceAll("{orderid}", orderModel.id);
-      await sendMail(subject: subjectNewString, isAdmin: emailTemplateModel.isSendToAdmin, body: newString, recipients: [MyAppState.currentUser!.email]);
+      subjectNewString =
+          subjectNewString.replaceAll("{orderid}", orderModel.id);
+      await sendMail(
+          subject: subjectNewString,
+          isAdmin: emailTemplateModel.isSendToAdmin,
+          body: newString,
+          recipients: [MyAppState.currentUser!.email]);
     }
   }
 
@@ -3620,7 +4469,8 @@ class FireStoreUtils {
   //   await updateProviderWalletAmount(amount: adminComm, userId: orderModel.provider.author);
   // }
   //
-  static Future updateProviderWalletAmount({required amount, required userId}) async {
+  static Future updateProviderWalletAmount(
+      {required amount, required userId}) async {
     await firestore.collection(USERS).doc(userId).get().then((value) async {
       DocumentSnapshot<Map<String, dynamic>> userDocument = value;
       if (userDocument.data() != null && userDocument.exists) {
@@ -3628,10 +4478,15 @@ class FireStoreUtils {
           print(userDocument.data());
           User user = User.fromJson(userDocument.data()!);
           user.wallet_amount = user.wallet_amount + amount;
-          await firestore.collection(USERS).doc(userId).set(user.toJson()).then((value) => print("north"));
+          await firestore
+              .collection(USERS)
+              .doc(userId)
+              .set(user.toJson())
+              .then((value) => print("north"));
         } catch (error) {
           print(error);
-          if (error.toString() == "Bad state: field does not exist within the DocumentSnapshotPlatform") {
+          if (error.toString() ==
+              "Bad state: field does not exist within the DocumentSnapshotPlatform") {
             print("does not exist");
           } else {
             print("went wrong!!");

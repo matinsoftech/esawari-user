@@ -9,15 +9,7 @@ class AddressModel {
   UserLocation? location;
   bool? isDefault;
 
-  AddressModel({
-    this.address,
-    this.landmark,
-    this.locality,
-    this.location,
-    this.isDefault,
-    this.addressAs,
-    this.id,
-  });
+  AddressModel({this.address, this.landmark, this.locality, this.location, this.isDefault, this.addressAs, this.id});
 
   AddressModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -26,9 +18,7 @@ class AddressModel {
     locality = json['locality'];
     isDefault = json['isDefault'];
     addressAs = json['addressAs'];
-    location = json['location'] == null
-        ? null
-        : UserLocation.fromJson(json['location']);
+    location = json['location'] == null ? null : UserLocation.fromJson(json['location']);
   }
 
   Map<String, dynamic> toJson() {

@@ -85,13 +85,15 @@ class _MapViewScreenState extends State<MapViewScreen> {
   getDirections(double latitude, double longLatitude) async {
     List<LatLng> polylineCoordinates = [];
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      request: PolylineRequest(
-        origin: PointLatLng(MyAppState.selectedPosotion.location!.latitude,
-            MyAppState.selectedPosotion.location!.longitude),
-        destination: PointLatLng(latitude, longLatitude),
-        mode: TravelMode.driving,
-      ),
-    );
+        googleApiKey: GOOGLE_API_KEY,
+
+        // travelMode: TravelMode.driving,
+        request: PolylineRequest(
+          origin: PointLatLng(MyAppState.selectedPosotion.location!.latitude,
+              MyAppState.selectedPosotion.location!.longitude),
+          destination: PointLatLng(latitude, longLatitude),
+          mode: TravelMode.driving,
+        ));
 
     print("----?${result.points}");
     if (result.points.isNotEmpty) {

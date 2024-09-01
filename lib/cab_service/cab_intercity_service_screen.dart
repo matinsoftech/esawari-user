@@ -63,10 +63,8 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
 
   @override
   void initState() {
-    getCurrentLocation(true, true);
-
     setIcons();
-    // getVehicleType();
+    getVehicleType();
     getCurrentOrder();
     super.initState();
   }
@@ -163,7 +161,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
     }
   }
 
-  void getCurrentLocation(bool isDepartureSet, bool isAutoFetchLocation) async {
+  void getCurrentLocation(bool isDepartureSet) async {
     if (isDepartureSet) {
       LocationData location = await currentLocation.getLocation();
       List<get_cord_address.Placemark> placeMarks =
@@ -189,22 +187,11 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
           (placeMarks.first.postalCode!.isEmpty
               ? ''
               : "${placeMarks.first.postalCode}, ");
-
-      isAutoFetchLocation
-          ? Future.delayed(const Duration(seconds: 3), () {
-              setState(() {
-                departureController.text = address;
-                setDepartureMarker(LatLng(
-                    location.latitude ?? 0.0, location.longitude ?? 0.0));
-              });
-            })
-          : setState(
-              () {
-                departureController.text = address;
-                setDepartureMarker(LatLng(
-                    location.latitude ?? 0.0, location.longitude ?? 0.0));
-              },
-            );
+      departureController.text = address;
+      setState(() {
+        setDepartureMarker(
+            LatLng(location.latitude ?? 0.0, location.longitude ?? 0.0));
+      });
     }
   }
 
@@ -345,7 +332,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                         ),
                                         IconButton(
                                           onPressed: () {
-                                            getCurrentLocation(true, false);
+                                            getCurrentLocation(true);
                                           },
                                           autofocus: false,
                                           icon: Icon(
@@ -1752,14 +1739,12 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       List<LatLng> polylineCoordinates = [];
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(_driverModel!.location.latitude,
-              _driverModel!.location.longitude),
-          destination: PointLatLng(_cabOrderModel!.sourceLocation.latitude,
-              _cabOrderModel!.sourceLocation.longitude),
-          mode: TravelMode.driving,
-        ),
-      );
+          request: PolylineRequest(
+              origin: PointLatLng(_driverModel!.location.latitude,
+                  _driverModel!.location.longitude),
+              destination: PointLatLng(_cabOrderModel!.sourceLocation.latitude,
+                  _cabOrderModel!.sourceLocation.longitude),
+              mode: TravelMode.driving));
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {
@@ -1847,14 +1832,15 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
         statusOfOrder == "vehicleType") {
       List<LatLng> polylineCoordinates = [];
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(
-              departureLatLong!.latitude, departureLatLong!.longitude),
-          destination: PointLatLng(
-              destinationLatLong!.latitude, destinationLatLong!.longitude),
-          mode: TravelMode.driving,
-        ),
-      );
+
+          // travelMode: TravelMode.driving,
+          request: PolylineRequest(
+        origin: PointLatLng(
+            departureLatLong!.latitude, departureLatLong!.longitude),
+        destination: PointLatLng(
+            destinationLatLong!.latitude, destinationLatLong!.longitude),
+        mode: TravelMode.driving,
+      ));
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {

@@ -50,12 +50,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBBziW-GfjM5LOXkDua_8gD2DbDPo-rf8Q',
-    appId: '1:291110943538:web:4017c9d83593fda1b5f52b',
-    messagingSenderId: '291110943538',
-    projectId: 'e-sawari-46aa4',
-    databaseURL: 'https://emart-8d99f-default-rtdb.firebaseio.com',
-    storageBucket: 'e-sawari-46aa4.appspot.com',
+    apiKey: 'AIzaSyCB7c17m5ecEe7r8OaAZsoHYEJUhALNHlM',
+    appId: '1:143565238435:web:a3dc1553712dc718a14f16',
+    messagingSenderId: '143565238435',
+    projectId: 'drmhope-dd349',
+    databaseURL: 'https://drmhope-dd349-default-rtdb.firebaseio.com',
+    storageBucket: 'drmhope-dd349.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

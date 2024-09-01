@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:emartconsumer/changenotier/password_change_notifier.dart';
+import 'package:emartconsumer/cab_service/dashboard_cab_service.dart';
 import 'package:emartconsumer/constants.dart';
 import 'package:emartconsumer/firebase_options.dart';
 import 'package:emartconsumer/model/AddressModel.dart';
@@ -17,7 +17,6 @@ import 'package:emartconsumer/ui/StoreSelection/StoreSelection.dart';
 import 'package:emartconsumer/ui/auth/AuthScreen.dart';
 import 'package:emartconsumer/ui/location_permission_screen.dart';
 import 'package:emartconsumer/ui/onBoarding/OnBoardingScreen.dart';
-import 'package:emartconsumer/ui/splash_screen/splash_screen.dart';
 import 'package:emartconsumer/userPrefrence.dart';
 import 'package:emartconsumer/utils/Styles.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -196,12 +195,10 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => themeChangeProvider),
-        ChangeNotifierProvider(
-            create: (context) => PasswordVisibilityProvider()),
-      ],
+    return ChangeNotifierProvider(
+      create: (_) {
+        return themeChangeProvider;
+      },
       child: Consumer<DarkThemeProvider>(
         builder: (context, value, child) {
           return MaterialApp(
@@ -212,7 +209,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
               debugShowCheckedModeBanner: false,
               theme: Styles.themeData(themeChangeProvider.darkTheme, context),
               builder: EasyLoading.init(),
-              home: const EsawariSplashScreen());
+              home: const OnBoarding());
         },
       ),
     );
@@ -259,9 +256,6 @@ class OnBoardingState extends State<OnBoarding> {
 
   Future hasFinishedOnBoarding() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(FINISHED_ON_BOARDING,
-        true); //? here on boarding is set to bool true to not show the onboarding
-    // print('pref ${prefs.getBool(FINISHED_ON_BOARDING)}');
     prefs.setBool(FINISHED_ON_BOARDING, true);
     bool finishedOnBoarding = (prefs.getBool(FINISHED_ON_BOARDING) ?? false);
 
@@ -292,9 +286,11 @@ class OnBoardingState extends State<OnBoarding> {
                 MyAppState.selectedPosotion =
                     MyAppState.currentUser!.shippingAddress!.first;
               }
-              pushReplacement(context, const StoreSelection());
+              // pushReplacement(context, const StoreSelection());
+              pushReplacement(context, DashBoardCabService(user: user));
             } else {
-              pushAndRemoveUntil(context, LocationPermissionScreen(), false);
+              pushAndRemoveUntil(
+                  context, LocationPermissionScreen(user: user), false);
             }
           } else {
             user.lastOnlineTimestamp = Timestamp.now();

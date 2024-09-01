@@ -17,7 +17,11 @@ import 'package:uuid/uuid.dart';
 import 'deliveryAddressScreen/DeliveryAddressScreen.dart';
 
 class LocationPermissionScreen extends StatefulWidget {
-  const LocationPermissionScreen({Key? key}) : super(key: key);
+  final User? user;
+  const LocationPermissionScreen({
+    this.user,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _LocationPermissionScreenState createState() =>
@@ -56,6 +60,7 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               textAlign: TextAlign.center,
             ).tr(),
           ),
+          //user current location
           Padding(
             padding: const EdgeInsets.only(right: 40.0, left: 40.0, top: 40),
             child: ConstrainedBox(
@@ -96,8 +101,9 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                         setState(() {
                           addressModel.id = Uuid().v4();
                           addressModel.location = UserLocation(
-                              latitude: newLocalData.latitude,
-                              longitude: newLocalData.longitude);
+                            latitude: newLocalData.latitude,
+                            longitude: newLocalData.longitude,
+                          );
                           String currentLocation =
                               "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
                           addressModel.locality = currentLocation;
@@ -108,11 +114,13 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                       MyAppState.selectedPosotion = addressModel;
                       await hideProgress();
                       // pushAndRemoveUntil(context, StoreSelection(), false);
-                      pushAndRemoveUntil(
-                        context,
-                        DashBoardCabService(user: null),
-                        false,
-                      );
+                      if (widget.user != null) {
+                        pushAndRemoveUntil(context,
+                            DashBoardCabService(user: widget.user), false);
+                      } else if (isSkipLogin) {
+                        pushAndRemoveUntil(
+                            context, DashBoardCabService(user: null), false);
+                      }
                     } catch (e) {
                       await placemarkFromCoordinates(19.228825, 72.854118)
                           .then((valuePlaceMaker) {
@@ -130,17 +138,13 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                       MyAppState.selectedPosotion = addressModel;
                       await hideProgress();
                       // pushAndRemoveUntil(context, StoreSelection(), false);
-                      pushAndRemoveUntil(
-                        context,
-                        DashBoardCabService(user: null),
-                        false,
-                      );
                     }
                   }, context);
                 },
               ),
             ),
           ),
+          //set from map
           Padding(
             padding: const EdgeInsets.only(right: 40.0, left: 40.0, top: 10),
             child: ConstrainedBox(
@@ -186,8 +190,25 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                               log(result.toString());
                               MyAppState.selectedPosotion = addressModel;
                               setState(() {});
-                              pushAndRemoveUntil(
-                                  context, StoreSelection(), false);
+                              // pushAndRemoveUntil(
+                              //     context, StoreSelection(), false);
+                              if (!isSkipLogin) {
+                                pushAndRemoveUntil(
+                                  context,
+                                  DashBoardCabService(
+                                    user: widget.user,
+                                  ),
+                                  false,
+                                );
+                              } else {
+                                pushAndRemoveUntil(
+                                  context,
+                                  DashBoardCabService(
+                                    user: null,
+                                  ),
+                                  false,
+                                );
+                              }
                             },
                             initialPosition: LatLng(-33.8567844, 151.213108),
                             useCurrentLocation: true,
@@ -218,7 +239,24 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
 
                       MyAppState.selectedPosotion = addressModel;
                       await hideProgress();
-                      pushAndRemoveUntil(context, StoreSelection(), false);
+                      // pushAndRemoveUntil(context, StoreSelection(), false);
+                      if (!isSkipLogin) {
+                        pushAndRemoveUntil(
+                          context,
+                          DashBoardCabService(
+                            user: null,
+                          ),
+                          false,
+                        );
+                      } else {
+                        pushAndRemoveUntil(
+                          context,
+                          DashBoardCabService(
+                            user: MyAppState.currentUser,
+                          ),
+                          false,
+                        );
+                      }
                     }
                   }, context);
                 },
