@@ -47,7 +47,7 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               "Find Your Sawari near you",
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Color(COLOR_PRIMARY),
+                  color: Colors.red,
                   fontSize: 22.0,
                   fontWeight: FontWeight.bold),
             ).tr(),
@@ -67,13 +67,13 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               constraints: const BoxConstraints(minWidth: double.infinity),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(COLOR_PRIMARY),
+                  backgroundColor: Colors.red,
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
-                    side: BorderSide(
-                      color: Color(COLOR_PRIMARY),
-                    ),
+                    // side: BorderSide(
+                    //   color: Color(COLOR_PRIMARY),
+                    // ),
                   ),
                 ),
                 child: Text(
@@ -121,7 +121,7 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                         pushAndRemoveUntil(
                             context, DashBoardCabService(user: null), false);
                       }
-                    } catch (e) {
+                    } catch (exception) {
                       await placemarkFromCoordinates(19.228825, 72.854118)
                           .then((valuePlaceMaker) {
                         Placemark placeMark = valuePlaceMaker[0];
@@ -137,6 +137,7 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
 
                       MyAppState.selectedPosotion = addressModel;
                       await hideProgress();
+                      print(exception);
                       // pushAndRemoveUntil(context, StoreSelection(), false);
                     }
                   }, context);
@@ -151,13 +152,13 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
               constraints: const BoxConstraints(minWidth: double.infinity),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(COLOR_PRIMARY),
+                  backgroundColor: Colors.red,
                   padding: EdgeInsets.only(top: 12, bottom: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
-                    side: BorderSide(
-                      color: Color(COLOR_PRIMARY),
-                    ),
+                    // side: BorderSide(
+                    //   color: Color(COLOR_PRIMARY),
+                    // ),
                   ),
                 ),
                 child: Text(
@@ -276,7 +277,7 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(COLOR_PRIMARY)),
+                            color: Colors.red),
                       ).tr(),
                       onPressed: () async {
                         await Navigator.of(context)
@@ -292,14 +293,14 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen> {
                         });
                       },
                       style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                           EdgeInsets.only(top: 12, bottom: 12),
                         ),
-                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                        shape: WidgetStateProperty.all<OutlinedBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25.0),
                             side: BorderSide(
-                              color: Color(COLOR_PRIMARY),
+                              color: Colors.red,
                             ),
                           ),
                         ),

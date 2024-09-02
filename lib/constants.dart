@@ -20,6 +20,7 @@ import 'model/TaxModel.dart';
 const FINISHED_ON_BOARDING = 'finishedOnBoarding';
 const COLOR_ACCENT = 0xFF8fd468;
 int COLOR_PRIMARY = 0xFF00B761;
+// int COLOR_PRIMARY = 0xFF00B761;
 const FACEBOOK_BUTTON_COLOR = 0xFF415893;
 const COUPON_BG_COLOR = 0xFFFCF8F3;
 const DARK_BG_COLOR = 0xff121212;

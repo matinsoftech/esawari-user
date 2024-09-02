@@ -215,32 +215,33 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                                               ],
                                             ),
                                           ),
-                                          Row(
-                                            children: [
-                                              !themeChange.darkTheme
-                                                  ? const Icon(
-                                                      Icons.light_mode_sharp)
-                                                  : const Icon(
-                                                      Icons.nightlight),
-                                              Switch(
-                                                // thumb color (round icon)
-                                                splashRadius: 50.0,
-                                                // activeThumbImage: const AssetImage('https://lists.gnu.org/archive/html/emacs-devel/2015-10/pngR9b4lzUy39.png'),
-                                                // inactiveThumbImage: const AssetImage('http://wolfrosch.com/_img/works/goodies/icon/vim@2x'),
+                                          // Row(
+                                          //   children: [
+                                          //     !themeChange.darkTheme
+                                          //         ? const Icon(
+                                          //             Icons.light_mode_sharp)
+                                          //         : const Icon(
+                                          //             Icons.nightlight),
+                                          //     Switch(
+                                          //       // thumb color (round icon)
+                                          //       splashRadius: 50.0,
+                                          //       // activeThumbImage: const AssetImage('https://lists.gnu.org/archive/html/emacs-devel/2015-10/pngR9b4lzUy39.png'),
+                                          //       // inactiveThumbImage: const AssetImage('http://wolfrosch.com/_img/works/goodies/icon/vim@2x'),
 
-                                                value: themeChange.darkTheme,
-                                                onChanged: (value) => setState(
-                                                    () => themeChange
-                                                        .darkTheme = value),
-                                              ),
-                                            ],
-                                          ),
+                                          //       value: themeChange.darkTheme,
+                                          //       onChanged: (value) => setState(
+                                          //           () => themeChange
+                                          //               .darkTheme = value),
+                                          //     ),
+                                          //   ],
+                                          // ),
                                         ],
                                       )
                                     ],
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Color(COLOR_PRIMARY),
+                                    // color: Color(COLOR_PRIMARY),
+                                    color: Colors.red,
                                   ),
                                 );
                               }),
@@ -272,7 +273,8 @@ class _DashBoardCabService extends State<DashBoardCabService> {
 
                               ListTileTheme(
                                 style: ListTileStyle.drawer,
-                                selectedColor: Color(COLOR_PRIMARY),
+                                // selectedColor: Color(COLOR_PRIMARY),
+                                selectedColor: Colors.red,
                                 child: ListTile(
                                   selected:
                                       _drawerSelection == DrawerSelection.Home,
@@ -547,46 +549,66 @@ class _DashBoardCabService extends State<DashBoardCabService> {
                   //     ? null
                   //     :
                   AppBar(
-                elevation: _drawerSelection == DrawerSelection.Wallet ? 0 : 0,
-                centerTitle:
-                    _drawerSelection == DrawerSelection.Wallet ? true : false,
-                backgroundColor: _drawerSelection == DrawerSelection.Wallet
-                    ? Colors.transparent
-                    : isDarkMode(context)
-                        ? Colors.black
-                        : Colors.white,
-                //isDarkMode(context) ? Color(DARK_COLOR) : null,
-                leading: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      key.currentState!.openDrawer();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.all(10),
-                    ),
-                    child: Image.asset(
-                      "assets/icons/ic_side_menu.png",
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                // iconTheme: IconThemeData(color: Colors.blue),
-                title: Text(
-                  _appBarTitle,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: _drawerSelection == DrawerSelection.Wallet
-                          ? Colors.white
-                          : isDarkMode(context)
-                              ? Colors.white
-                              : Colors.black,
-                      //isDarkMode(context) ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.normal),
-                ),
-              ),
+                      elevation:
+                          _drawerSelection == DrawerSelection.Wallet ? 0 : 0,
+                      centerTitle: true,
+
+                      //  _drawerSelection == DrawerSelection.Wallet
+                      //     ? true
+                      //     : false,
+                      backgroundColor: Colors.red.withOpacity(0.04),
+                      // _drawerSelection == DrawerSelection.Wallet
+                      //     ? Colors.transparent
+                      //     : isDarkMode(context)
+                      //         ? Colors.black
+                      //         : Colors.white,
+                      //isDarkMode(context) ? Color(DARK_COLOR) : null,
+                      leading: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: GestureDetector(
+                          onTap: () {
+                            key.currentState!.openDrawer();
+                          },
+                          child: Image.asset(
+                            "assets/icons/ic_side_menu.png",
+                            color: Colors.red,
+                          ),
+                        ),
+                        //  ElevatedButton(
+                        //   onPressed: () {
+                        //     key.currentState!.openDrawer();
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     shape: const CircleBorder(),
+                        //     backgroundColor: Colors.white,
+                        //     padding: const EdgeInsets.all(10),
+                        //   ),
+                        //   child: Image.asset(
+                        //     "assets/icons/ic_side_menu.png",
+                        //     color: Colors.red,
+                        //   ),
+                        // ),
+                      ),
+                      // iconTheme: IconThemeData(color: Colors.blue),
+                      title: Image.asset(
+                        'assets/images/app_logo_new.png',
+                        width: 45,
+                        height: 50,
+                      )
+
+                      //  Text(
+                      //   _appBarTitle,
+                      //   style: TextStyle(
+                      //       fontSize: 18,
+                      //       color: _drawerSelection == DrawerSelection.Wallet
+                      //           ? Colors.white
+                      //           : isDarkMode(context)
+                      //               ? Colors.white
+                      //               : Colors.black,
+                      //       //isDarkMode(context) ? Colors.white : Colors.black,
+                      //       fontWeight: FontWeight.normal),
+                      // ),
+                      ),
               body: _currentWidget,
             );
           },

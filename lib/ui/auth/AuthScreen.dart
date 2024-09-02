@@ -192,7 +192,7 @@ class AuthScreen extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(COLOR_PRIMARY)),
+                    color: Colors.red),
               ),
               onPressed: () async {
                 isSkipLogin = true;
@@ -222,7 +222,7 @@ class AuthScreen extends StatelessWidget {
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                     side: BorderSide(
-                      color: Color(COLOR_PRIMARY),
+                      color: Colors.red,
                     ),
                   ),
                 ),
@@ -249,7 +249,7 @@ class AuthScreen extends StatelessWidget {
                 'Welcome to Esawari'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Color(COLOR_PRIMARY),
+                    color: Colors.red,
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold),
               ).tr(),
@@ -268,13 +268,13 @@ class AuthScreen extends StatelessWidget {
                 constraints: const BoxConstraints(minWidth: double.infinity),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(COLOR_PRIMARY),
+                    backgroundColor: Colors.red,
                     padding: const EdgeInsets.only(top: 12, bottom: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),
-                      side: BorderSide(
-                        color: Color(COLOR_PRIMARY),
-                      ),
+                      // side: BorderSide(
+                      //   color: Color(COLOR_PRIMARY),
+                      // ),
                     ),
                   ),
                   child: Text(
@@ -299,22 +299,23 @@ class AuthScreen extends StatelessWidget {
                   child: Text(
                     'signUp'.tr(),
                     style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(COLOR_PRIMARY)),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
                   ).tr(),
                   onPressed: () {
                     push(context, SignUpScreen());
                   },
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
                       const EdgeInsets.only(top: 12, bottom: 12),
                     ),
-                    shape: MaterialStateProperty.all<OutlinedBorder>(
+                    shape: WidgetStateProperty.all<OutlinedBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25.0),
                         side: BorderSide(
-                          color: Color(COLOR_PRIMARY),
+                          color: Colors.red,
                         ),
                       ),
                     ),
