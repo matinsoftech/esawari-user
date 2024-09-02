@@ -27,6 +27,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -201,7 +202,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
       },
       child: Consumer<DarkThemeProvider>(
         builder: (context, value, child) {
-          return MaterialApp(
+          return GetMaterialApp(
               navigatorKey: notificationService.navigatorKey,
               localizationsDelegates: context.localizationDelegates,
               locale: context.locale,
@@ -270,6 +271,12 @@ class OnBoardingState extends State<OnBoarding> {
             user.fcmToken =
                 await FireStoreUtils.firebaseMessaging.getToken() ?? '';
             await FireStoreUtils.updateCurrentUser(user);
+            await FireStoreUtils().getSections().then(
+              (value) {
+                sectionConstantModel = value.first;
+                print('section id ${value.first.id}');
+              },
+            );
             MyAppState.currentUser = user;
             isSkipLogin = false;
 

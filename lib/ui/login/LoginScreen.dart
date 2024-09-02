@@ -47,7 +47,7 @@ class _LoginScreen extends State<LoginScreen> {
               child: Text(
                 'signIn'.tr(),
                 style: TextStyle(
-                    color: Color(COLOR_PRIMARY),
+                    color: Colors.red,
                     fontSize: 25.0,
                     fontWeight: FontWeight.bold),
               ).tr(),
@@ -67,15 +67,15 @@ class _LoginScreen extends State<LoginScreen> {
                     controller: _emailController,
                     style: const TextStyle(fontSize: 18.0),
                     keyboardType: TextInputType.emailAddress,
-                    cursorColor: Color(COLOR_PRIMARY),
+                    cursorColor: Colors.red,
                     decoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, right: 16),
                       hintText: 'emailAddress'.tr(),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25.0),
-                          borderSide: BorderSide(
-                              color: Color(COLOR_PRIMARY), width: 2.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
                       errorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.error),
@@ -109,15 +109,15 @@ class _LoginScreen extends State<LoginScreen> {
                     onFieldSubmitted: (password) => _login(),
                     textInputAction: TextInputAction.done,
                     style: const TextStyle(fontSize: 18.0),
-                    cursorColor: Color(COLOR_PRIMARY),
+                    cursorColor: Colors.red,
                     decoration: InputDecoration(
                       contentPadding:
                           const EdgeInsets.only(left: 16, right: 16),
                       hintText: 'password'.tr(),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25.0),
-                          borderSide: BorderSide(
-                              color: Color(COLOR_PRIMARY), width: 2.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
                       errorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.error),
@@ -169,12 +169,12 @@ class _LoginScreen extends State<LoginScreen> {
                 constraints: const BoxConstraints(minWidth: double.infinity),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(COLOR_PRIMARY),
+                    backgroundColor: Colors.red,
                     padding: const EdgeInsets.only(top: 12, bottom: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),
                       side: BorderSide(
-                        color: Color(COLOR_PRIMARY),
+                        color: Colors.red,
                       ),
                     ),
                   ),

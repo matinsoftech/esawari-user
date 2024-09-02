@@ -80,6 +80,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
   flutter_svg: ^2.0.10+1
   carousel_slider: ^4.2.1
+  get: ^4.6.6
 
 dependency_overrides:
   webview_flutter: ^4.8.0
