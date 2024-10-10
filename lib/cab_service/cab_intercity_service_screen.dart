@@ -17,6 +17,7 @@ import 'package:emartconsumer/model/VehicleType.dart';
 import 'package:emartconsumer/model/popular_destination.dart';
 import 'package:emartconsumer/services/FirebaseHelper.dart';
 import 'package:emartconsumer/services/helper.dart';
+import 'package:emartconsumer/ui/StoreSelection/StoreSelection.dart';
 import 'package:emartconsumer/ui/auth/AuthScreen.dart';
 import 'package:emartconsumer/ui/chat_screen/chat_screen.dart';
 import 'package:flutter/material.dart';
@@ -29,19 +30,19 @@ import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class CabInterCityServiceScreen extends StatefulWidget {
-  const CabInterCityServiceScreen({Key? key}) : super(key: key);
+  const CabInterCityServiceScreen( {Key? key}) : super(key: key);
 
   @override
-  State<CabInterCityServiceScreen> createState() =>
-      _CabInterCityServiceScreenState();
+  State<CabInterCityServiceScreen> createState() => _CabInterCityServiceScreenState();
 }
 
 class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
-  final CameraPosition _kInitialPosition = const CameraPosition(
-      target: LatLng(19.018255973653343, 72.84793849278007),
-      zoom: 11.0,
-      tilt: 0,
-      bearing: 0);
+final CameraPosition _kInitialPosition = const CameraPosition(
+  target: LatLng(27.7172, 85.324), // Coordinates for Kathmandu, Nepal
+  zoom: 11.0, // Zoom level
+  tilt: 0, // Tilt angle
+  bearing: 0 // Bearing direction
+);
 
   final TextEditingController departureController = TextEditingController();
   final TextEditingController destinationController = TextEditingController();
@@ -65,7 +66,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
   void initState() {
     setIcons();
     getVehicleType();
-    getCurrentOrder();
+    //getCurrentOrder();
     super.initState();
   }
 
@@ -137,60 +138,43 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
   late Stream<User> driverStream;
   User? _driverModel;
 
-  getCurrentOrder() {
-    if (MyAppState.currentUser != null) {
-      if (MyAppState.currentUser!.inProgressOrderID != null) {
-        ordersFuture = FireStoreUtils().getIntercityOrder(
-            MyAppState.currentUser!.inProgressOrderID.toString());
-        ordersFuture.listen((event) {
-          print("------->${event.status}");
-          print("------->${event.paymentMethod}");
-          setState(() {
-            _cabOrderModel = event;
-            statusOfOrder = event.status;
-          });
-          if (_cabOrderModel!.driverID != null ||
-              _cabOrderModel!.driverID!.isNotEmpty) {
-            getDriverDetails();
-          }
-          setState(() {});
-        });
-      }
-      getDirections();
-      setState(() {});
-    }
-  }
+  // getCurrentOrder()async {
+  //   if (MyAppState.currentUser != null) {
+  //     if (MyAppState.currentUser!.inProgressOrderID != null) {
+  //       ordersFuture =await FireStoreUtils().getIntercityOrder(MyAppState.currentUser!.inProgressOrderID.toString());
+  //       ordersFuture.listen((event) {
+  //         print("------->${event.status}");
+  //         print("------->${event.paymentMethod}");
+  //         setState(() {
+  //           _cabOrderModel = event;
+  //           statusOfOrder = event.status;
+  //         });
+  //         if (_cabOrderModel!.driverID != null || _cabOrderModel!.driverID!.isNotEmpty) {
+  //           getDriverDetails();
+  //         }
+  //         setState(() {});
+  //       });
+  //     }
+  //     getDirections();
+  //     setState(() {});
+  //   }
+  // }
 
   void getCurrentLocation(bool isDepartureSet) async {
     if (isDepartureSet) {
       LocationData location = await currentLocation.getLocation();
-      List<get_cord_address.Placemark> placeMarks =
-          await get_cord_address.placemarkFromCoordinates(
-              location.latitude ?? 0.0, location.longitude ?? 0.0);
+      List<get_cord_address.Placemark> placeMarks = await get_cord_address.placemarkFromCoordinates(location.latitude ?? 0.0, location.longitude ?? 0.0);
 
-      final address = (placeMarks.first.subLocality!.isEmpty
-              ? ''
-              : "${placeMarks.first.subLocality}, ") +
-          (placeMarks.first.street!.isEmpty
-              ? ''
-              : "${placeMarks.first.street}, ") +
+      final address = (placeMarks.first.subLocality!.isEmpty ? '' : "${placeMarks.first.subLocality}, ") +
+          (placeMarks.first.street!.isEmpty ? '' : "${placeMarks.first.street}, ") +
           (placeMarks.first.name!.isEmpty ? '' : "${placeMarks.first.name}, ") +
-          (placeMarks.first.subAdministrativeArea!.isEmpty
-              ? ''
-              : "${placeMarks.first.subAdministrativeArea}, ") +
-          (placeMarks.first.administrativeArea!.isEmpty
-              ? ''
-              : "${placeMarks.first.administrativeArea}, ") +
-          (placeMarks.first.country!.isEmpty
-              ? ''
-              : "${placeMarks.first.country}, ") +
-          (placeMarks.first.postalCode!.isEmpty
-              ? ''
-              : "${placeMarks.first.postalCode}, ");
+          (placeMarks.first.subAdministrativeArea!.isEmpty ? '' : "${placeMarks.first.subAdministrativeArea}, ") +
+          (placeMarks.first.administrativeArea!.isEmpty ? '' : "${placeMarks.first.administrativeArea}, ") +
+          (placeMarks.first.country!.isEmpty ? '' : "${placeMarks.first.country}, ") +
+          (placeMarks.first.postalCode!.isEmpty ? '' : "${placeMarks.first.postalCode}, ");
       departureController.text = address;
       setState(() {
-        setDepartureMarker(
-            LatLng(location.latitude ?? 0.0, location.longitude ?? 0.0));
+        setDepartureMarker(LatLng(location.latitude ?? 0.0, location.longitude ?? 0.0));
       });
     }
   }
@@ -219,8 +203,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
             markers: _markers.values.toSet(),
           ),
           Padding(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).size.height * 0.04, right: 10),
+            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.04, right: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -228,11 +211,15 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                   padding: const EdgeInsets.only(top: 3),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                       if(MyAppState.currentUser!=null){
+                      push(context, StoreSelection());}
+                      else {
+                      push(context, StoreSelection());
+                      }
+                    
                     },
                     style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      backgroundColor: Colors.white,
+                      shape: const CircleBorder(), backgroundColor: Colors.white,
                       padding: const EdgeInsets.all(8),
                     ),
                     child: const Icon(
@@ -244,22 +231,15 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                 Visibility(
                   visible: MyAppState.currentUser == null
                       ? true
-                      : MyAppState.currentUser!.inProgressOrderID == null ||
-                              MyAppState.currentUser!.inProgressOrderID!.isEmpty
+                      : MyAppState.currentUser!.inProgressOrderID == null || MyAppState.currentUser!.inProgressOrderID!.isEmpty
                           ? true
                           : false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: isDarkMode(context)
-                              ? Colors.black87
-                              : Colors.white),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: isDarkMode(context) ? Colors.black87 : Colors.white),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
                         child: Row(
                           children: [
                             Image.asset(
@@ -268,8 +248,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                             ),
                             Expanded(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -281,52 +260,34 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PlacePicker(
+                                                  builder: (context) => PlacePicker(
                                                     apiKey: GOOGLE_API_KEY,
                                                     onPlacePicked: (result) {
                                                       setState(() {
-                                                        departureController
-                                                                .text =
-                                                            result
-                                                                .formattedAddress
-                                                                .toString();
-                                                        setDepartureMarker(
-                                                            LatLng(
-                                                                result
-                                                                    .geometry!
-                                                                    .location
-                                                                    .lat,
-                                                                result
-                                                                    .geometry!
-                                                                    .location
-                                                                    .lng));
+                                                        departureController.text = result.formattedAddress.toString();
+                                                        setDepartureMarker(LatLng(result.geometry!.location.lat, result.geometry!.location.lng));
                                                       });
 
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                      Navigator.of(context).pop();
                                                     },
-                                                    initialPosition: LatLng(
-                                                        -33.8567844,
-                                                        151.213108),
+                                                    initialPosition: LatLng(-33.8567844, 151.213108),
                                                     useCurrentLocation: true,
-                                                    initialMapType:
-                                                        MapType.terrain,
+                                                    initialMapType: MapType.normal,
                                                     selectInitialPosition: true,
                                                     usePinPointingSearch: true,
                                                     usePlaceDetailSearch: true,
                                                     zoomGesturesEnabled: true,
                                                     zoomControlsEnabled: true,
-                                                    resizeToAvoidBottomInset:
-                                                        false, // only works in page mode, less flickery, remove if wrong offsets
+                                                    resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
                                                   ),
                                                 ),
                                               );
+
+
                                             },
                                             child: buildTextField(
                                               title: "Departure".tr(),
-                                              textController:
-                                                  departureController,
+                                              textController: departureController,
                                             ),
                                           ),
                                         ),
@@ -338,9 +299,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                           icon: Icon(
                                             Icons.my_location_outlined,
                                             size: 18,
-                                            color: isDarkMode(context)
-                                                ? Colors.white
-                                                : Colors.black,
+                                            color: isDarkMode(context) ? Colors.white : Colors.black,
                                           ),
                                         ),
                                       ],
@@ -355,29 +314,21 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                               apiKey: GOOGLE_API_KEY,
                                               onPlacePicked: (result) {
                                                 setState(() {
-                                                  destinationController.text =
-                                                      result.formattedAddress
-                                                          .toString();
-                                                  setDepartureMarker(LatLng(
-                                                      result.geometry!.location
-                                                          .lat,
-                                                      result.geometry!.location
-                                                          .lng));
+                                                  destinationController.text = result.formattedAddress.toString();
+                                                  setDepartureMarker(LatLng(result.geometry!.location.lat, result.geometry!.location.lng));
                                                 });
 
                                                 Navigator.of(context).pop();
                                               },
-                                              initialPosition: LatLng(
-                                                  -33.8567844, 151.213108),
+                                              initialPosition: LatLng(-33.8567844, 151.213108),
                                               useCurrentLocation: true,
                                               selectInitialPosition: true,
                                               usePinPointingSearch: true,
                                               usePlaceDetailSearch: true,
                                               zoomGesturesEnabled: true,
                                               zoomControlsEnabled: true,
-                                              initialMapType: MapType.terrain,
-                                              resizeToAvoidBottomInset:
-                                                  false, // only works in page mode, less flickery, remove if wrong offsets
+                                               initialMapType: MapType.normal,
+                                              resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
                                             ),
                                           ),
                                         );
@@ -402,138 +353,95 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child:
-                statusOfOrder == ORDER_STATUS_PLACED ||
-                        statusOfOrder == ORDER_STATUS_DRIVER_PENDING ||
-                        statusOfOrder == ORDER_STATUS_DRIVER_REJECTED
-                    ? waitingDialog()
-                    : statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED ||
-                            statusOfOrder == ORDER_STATUS_SHIPPED ||
-                            statusOfOrder == ORDER_STATUS_IN_TRANSIT
-                        ? driverDialog(_cabOrderModel)
-                        : statusOfOrder == ORDER_REACHED_DESTINATION
-                            ? completeRide()
-                            : statusOfOrder == "conformation"
-                                ? conformationButton()
-                                : statusOfOrder == "vehicleType"
-                                    ? vehicleSelection()
-                                    : statusOfOrder == "tripOption"
-                                        ? tripOptionSelection()
-                                        : destinationLatLong == null
-                                            ? Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: SizedBox(
-                                                  height: 120,
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                        color:
-                                                            isDarkMode(context)
-                                                                ? Colors.black87
-                                                                : Colors.white),
-                                                    child:
-                                                        isPopularDestinationLoading
-                                                            ? const Center(
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              )
-                                                            : Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .all(
-                                                                        8.0),
-                                                                child: ListView
-                                                                    .builder(
-                                                                  itemCount:
-                                                                      popularDestination
-                                                                          .length,
-                                                                  scrollDirection:
-                                                                      Axis.horizontal,
-                                                                  itemBuilder:
-                                                                      (context,
-                                                                          index) {
-                                                                    return InkWell(
-                                                                      onTap:
-                                                                          () async {
-                                                                        if (popularDestination[index].latitude !=
-                                                                                null ||
-                                                                            popularDestination[index].longitude !=
-                                                                                null) {
-                                                                          List<get_cord_address.Placemark>
-                                                                              placeMarks =
-                                                                              await get_cord_address.placemarkFromCoordinates(popularDestination[index].latitude ?? 0.0, popularDestination[index].longitude ?? 0.0);
+            child: statusOfOrder == ORDER_STATUS_PLACED || statusOfOrder == ORDER_STATUS_DRIVER_PENDING || statusOfOrder == ORDER_STATUS_DRIVER_REJECTED
+                ? waitingDialog()
+                : statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED || statusOfOrder == ORDER_STATUS_SHIPPED || statusOfOrder == ORDER_STATUS_IN_TRANSIT
+                    ? driverDialog(_cabOrderModel)
+                    : statusOfOrder == ORDER_REACHED_DESTINATION
+                        ? completeRide()
+                        : statusOfOrder == "conformation"
+                            ? conformationButton()
+                            : statusOfOrder == "vehicleType"
+                                ? vehicleSelection()
+                                : statusOfOrder == "tripOption"
+                                    ? tripOptionSelection()
+                                    : destinationLatLong == null
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: SizedBox(
+                                              height: 120,
+                                              child: Container(
+                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: isDarkMode(context) ? Colors.black87 : Colors.white),
+                                                child: isPopularDestinationLoading
+                                                    ? const Center(
+                                                        child: CircularProgressIndicator(),
+                                                      )
+                                                    : Padding(
+                                                        padding: const EdgeInsets.all(8.0),
+                                                        child: ListView.builder(
+                                                          itemCount: popularDestination.length,
+                                                          scrollDirection: Axis.horizontal,
+                                                          itemBuilder: (context, index) {
+                                                            return InkWell(
+                                                              onTap: () async {
+                                                                if (popularDestination[index].latitude != null || popularDestination[index].longitude != null) {
+                                                                  List<get_cord_address.Placemark> placeMarks = await get_cord_address.placemarkFromCoordinates(
+                                                                      popularDestination[index].latitude ?? 0.0, popularDestination[index].longitude ?? 0.0);
 
-                                                                          final address = (placeMarks.first.subLocality!.isEmpty ? '' : "${placeMarks.first.subLocality}, ") +
-                                                                              (placeMarks.first.street!.isEmpty ? '' : "${placeMarks.first.street}, ") +
-                                                                              (placeMarks.first.name!.isEmpty ? '' : "${placeMarks.first.name}, ") +
-                                                                              (placeMarks.first.subAdministrativeArea!.isEmpty ? '' : "${placeMarks.first.subAdministrativeArea}, ") +
-                                                                              (placeMarks.first.administrativeArea!.isEmpty ? '' : "${placeMarks.first.administrativeArea}, ") +
-                                                                              (placeMarks.first.country!.isEmpty ? '' : "${placeMarks.first.country}, ") +
-                                                                              (placeMarks.first.postalCode!.isEmpty ? '' : "${placeMarks.first.postalCode}, ");
-                                                                          destinationController.text =
-                                                                              address;
+                                                                  final address = (placeMarks.first.subLocality!.isEmpty ? '' : "${placeMarks.first.subLocality}, ") +
+                                                                      (placeMarks.first.street!.isEmpty ? '' : "${placeMarks.first.street}, ") +
+                                                                      (placeMarks.first.name!.isEmpty ? '' : "${placeMarks.first.name}, ") +
+                                                                      (placeMarks.first.subAdministrativeArea!.isEmpty ? '' : "${placeMarks.first.subAdministrativeArea}, ") +
+                                                                      (placeMarks.first.administrativeArea!.isEmpty ? '' : "${placeMarks.first.administrativeArea}, ") +
+                                                                      (placeMarks.first.country!.isEmpty ? '' : "${placeMarks.first.country}, ") +
+                                                                      (placeMarks.first.postalCode!.isEmpty ? '' : "${placeMarks.first.postalCode}, ");
+                                                                  destinationController.text = address;
 
-                                                                          setDestinationMarker(LatLng(
-                                                                              popularDestination[index].latitude ?? 0.0,
-                                                                              popularDestination[index].longitude ?? 0.0));
-                                                                        }
-                                                                      },
-                                                                      child:
-                                                                          Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.center,
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.center,
-                                                                        children: [
-                                                                          CachedNetworkImage(
-                                                                            imageUrl:
-                                                                                getImageVAlidUrl(popularDestination[index].image.toString()),
-                                                                            height:
-                                                                                80,
-                                                                            width:
-                                                                                80,
-                                                                            imageBuilder: (context, imageProvider) =>
-                                                                                Container(
-                                                                              decoration: BoxDecoration(
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                                                                              ),
-                                                                            ),
-                                                                            placeholder: (context, url) => Center(
-                                                                                child: CircularProgressIndicator.adaptive(
-                                                                              valueColor: AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),
-                                                                            )),
-                                                                            errorWidget: (context, url, error) => ClipRRect(
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                                child: Image.network(
-                                                                                  placeholderImage,
-                                                                                  fit: BoxFit.cover,
-                                                                                  cacheHeight: 80,
-                                                                                  cacheWidth: 80,
-                                                                                )),
-                                                                            fit:
-                                                                                BoxFit.cover,
-                                                                          ),
-                                                                          const SizedBox(
-                                                                            height:
-                                                                                5,
-                                                                          ),
-                                                                          Text(popularDestination[index]
-                                                                              .title
-                                                                              .toString()),
-                                                                        ],
+                                                                  setDestinationMarker(LatLng(popularDestination[index].latitude ?? 0.0, popularDestination[index].longitude ?? 0.0));
+                                                                }
+                                                              },
+                                                              child: Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                children: [
+                                                                  CachedNetworkImage(
+                                                                    imageUrl: getImageVAlidUrl(popularDestination[index].image.toString()),
+                                                                    height: 80,
+                                                                    width: 80,
+                                                                    imageBuilder: (context, imageProvider) => Container(
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius: BorderRadius.circular(10),
+                                                                        image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                                                                       ),
-                                                                    );
-                                                                  },
-                                                                ),
+                                                                    ),
+                                                                    placeholder: (context, url) => Center(
+                                                                        child: CircularProgressIndicator.adaptive(
+                                                                      valueColor: AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),
+                                                                    )),
+                                                                    errorWidget: (context, url, error) => ClipRRect(
+                                                                        borderRadius: BorderRadius.circular(10),
+                                                                        child: Image.network(
+                                                                          placeholderImage,
+                                                                          fit: BoxFit.cover,
+                                                                          cacheHeight: 80,
+                                                                          cacheWidth: 80,
+                                                                        )),
+                                                                    fit: BoxFit.cover,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 5,
+                                                                  ),
+                                                                  Text(popularDestination[index].title.toString()),
+                                                                ],
                                                               ),
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
           ),
         ],
       ),
@@ -551,18 +459,12 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
       child: MaterialButton(
         onPressed: () async {
-          await getDurationDistance(departureLatLong!, destinationLatLong!)
-              .then((durationValue) async {
+          await getDurationDistance(departureLatLong!, destinationLatLong!).then((durationValue) async {
             print("----->${durationValue.toString()}");
             if (durationValue != null) {
               setState(() {
-                distance = durationValue['rows']
-                        .first['elements']
-                        .first['distance']['value'] /
-                    1000.00;
-                duration = durationValue['rows']
-                    .first['elements']
-                    .first['duration']['text'];
+                distance = durationValue['rows'].first['elements'].first['distance']['value'] / 1000.00;
+                duration = durationValue['rows'].first['elements'].first['duration']['text'];
                 statusOfOrder = "vehicleType";
               });
             }
@@ -575,11 +477,10 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         color: Color(COLOR_PRIMARY),
-        child: Text(
+        child:  Text(
           "Continue".tr(),
           textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ).tr(),
       ),
     );
@@ -604,8 +505,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 "Select Your Vehicle Type".tr(),
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ),
             ListView.builder(
@@ -618,8 +518,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                     onTap: () {
                       setState(() {
                         selectedVehicleType = vehicleType[index];
-                        selectedVehicleTypeName =
-                            vehicleType[index].name.toString();
+                        selectedVehicleTypeName = vehicleType[index].name.toString();
                       });
                     },
                     child: Container(
@@ -627,18 +526,14 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                             color: isDarkMode(context)
-                                ? selectedVehicleTypeName ==
-                                        vehicleType[index].name.toString()
+                                ? selectedVehicleTypeName == vehicleType[index].name.toString()
                                     ? Colors.white
                                     : const Color(DarkContainerBorderColor)
-                                : selectedVehicleTypeName ==
-                                        vehicleType[index].name.toString()
+                                : selectedVehicleTypeName == vehicleType[index].name.toString()
                                     ? Colors.black
                                     : Colors.grey.shade100,
                             width: 1),
-                        color: isDarkMode(context)
-                            ? const Color(DarkContainerColor)
-                            : Colors.white,
+                        color: isDarkMode(context) ? const Color(DarkContainerColor) : Colors.white,
                         boxShadow: [
                           isDarkMode(context)
                               ? const BoxShadow()
@@ -649,15 +544,13 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                         ],
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         child: Row(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: CachedNetworkImage(
-                                imageUrl:
-                                    vehicleType[index].vehicleIcon.toString(),
+                                imageUrl: vehicleType[index].vehicleIcon.toString(),
                                 height: 60,
                                 width: 60,
                                 errorWidget: (context, url, error) => ClipRRect(
@@ -668,48 +561,34 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                       height: 60,
                                       width: 60,
                                     )),
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
+                                imageBuilder: (context, imageProvider) => Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover),
+                                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                                   ),
                                 ),
                                 placeholder: (context, url) => Center(
                                     child: CircularProgressIndicator.adaptive(
-                                  valueColor: AlwaysStoppedAnimation(
-                                      Color(COLOR_PRIMARY)),
+                                  valueColor: AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),
                                 )),
                                 fit: BoxFit.cover,
                               ),
                             ),
                             Expanded(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      vehicleType[index].name.toString() +
-                                          " | " +
-                                          distance.toStringAsFixed(
-                                              currencyData!.decimal) +
-                                          "km".tr(),
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1),
+                                      vehicleType[index].name.toString() + " | " + distance.toStringAsFixed(currencyData!.decimal) + "km".tr(),
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 2.0),
                                       child: Text(
                                         duration,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            letterSpacing: 1),
+                                        style: const TextStyle(fontWeight: FontWeight.w400, letterSpacing: 1),
                                       ),
                                     ),
                                   ],
@@ -717,13 +596,8 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                               ),
                             ),
                             Text(
-                              amountShow(
-                                  amount:
-                                      getAmount(vehicleType[index]).toString()),
-                              style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1),
+                              amountShow(amount: getAmount(vehicleType[index]).toString()),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
                             ),
                           ],
                         ),
@@ -754,24 +628,14 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Book".tr() +
-                        " ${selectedVehicleType == null ? "" : selectedVehicleType!.name}",
+                    "Book".tr() + " ${selectedVehicleType == null ? "" : selectedVehicleType!.name}",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    selectedVehicleType == null
-                        ? amountShow(amount: "0.0")
-                        : amountShow(
-                            amount: getAmount(selectedVehicleType!).toString()),
+                    selectedVehicleType == null ? amountShow(amount: "0.0") : amountShow(amount: getAmount(selectedVehicleType!).toString()),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -784,10 +648,8 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
 
   String selectedTripOption = "One-way";
 
-  final dateController = TextEditingController(
-      text: DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()));
-  final returnDateController = TextEditingController(
-      text: DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()));
+  final dateController = TextEditingController(text: DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()));
+  final returnDateController = TextEditingController(text: DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()));
 
   DateTime selectedDateTime = DateTime.now();
   DateTime selectedReturnDateTime = DateTime.now();
@@ -822,30 +684,24 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: selectedTripOption == "One-way"
-                            ? Border.all(color: Color(COLOR_PRIMARY))
-                            : null,
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            bottomLeft: Radius.circular(10)),
+                        border: selectedTripOption == "One-way" ? Border.all(color: Color(COLOR_PRIMARY)) : null,
+                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: const Offset(
-                                0, 3), // changes position of shadow
+                            offset: const Offset(0, 3), // changes position of shadow
                           ),
                         ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Column(
-                          children: [
+                          children:  [
                             Text(
                               "One-way".tr(),
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             SizedBox(
                               height: 5,
@@ -867,30 +723,24 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: selectedTripOption == "Round trip"
-                            ? Border.all(color: Color(COLOR_PRIMARY))
-                            : null,
-                        borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10)),
+                        border: selectedTripOption == "Round trip" ? Border.all(color: Color(COLOR_PRIMARY)) : null,
+                        borderRadius: const BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 7,
-                            offset: const Offset(
-                                0, 3), // changes position of shadow
+                            offset: const Offset(0, 3), // changes position of shadow
                           ),
                         ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Column(
-                          children: [
+                          children:  [
                             Text(
                               "Round trip".tr(),
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style:const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             SizedBox(
                               height: 5,
@@ -909,7 +759,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
             ),
             Row(
               children: [
-                Text("Leave on : ".tr()),
+                 Text("Leave on : ".tr()),
                 Expanded(
                   child: InkWell(
                     onTap: () async {
@@ -922,8 +772,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                       if (date != null) {
                         setState(() {
                           selectedDateTime = date;
-                          dateController.text =
-                              DateFormat('dd-MM-yyyy HH:mm').format(date);
+                          dateController.text = DateFormat('dd-MM-yyyy HH:mm').format(date);
                         });
                       }
                     },
@@ -936,15 +785,11 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                       cursorColor: Color(COLOR_PRIMARY),
                       enabled: false,
                       decoration: InputDecoration(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 16),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                         fillColor: Colors.white,
                         errorStyle: const TextStyle(color: Colors.red),
                         hintText: "Select Data".tr(),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(
-                                color: Color(COLOR_PRIMARY), width: 2.0)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Color(COLOR_PRIMARY), width: 2.0)),
                       ),
                     ),
                   ),
@@ -960,7 +805,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                   ),
                   Row(
                     children: [
-                      Text("Return By : ".tr()),
+                       Text("Return By : ".tr()),
                       Expanded(
                         child: InkWell(
                           onTap: () async {
@@ -973,8 +818,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                             if (date != null) {
                               setState(() {
                                 selectedReturnDateTime = date;
-                                returnDateController.text =
-                                    DateFormat('dd-MM-yyyy HH:mm').format(date);
+                                returnDateController.text = DateFormat('dd-MM-yyyy HH:mm').format(date);
                               });
                             }
                           },
@@ -987,15 +831,11 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                             cursorColor: Color(COLOR_PRIMARY),
                             enabled: false,
                             decoration: InputDecoration(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                               fillColor: Colors.white,
                               errorStyle: const TextStyle(color: Colors.red),
                               hintText: "Select Data".tr(),
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide(
-                                      color: Color(COLOR_PRIMARY), width: 2.0)),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide(color: Color(COLOR_PRIMARY), width: 2.0)),
                             ),
                           ),
                         ),
@@ -1013,29 +853,23 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                 if (MyAppState.currentUser == null) {
                   push(context, const AuthScreen());
                 } else {
-                  final result = await Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => InterCityPaymentSelectionScreen(
-                              distance: distance.toString(),
-                              duration: duration,
-                              departureLatLong: departureLatLong,
-                              destinationLatLong: destinationLatLong,
-                              vehicleId: selectedVehicleType!.id,
-                              vehicleType: selectedVehicleType,
-                              departureName: departureController.text,
-                              destinationName: destinationController.text,
-                              roundTrip: selectedTripOption == "Round trip"
-                                  ? true
-                                  : false,
-                              scheduleDateTime:
-                                  Timestamp.fromDate(selectedDateTime),
-                              scheduleReturnDateTime:
-                                  Timestamp.fromDate(selectedReturnDateTime),
-                              subTotal: getAmount(selectedVehicleType!)
-                                  .toStringAsFixed(currencyData!.decimal))));
+                  final result = await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => InterCityPaymentSelectionScreen(
+                          distance: distance.toString(),
+                          duration: duration,
+                          departureLatLong: departureLatLong,
+                          destinationLatLong: destinationLatLong,
+                          vehicleId: selectedVehicleType!.id,
+                          vehicleType: selectedVehicleType,
+                          departureName: departureController.text,
+                          destinationName: destinationController.text,
+                          roundTrip: selectedTripOption == "Round trip" ? true : false,
+                          scheduleDateTime: Timestamp.fromDate(selectedDateTime),
+                          scheduleReturnDateTime: Timestamp.fromDate(selectedReturnDateTime),
+                          subTotal: getAmount(selectedVehicleType!).toStringAsFixed(currencyData!.decimal))));
                   print("----->${result}");
                   if (result != null) {
-                    getCurrentOrder();
+                   // getCurrentOrder();
                   }
                 }
               },
@@ -1049,24 +883,14 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Book".tr() +
-                        " ${selectedVehicleType == null ? "" : selectedVehicleType!.name}",
+                    "Book".tr() + " ${selectedVehicleType == null ? "" : selectedVehicleType!.name}",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    selectedVehicleType == null
-                        ? amountShow(amount: "0.0")
-                        : amountShow(
-                            amount: getAmount(selectedVehicleType!).toString()),
+                    selectedVehicleType == null ? amountShow(amount: "0.0") : amountShow(amount: getAmount(selectedVehicleType!).toString()),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -1080,8 +904,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
   double getAmount(VehicleType vehicleType) {
     double totalAmount = 0.0;
     if (distance <= vehicleType.minimum_delivery_charges_within_km!) {
-      totalAmount =
-          double.parse(vehicleType.minimum_delivery_charges.toString());
+      totalAmount = double.parse(vehicleType.minimum_delivery_charges.toString());
     } else {
       totalAmount = vehicleType.delivery_charges_per_km! * distance;
     }
@@ -1091,14 +914,11 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
   getDriverDetails() async {
     if (_cabOrderModel != null) {
       print("------->${_cabOrderModel!.driverID.toString()}");
-      if (statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED) {
+      if(statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED){
         await FireStoreUtils.sendRideBookEmail(orderModel: _cabOrderModel);
       }
-      if (statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED ||
-          statusOfOrder == ORDER_STATUS_SHIPPED ||
-          statusOfOrder == ORDER_STATUS_IN_TRANSIT) {
-        driverStream =
-            FireStoreUtils().getDriver(_cabOrderModel!.driverID.toString());
+      if (statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED || statusOfOrder == ORDER_STATUS_SHIPPED || statusOfOrder == ORDER_STATUS_IN_TRANSIT) {
+        driverStream = FireStoreUtils().getDriver(_cabOrderModel!.driverID.toString());
         driverStream.listen((event) {
           setState(() {
             _driverModel = event;
@@ -1106,22 +926,14 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
           getDirections();
         });
 
-        await getDurationDistance(
-                LatLng(_cabOrderModel!.sourceLocation.latitude,
-                    _cabOrderModel!.sourceLocation.longitude),
-                LatLng(_cabOrderModel!.destinationLocation.latitude,
-                    _cabOrderModel!.destinationLocation.longitude))
+        await getDurationDistance(LatLng(_cabOrderModel!.sourceLocation.latitude, _cabOrderModel!.sourceLocation.longitude),
+                LatLng(_cabOrderModel!.destinationLocation.latitude, _cabOrderModel!.destinationLocation.longitude))
             .then((durationValue) async {
           print("----->${durationValue.toString()}");
           if (durationValue != null) {
             setState(() {
-              distance = durationValue['rows']
-                      .first['elements']
-                      .first['distance']['value'] /
-                  1000.00;
-              duration = durationValue['rows']
-                  .first['elements']
-                  .first['duration']['text'];
+              distance = durationValue['rows'].first['elements'].first['distance']['value'] / 1000.00;
+              duration = durationValue['rows'].first['elements'].first['duration']['text'];
             });
           }
         });
@@ -1169,15 +981,9 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
               ? const CircularProgressIndicator()
               : Container(
                   decoration: BoxDecoration(
-                      color: isDarkMode(context)
-                          ? const Color(DarkContainerColor)
-                          : Colors.white,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(26),
-                          topRight: Radius.circular(26))),
+                      color: isDarkMode(context) ? const Color(DarkContainerColor) : Colors.white, borderRadius: const BorderRadius.only(topLeft: Radius.circular(26), topRight: Radius.circular(26))),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0, vertical: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
                     child: Column(
                       children: [
                         const SizedBox(
@@ -1189,11 +995,8 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                      "${cabOrderModel!.driver!.carNumber} \n${cabOrderModel.driver!.carMakes} ${cabOrderModel.driver!.carName}",
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600)),
+                                  Text("${cabOrderModel!.driver!.carNumber} \n${cabOrderModel.driver!.carMakes} ${cabOrderModel.driver!.carName}",
+                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 15),
                                     child: Text(
@@ -1210,20 +1013,13 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                         color: Color(COLOR_PRIMARY),
                                       ),
                                       const SizedBox(width: 3),
-                                      Text(
-                                          _driverModel!.reviewsCount != 0
-                                              ? (_driverModel!.reviewsSum /
-                                                      _driverModel!
-                                                          .reviewsCount)
-                                                  .toStringAsFixed(1)
-                                              : 0.toString(),
+                                      Text(_driverModel!.reviewsCount != 0 ? (_driverModel!.reviewsSum / _driverModel!.reviewsCount).toStringAsFixed(1) : 0.toString(),
                                           style: const TextStyle(
                                             letterSpacing: 0.5,
                                             color: Color(0xff000000),
                                           )),
                                       const SizedBox(width: 3),
-                                      Text(
-                                          '(${cabOrderModel.driver!.reviewsCount.toStringAsFixed(1)})',
+                                      Text('(${cabOrderModel.driver!.reviewsCount.toStringAsFixed(1)})',
                                           style: const TextStyle(
                                             letterSpacing: 0.5,
                                             color: Color(0xff666666),
@@ -1239,26 +1035,21 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(10.0),
                                   child: CachedNetworkImage(
-                                    imageUrl:
-                                        cabOrderModel.driver!.profilePictureURL,
+                                    imageUrl: cabOrderModel.driver!.profilePictureURL,
                                     height: 80.0,
                                     width: 80.0,
                                     placeholder: (context, url) => Center(
-                                        child:
-                                            CircularProgressIndicator.adaptive(
-                                      valueColor: AlwaysStoppedAnimation(
-                                          Color(COLOR_PRIMARY)),
+                                        child: CircularProgressIndicator.adaptive(
+                                      valueColor: AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),
                                     )),
-                                    errorWidget: (context, url, error) =>
-                                        ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            child: Image.network(
-                                              height: 80.0,
-                                              width: 80.0,
-                                              placeholderImage,
-                                              fit: BoxFit.cover,
-                                            )),
+                                    errorWidget: (context, url, error) => ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          height: 80.0,
+                                          width: 80.0,
+                                          placeholderImage,
+                                          fit: BoxFit.cover,
+                                        )),
                                   ),
                                 ),
                                 const SizedBox(
@@ -1273,12 +1064,10 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                         strokeWidth: 2,
                                         dashPattern: const [5],
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                                           child: Text(
                                             cabOrderModel.otpCode.toString(),
-                                            style: const TextStyle(
-                                                color: Colors.black),
+                                            style: const TextStyle(color: Colors.black),
                                           ),
                                         ))
                               ],
@@ -1295,23 +1084,18 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                               Expanded(
                                 child: MaterialButton(
                                   onPressed: () async {
-                                    if (cabOrderModel
-                                        .driver!.phoneNumber.isNotEmpty) {
-                                      UrlLauncher.launch(
-                                          "tel://${cabOrderModel.driver!.phoneNumber}");
+                                    if (cabOrderModel.driver!.phoneNumber.isNotEmpty) {
+                                      UrlLauncher.launch("tel://${cabOrderModel.driver!.phoneNumber}");
                                     } else {
                                       SnackBar snack = SnackBar(
                                         content: Text(
-                                          "Driver Phone number is not available"
-                                              .tr(),
-                                          style: const TextStyle(
-                                              color: Colors.white),
+                                          "Driver Phone number is not available".tr(),
+                                          style: const TextStyle(color: Colors.white),
                                         ),
                                         duration: const Duration(seconds: 2),
                                         backgroundColor: Colors.black,
                                       );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snack);
+                                      ScaffoldMessenger.of(context).showSnackBar(snack);
                                     }
                                   },
                                   height: 42,
@@ -1323,18 +1107,14 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.wifi_calling_3,
-                                          color: Colors.white),
+                                      const Icon(Icons.wifi_calling_3, color: Colors.white),
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      Text(
+                                       Text(
                                         "Call".tr(),
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),
+                                        style:const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                                       ).tr(),
                                     ],
                                   ),
@@ -1346,34 +1126,23 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                               Expanded(
                                 child: MaterialButton(
                                   onPressed: () async {
-                                    await showProgress(
-                                        context, "Please wait".tr(), false);
+                                    await showProgress(context, "Please wait".tr(), false);
 
-                                    User? customer =
-                                        await FireStoreUtils.getCurrentUser(
-                                            cabOrderModel.authorID);
-                                    User? driver =
-                                        await FireStoreUtils.getCurrentUser(
-                                            cabOrderModel.driverID.toString());
+                                    User? customer = await FireStoreUtils.getCurrentUser(cabOrderModel.authorID);
+                                    User? driver = await FireStoreUtils.getCurrentUser(cabOrderModel.driverID.toString());
 
                                     hideProgress();
                                     push(
                                         context,
                                         ChatScreens(
                                           type: "cab_parcel_chat",
-                                          customerName: customer!.firstName +
-                                              " " +
-                                              customer.lastName,
-                                          restaurantName: driver!.firstName +
-                                              " " +
-                                              driver.lastName,
+                                          customerName: customer!.firstName + " " + customer.lastName,
+                                          restaurantName: driver!.firstName + " " + driver.lastName,
                                           orderId: cabOrderModel.id,
                                           restaurantId: driver.userID,
                                           customerId: customer.userID,
-                                          customerProfileImage:
-                                              customer.profilePictureURL,
-                                          restaurantProfileImage:
-                                              driver.profilePictureURL,
+                                          customerProfileImage: customer.profilePictureURL,
+                                          restaurantProfileImage: driver.profilePictureURL,
                                           token: driver.fcmToken,
                                           chatType: 'Driver',
                                         ));
@@ -1397,10 +1166,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                       Text(
                                         "Message".tr(),
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),
+                                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                                       ),
                                     ],
                                   ),
@@ -1411,28 +1177,17 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                         ),
                         MaterialButton(
                           onPressed: () async {
-                            await showProgress(
-                                context, "Please wait".tr(), false);
+                            await showProgress(context, "Please wait".tr(), false);
 
-                            LocationData location =
-                                await currentLocation.getLocation();
+                            LocationData location = await currentLocation.getLocation();
 
-                            await FireStoreUtils()
-                                .getSOS(_cabOrderModel!.id)
-                                .then((value) async {
+                            await FireStoreUtils().getSOS(_cabOrderModel!.id).then((value) async {
                               if (value == false) {
-                                await FireStoreUtils()
-                                    .setSos(
-                                        _cabOrderModel!.id,
-                                        UserLocation(
-                                            latitude: location.latitude!,
-                                            longitude: location.longitude!))
-                                    .then((value) {
+                                await FireStoreUtils().setSos(_cabOrderModel!.id, UserLocation(latitude: location.latitude!, longitude: location.longitude!)).then((value) {
                                   hideProgress();
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                     content: Builder(builder: (context) {
-                                      return Text(
+                                      return  Text(
                                         "Your SOS request has been submitted to admin ",
                                       ).tr();
                                     }),
@@ -1442,8 +1197,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                                 });
                               } else {
                                 hideProgress();
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content: Builder(builder: (context) {
                                     return const Text(
                                       "Your SOS request is already submitted",
@@ -1471,13 +1225,10 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                               const SizedBox(
                                 width: 10,
                               ),
-                              Text(
+                               Text(
                                 "SOS".tr(),
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600),
+                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                               ).tr(),
                             ],
                           ),
@@ -1501,8 +1252,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
         icon: departureIcon!,
       );
       departureLatLong = departure;
-      _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-          target: LatLng(departure.latitude, departure.longitude), zoom: 14)));
+      _controller!.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(departure.latitude, departure.longitude), zoom: 14)));
 
       // _controller?.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(departure.latitude, departure.longitude), zoom: 18)));
       if (departureLatLong != null && destinationLatLong != null) {
@@ -1534,15 +1284,13 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CachedNetworkImage(
-                imageUrl:
-                    getImageVAlidUrl(_cabOrderModel!.author.profilePictureURL),
+                imageUrl: getImageVAlidUrl(_cabOrderModel!.author.profilePictureURL),
                 height: 50,
                 width: 50,
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                        image: imageProvider, fit: BoxFit.cover),
+                    image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                   ),
                 ),
                 placeholder: (context, url) => Center(
@@ -1564,10 +1312,8 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
               ),
               Expanded(
                 child: Text(
-                  DateFormat('EEE, MMM dd, hh:mm aa')
-                      .format(_cabOrderModel!.scheduleDateTime!.toDate()),
-                  style: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600),
+                  DateFormat('EEE, MMM dd, hh:mm aa').format(_cabOrderModel!.scheduleDateTime!.toDate()),
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
                 ),
               ),
               InkWell(
@@ -1583,11 +1329,10 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                       false);
                 },
                 child: Row(
-                  children: [
+                  children:  [
                     Text(
                       'View Details'.tr(),
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
                     ),
                     SizedBox(
                       width: 10,
@@ -1623,11 +1368,10 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: MaterialButton(
               onPressed: () async {
-                final result =
-                    await Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CabPaymentScreen(
-                              cabOrderModel: _cabOrderModel,
-                            )));
+                final result = await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CabPaymentScreen(
+                          cabOrderModel: _cabOrderModel,
+                        )));
                 print("----------->${result.toString()}");
                 if (result != null) {
                   statusOfOrder = "";
@@ -1646,13 +1390,10 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               color: Color(COLOR_PRIMARY),
-              child: Text(
+              child:  Text(
                 "Complete Your Payment".tr(),
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -1680,14 +1421,12 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
     });
   }
 
-  Widget buildTextField(
-      {required title, required TextEditingController textController}) {
+  Widget buildTextField({required title, required TextEditingController textController}) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: TextField(
         controller: textController,
-        style:
-            TextStyle(color: isDarkMode(context) ? Colors.white : Colors.black),
+        style: TextStyle(color: isDarkMode(context) ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: title,
           border: InputBorder.none,
@@ -1702,16 +1441,17 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
     print(statusOfOrder);
     if (statusOfOrder == ORDER_STATUS_DRIVER_ACCEPTED) {
       List<LatLng> polylineCoordinates = [];
+      PolylineRequest polylineRequest = PolylineRequest(
+        origin: PointLatLng(_cabOrderModel!.sourceLocation.latitude, _cabOrderModel!.sourceLocation.longitude),
+        destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude, _cabOrderModel!.destinationLocation.longitude),
+        mode: TravelMode.driving, // Specify the travel mode
+      );
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(_cabOrderModel!.sourceLocation.latitude,
-              _cabOrderModel!.sourceLocation.longitude),
-          destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude,
-              _cabOrderModel!.destinationLocation.longitude),
-          mode: TravelMode.driving,
-        ),
+        request: polylineRequest,
+        googleApiKey: GOOGLE_API_KEY, // Provide your API key here
       );
+
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {
@@ -1722,29 +1462,30 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       _markers['Departure'] = Marker(
         markerId: const MarkerId('Departure'),
         infoWindow: const InfoWindow(title: "Departure"),
-        position: LatLng(_cabOrderModel!.sourceLocation.latitude,
-            _cabOrderModel!.sourceLocation.longitude),
+        position: LatLng(_cabOrderModel!.sourceLocation.latitude, _cabOrderModel!.sourceLocation.longitude),
         icon: departureIcon!,
       );
       _markers.remove("Destination");
       _markers['Destination'] = Marker(
         markerId: const MarkerId('Destination'),
         infoWindow: const InfoWindow(title: "Destination"),
-        position: LatLng(_cabOrderModel!.destinationLocation.latitude,
-            _cabOrderModel!.destinationLocation.longitude),
+        position: LatLng(_cabOrderModel!.destinationLocation.latitude, _cabOrderModel!.destinationLocation.longitude),
         icon: destinationIcon!,
       );
       addPolyLine(polylineCoordinates);
     } else if (statusOfOrder == ORDER_STATUS_SHIPPED) {
       List<LatLng> polylineCoordinates = [];
+      PolylineRequest polylineRequest = PolylineRequest(
+        origin: PointLatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
+        destination: PointLatLng(_cabOrderModel!.sourceLocation.latitude, _cabOrderModel!.sourceLocation.longitude),
+        mode: TravelMode.driving, // Specify the travel mode
+      );
 
       PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-          request: PolylineRequest(
-              origin: PointLatLng(_driverModel!.location.latitude,
-                  _driverModel!.location.longitude),
-              destination: PointLatLng(_cabOrderModel!.sourceLocation.latitude,
-                  _cabOrderModel!.sourceLocation.longitude),
-              mode: TravelMode.driving));
+        request: polylineRequest,
+        googleApiKey: GOOGLE_API_KEY, // Provide your API key here
+      );
+
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {
@@ -1756,8 +1497,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       _markers['Driver'] = Marker(
           markerId: const MarkerId('Driver'),
           infoWindow: const InfoWindow(title: "Driver"),
-          position: LatLng(_driverModel!.location.latitude,
-              _driverModel!.location.longitude),
+          position: LatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
           icon: taxiIcon!,
           rotation: double.parse(_driverModel!.rotation.toString()));
 
@@ -1765,8 +1505,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       _markers['Departure'] = Marker(
         markerId: const MarkerId('Departure'),
         infoWindow: const InfoWindow(title: "Departure"),
-        position: LatLng(_cabOrderModel!.sourceLocation.latitude,
-            _cabOrderModel!.sourceLocation.longitude),
+        position: LatLng(_cabOrderModel!.sourceLocation.latitude, _cabOrderModel!.sourceLocation.longitude),
         icon: departureIcon!,
       );
 
@@ -1774,25 +1513,25 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       _markers['Destination'] = Marker(
         markerId: const MarkerId('Destination'),
         infoWindow: const InfoWindow(title: "Destination"),
-        position: LatLng(_cabOrderModel!.destinationLocation.latitude,
-            _cabOrderModel!.destinationLocation.longitude),
+        position: LatLng(_cabOrderModel!.destinationLocation.latitude, _cabOrderModel!.destinationLocation.longitude),
         icon: destinationIcon!,
       );
 
       addPolyLine(polylineCoordinates);
-    } else if (statusOfOrder == ORDER_STATUS_IN_TRANSIT ||
-        statusOfOrder == ORDER_REACHED_DESTINATION) {
+    } else if (statusOfOrder == ORDER_STATUS_IN_TRANSIT || statusOfOrder == ORDER_REACHED_DESTINATION) {
       List<LatLng> polylineCoordinates = [];
 
-      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin: PointLatLng(_driverModel!.location.latitude,
-              _driverModel!.location.longitude),
-          destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude,
-              _cabOrderModel!.destinationLocation.longitude),
-          mode: TravelMode.driving,
-        ),
+      PolylineRequest polylineRequest = PolylineRequest(
+        origin: PointLatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
+        destination: PointLatLng(_cabOrderModel!.destinationLocation.latitude, _cabOrderModel!.destinationLocation.longitude),
+        mode: TravelMode.driving, // Specify the travel mode
       );
+
+      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        request: polylineRequest,
+        googleApiKey: GOOGLE_API_KEY, // Provide your API key here
+      );
+
 
       print("----?${result.points}");
       if (result.points.isNotEmpty) {
@@ -1805,8 +1544,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
         _markers['Driver'] = Marker(
             markerId: const MarkerId('Driver'),
             infoWindow: const InfoWindow(title: "Driver"),
-            position: LatLng(_driverModel!.location.latitude,
-                _driverModel!.location.longitude),
+            position: LatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
             icon: taxiIcon!,
             rotation: double.parse(_driverModel!.rotation.toString()));
       });
@@ -1815,32 +1553,29 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       _markers['Departure'] = Marker(
         markerId: const MarkerId('Departure'),
         infoWindow: const InfoWindow(title: "Departure"),
-        position: LatLng(_cabOrderModel!.sourceLocation.latitude,
-            _cabOrderModel!.sourceLocation.longitude),
+        position: LatLng(_cabOrderModel!.sourceLocation.latitude, _cabOrderModel!.sourceLocation.longitude),
         icon: departureIcon!,
       );
       _markers.remove("Destination");
       _markers['Destination'] = Marker(
         markerId: const MarkerId('Destination'),
         infoWindow: const InfoWindow(title: "Destination"),
-        position: LatLng(_cabOrderModel!.destinationLocation.latitude,
-            _cabOrderModel!.destinationLocation.longitude),
+        position: LatLng(_cabOrderModel!.destinationLocation.latitude, _cabOrderModel!.destinationLocation.longitude),
         icon: destinationIcon!,
       );
       addPolyLine(polylineCoordinates);
-    } else if (statusOfOrder == "conformation" ||
-        statusOfOrder == "vehicleType") {
+    } else if (statusOfOrder == "conformation" || statusOfOrder == "vehicleType") {
       List<LatLng> polylineCoordinates = [];
-      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      PolylineRequest polylineRequest = PolylineRequest(
+        origin: PointLatLng(departureLatLong!.latitude, departureLatLong!.longitude),
+        destination: PointLatLng(destinationLatLong!.latitude, destinationLatLong!.longitude),
+        mode: TravelMode.driving, // Specify the travel mode
+      );
 
-          // travelMode: TravelMode.driving,
-          request: PolylineRequest(
-        origin: PointLatLng(
-            departureLatLong!.latitude, departureLatLong!.longitude),
-        destination: PointLatLng(
-            destinationLatLong!.latitude, destinationLatLong!.longitude),
-        mode: TravelMode.driving,
-      ));
+      PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        request: polylineRequest,
+        googleApiKey: GOOGLE_API_KEY, // Provide your API key here
+      );
 
       if (result.points.isNotEmpty) {
         for (var point in result.points) {
@@ -1861,8 +1596,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
       geodesic: true,
     );
     polyLines[id] = polyline;
-    updateCameraLocation(
-        polylineCoordinates.first, polylineCoordinates.last, _controller);
+    updateCameraLocation(polylineCoordinates.first, polylineCoordinates.last, _controller);
     setState(() {});
   }
 
@@ -1875,17 +1609,12 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
 
     LatLngBounds bounds;
 
-    if (source.latitude > destination.latitude &&
-        source.longitude > destination.longitude) {
+    if (source.latitude > destination.latitude && source.longitude > destination.longitude) {
       bounds = LatLngBounds(southwest: destination, northeast: source);
     } else if (source.longitude > destination.longitude) {
-      bounds = LatLngBounds(
-          southwest: LatLng(source.latitude, destination.longitude),
-          northeast: LatLng(destination.latitude, source.longitude));
+      bounds = LatLngBounds(southwest: LatLng(source.latitude, destination.longitude), northeast: LatLng(destination.latitude, source.longitude));
     } else if (source.latitude > destination.latitude) {
-      bounds = LatLngBounds(
-          southwest: LatLng(destination.latitude, source.longitude),
-          northeast: LatLng(source.latitude, destination.longitude));
+      bounds = LatLngBounds(southwest: LatLng(destination.latitude, source.longitude), northeast: LatLng(source.latitude, destination.longitude));
     } else {
       bounds = LatLngBounds(southwest: source, northeast: destination);
     }
@@ -1895,8 +1624,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
     return checkCameraLocation(cameraUpdate, mapController);
   }
 
-  Future<void> checkCameraLocation(
-      CameraUpdate cameraUpdate, GoogleMapController mapController) async {
+  Future<void> checkCameraLocation(CameraUpdate cameraUpdate, GoogleMapController mapController) async {
     mapController.animateCamera(cameraUpdate);
     LatLngBounds l1 = await mapController.getVisibleRegion();
     LatLngBounds l2 = await mapController.getVisibleRegion();
@@ -1906,8 +1634,7 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
     }
   }
 
-  Future<dynamic> getDurationDistance(
-      LatLng departureLatLong, LatLng destinationLatLong) async {
+  Future<dynamic> getDurationDistance(LatLng departureLatLong, LatLng destinationLatLong) async {
     double originLat, originLong, destLat, destLong;
     originLat = departureLatLong.latitude;
     originLong = departureLatLong.longitude;
@@ -1915,15 +1642,13 @@ class _CabInterCityServiceScreenState extends State<CabInterCityServiceScreen> {
     destLong = destinationLatLong.longitude;
 
     String url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
-    http.Response restaurantToCustomerTime =
-        await http.get(Uri.parse('$url?units=metric&origins=$originLat,'
-            '$originLong&destinations=$destLat,$destLong&key=$GOOGLE_API_KEY'));
+    http.Response restaurantToCustomerTime = await http.get(Uri.parse('$url?units=metric&origins=$originLat,'
+        '$originLong&destinations=$destLat,$destLong&key=$GOOGLE_API_KEY'));
 
     var decodedResponse = jsonDecode(restaurantToCustomerTime.body);
 
     print(decodedResponse);
-    if (decodedResponse['status'] == 'OK' &&
-        decodedResponse['rows'].first['elements'].first['status'] == 'OK') {
+    if (decodedResponse['status'] == 'OK' && decodedResponse['rows'].first['elements'].first['status'] == 'OK') {
       return decodedResponse;
     }
     return null;

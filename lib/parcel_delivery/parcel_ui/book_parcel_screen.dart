@@ -250,9 +250,9 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                 "Change".tr(),
                               ),
                               style: ButtonStyle(
-                                  foregroundColor: MaterialStateProperty.all<Color>(Color(COLOR_PRIMARY)),
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  foregroundColor: WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY)),
+                                  backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                       RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(8)), side: BorderSide(color: Color(COLOR_PRIMARY))))),
                               onPressed: () async {
                                 Navigator.push(
@@ -452,9 +452,9 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                 "Change".tr(),
                               ),
                               style: ButtonStyle(
-                                  foregroundColor: MaterialStateProperty.all<Color>(Color(COLOR_PRIMARY)),
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  foregroundColor: WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY)),
+                                  backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
+                                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                       RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(8)), side: BorderSide(color: Color(COLOR_PRIMARY))))),
                               onPressed: () async {
                                 Navigator.push(

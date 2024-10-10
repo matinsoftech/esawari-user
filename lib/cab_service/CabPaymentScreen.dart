@@ -57,19 +57,23 @@ class CabPaymentScreen extends StatefulWidget {
   final CabOrderModel? cabOrderModel;
   final List<TaxModel>? taxModel;
 
-  const CabPaymentScreen({Key? key, required this.cabOrderModel, this.taxModel}) : super(key: key);
+  const CabPaymentScreen({Key? key, required this.cabOrderModel, this.taxModel})
+      : super(key: key);
 
   @override
   _CabPaymentScreenState createState() => _CabPaymentScreenState();
 }
 
 class _CabPaymentScreenState extends State<CabPaymentScreen> {
-  late Future<List<OfferModel>> coupon;
-  late Future<List<OfferModel>> publicoupon;
+  late Future<List<OfferModel>> coupon = Future.value([]);
+  late Future<List<OfferModel>> publicoupon = Future.value([]);
   TextEditingController txt = TextEditingController(text: '');
   final FireStoreUtils _fireStoreUtils = FireStoreUtils();
   var tipValue = 0.0;
-  bool isTipSelected = false, isTipSelected1 = false, isTipSelected2 = false, isTipSelected3 = false;
+  bool isTipSelected = false,
+      isTipSelected1 = false,
+      isTipSelected2 = false,
+      isTipSelected3 = false;
   final TextEditingController _textFieldController = TextEditingController();
 
   final Razorpay _razorPay = Razorpay();
@@ -78,7 +82,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
   void initState() {
     super.initState();
     print("----->${widget.cabOrderModel!.paymentMethod}");
-    setAllFalse(value: widget.cabOrderModel!.paymentMethod.toString() == "cod" ? "Cash".tr() : widget.cabOrderModel!.paymentMethod.toString());
+    setAllFalse(
+        value: widget.cabOrderModel!.paymentMethod.toString() == "cod"
+            ? "Cash".tr()
+            : widget.cabOrderModel!.paymentMethod.toString());
 
     if (widget.cabOrderModel!.paymentMethod == "stripe") {
       selectedRadioTile = "Stripe";
@@ -110,14 +117,15 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     if (widget.cabOrderModel!.paymentMethod == "mercadoPago") {
       selectedRadioTile = "Mercado Pago";
     }
-
+    //note by nirajan uncomment bellow line 121 and 122 for coupon
+    // publicoupon = _fireStoreUtils.getOfferByCabCoupons();
+    // coupon = _fireStoreUtils.getCabCoupons();
     getTexDetails();
     getPaymentSettingData();
     _razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWaller);
     _razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    publicoupon = _fireStoreUtils.getOfferByCabCoupons();
-    coupon = _fireStoreUtils.getCabCoupons();
+    // coupon = _fireStoreUtils.getCabCoupons();
     setState(() {});
   }
 
@@ -134,7 +142,11 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     subTotal = double.parse(widget.cabOrderModel!.subTotal.toString());
     //await coupon.then((value) {
     await publicoupon.then((value) {
-      couponList = value;
+      if (value.isEmpty) {
+        coupon;
+      } else {
+        couponList = value;
+      }
     });
     setState(() {});
   }
@@ -156,7 +168,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     double taxAmount = 0.0;
     if (taxList != null) {
       for (var element in taxList!) {
-        taxAmount = taxAmount + getTaxValue(amount: (subTotal - discountAmount).toString(), taxModel: element);
+        taxAmount = taxAmount +
+            getTaxValue(
+                amount: (subTotal - discountAmount).toString(),
+                taxModel: element);
       }
     }
     return subTotal - discountAmount + taxAmount + tipValue;
@@ -172,17 +187,58 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     //setPrefData();
   }
 
+  // placeOrderChanges() async {
+  //   CabOrderModel? orderModel = widget.cabOrderModel;
+  //   orderModel!.tipValue = tipValue.toString();
+  //   orderModel.paymentMethod = paymentType;
+  //   /* if (taxActive != null && taxActive == true) {
+  //     orderModel.taxType = taxType.toString();
+  //     orderModel.tax = taxAmount.toString();
+  //   }*/
+  //   orderModel.discount = discountAmount;
+  //   orderModel.adminCommission =
+  //       sectionConstantModel!.adminCommision!.commission.toString() ?? ;
+  //   orderModel.adminCommissionType = sectionConstantModel!.adminCommision!.type;
+  //   orderModel.paymentStatus = true;
+  //   orderModel.taxModel = taxList;
+
+  //   await FireStoreUtils().cabOrderPlace(orderModel, true);
+  //   Navigator.pop(context, true);
+  // }
   placeOrderChanges() async {
     CabOrderModel? orderModel = widget.cabOrderModel;
-    orderModel!.tipValue = tipValue.toString();
+
+    if (orderModel == null) {
+      // Handle the case where the orderModel is null
+      print("Order model is null");
+      return;
+    }
+
+    orderModel.tipValue = tipValue.toString();
     orderModel.paymentMethod = paymentType;
+
     /* if (taxActive != null && taxActive == true) {
-      orderModel.taxType = taxType.toString();
-      orderModel.tax = taxAmount.toString();
-    }*/
+    orderModel.taxType = taxType.toString();
+    orderModel.tax = taxAmount.toString();
+  }*/
+
     orderModel.discount = discountAmount;
-    orderModel.adminCommission = sectionConstantModel!.adminCommision!.commission.toString();
-    orderModel.adminCommissionType = sectionConstantModel!.adminCommision!.type;
+
+    // Safely accessing sectionConstantModel and its properties
+    if (sectionConstantModel != null &&
+        sectionConstantModel!.adminCommision != null) {
+      orderModel.adminCommission =
+          sectionConstantModel!.adminCommision!.commission?.toString() ?? '0';
+      orderModel.adminCommissionType =
+          sectionConstantModel!.adminCommision!.type ?? '';
+    } else {
+      // Handle the case where sectionConstantModel or adminCommision is null
+      print("Admin commission data is missing");
+      // Set default values if necessary
+      orderModel.adminCommission = '0';
+      orderModel.adminCommissionType = '';
+    }
+
     orderModel.paymentStatus = true;
     orderModel.taxModel = taxList;
 
@@ -197,10 +253,13 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
       appBar: AppBar(
         title: Text(
           'Payment'.tr(),
-          style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : Colors.black),
+          style: TextStyle(
+              color:
+                  isDarkMode(context) ? const Color(0xffFFFFFF) : Colors.black),
         ).tr(),
       ),
-      backgroundColor: isDarkMode(context) ? Colors.black : const Color(0xffFFFFFF),
+      backgroundColor:
+          isDarkMode(context) ? Colors.black : const Color(0xffFFFFFF),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -230,10 +289,13 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
             if (razorPay) {
               paymentType = 'razorpay';
               showLoadingAlert();
-              RazorPayController().createOrderRazorPay(amount: getTotalAmount().toInt()).then((value) {
+              RazorPayController()
+                  .createOrderRazorPay(amount: getTotalAmount().toInt())
+                  .then((value) {
                 if (value == null) {
                   Navigator.pop(context);
-                  showAlert(_globalKey.currentContext!, response: "contact-admin".tr(), colors: Colors.red);
+                  showAlert(_globalKey.currentContext!,
+                      response: "contact-admin".tr(), colors: Colors.red);
                 } else {
                   CreateRazorPayOrderModel result = value;
                   openCheckout(
@@ -253,12 +315,17 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
             } else if (payFast) {
               paymentType = 'payfast';
               showLoadingAlert();
-              PayStackURLGen.getPayHTML(payFastSettingData: payFastSettingData!, amount: getTotalAmount().toStringAsFixed(currencyData!.decimal)).then((value) async {
-                bool isDone = await Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PayFastScreen(
-                          htmlData: value,
-                          payFastSettingData: payFastSettingData!,
-                        )));
+              PayStackURLGen.getPayHTML(
+                      payFastSettingData: payFastSettingData!,
+                      amount: getTotalAmount()
+                          .toStringAsFixed(currencyData!.decimal))
+                  .then((value) async {
+                bool isDone =
+                    await Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PayFastScreen(
+                              htmlData: value,
+                              payFastSettingData: payFastSettingData!,
+                            )));
 
                 print(isDone);
                 if (isDone) {
@@ -314,15 +381,48 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                   payment_status: "success",
                   transactionUser: "customer",
                   note: 'Cab Booking Amount Payment');
+              print("Wallet value is");
+              print(wallet);
+              print("OrderIdddddd${widget.cabOrderModel!.id}");
+              // print("OrderIdddddd${widget.ordermo!.id}");
 
-              await FireStoreUtils.firestore.collection("wallet").doc(wallet.id).set(wallet.toJson()).then((value) {
-                FireStoreUtils.updateWalletAmount(amount: -getTotalAmount()).then((value) {
+              await FireStoreUtils.firestore
+                  .collection("wallet")
+                  .doc(wallet.id)
+                  .set(wallet.toJson())
+                  .then((value) {
+                FireStoreUtils.updateWalletAmount(amount: -getTotalAmount())
+                    .then((value) {
                   Navigator.pop(context, true);
-                }).whenComplete(() {
-                  placeOrderChanges();
-                  showAlert(_globalKey.currentContext!, response: "Payment Successful Via Wallet".tr(), colors: Colors.green);
+                }).whenComplete(
+                  () {
+                    placeOrderChanges();
+                    showAlert(
+                      _globalKey.currentContext!,
+                      response: "Payment Successful Via Wallet".tr(),
+                      colors: Colors.green,
+                    );
+                    Navigator.pop(context, true);
+                  },
+                );
+                FireStoreUtils.firestore
+                    .collection("rides")
+                    .doc(widget.cabOrderModel!.id)
+                    .update({"paymentStatus": true}).then((value) {
+                  print("payment status updated successfully");
                 });
+                print("payment wallet successfull");
               });
+
+              //
+              DocumentSnapshot documentSnapshot = await FireStoreUtils.firestore
+                  .collection("wallet")
+                  .doc(wallet.id)
+                  .get();
+
+              if (documentSnapshot.exists) {
+                print("wallet payment got...");
+              }
             } else if (codPay) {
               paymentType = 'cod';
               placeOrderChanges();
@@ -350,7 +450,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
           },
           child: Text(
             'PROCEED'.tr(),
-            style: TextStyle(color: isDarkMode(context) ? Colors.black : Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+            style: TextStyle(
+                color: isDarkMode(context) ? Colors.black : Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
           ),
         ),
       ),
@@ -363,7 +466,11 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
         margin: const EdgeInsets.only(left: 13, top: 10, right: 13, bottom: 13),
         decoration: BoxDecoration(
           color: isDarkMode(context) ? Colors.grey.shade700 : Colors.white,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -383,15 +490,23 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      if (couponList[index].discountTypeOffer == 'Percentage' || couponList[index].discountTypeOffer == 'Percent') {
-                        discountAmount = subTotal * double.parse(couponList[index].discountOffer!) / 100;
-                        discountType = couponList[index].discountTypeOffer.toString();
-                        discountLable = couponList[index].discountOffer.toString();
+                      if (couponList[index].discountTypeOffer == 'Percentage' ||
+                          couponList[index].discountTypeOffer == 'Percent') {
+                        discountAmount = subTotal *
+                            double.parse(couponList[index].discountOffer!) /
+                            100;
+                        discountType =
+                            couponList[index].discountTypeOffer.toString();
+                        discountLable =
+                            couponList[index].discountOffer.toString();
                         offerCode = couponList[index].offerCode.toString();
                       } else {
-                        discountAmount = double.parse(couponList[index].discountOffer!);
-                        discountType = couponList[index].discountTypeOffer.toString();
-                        discountLable = couponList[index].discountOffer.toString();
+                        discountAmount =
+                            double.parse(couponList[index].discountOffer!);
+                        discountType =
+                            couponList[index].discountTypeOffer.toString();
+                        discountLable =
+                            couponList[index].discountOffer.toString();
                         offerCode = couponList[index].offerCode.toString();
                       }
 
@@ -449,7 +564,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                   ? "${snapshot[index].discountOffer}${currencyData!.symbol.toString()} OFF"
                                   : "${currencyData!.symbol.toString()}${snapshot[index].discountOffer} OFF"
                               : "${snapshot[index].discountOffer} % Off",
-                          style: const TextStyle(color: Color(GREY_TEXT_COLOR), fontWeight: FontWeight.bold, letterSpacing: 0.7),
+                          style: const TextStyle(
+                              color: Color(GREY_TEXT_COLOR),
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.7),
                         ),
                       ),
                     ],
@@ -464,15 +582,26 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                       Text(
                         snapshot[index].offerCode!,
                         textAlign: TextAlign.left,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, letterSpacing: 0.5, color: Color(GREY_TEXT_COLOR)),
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            letterSpacing: 0.5,
+                            color: Color(GREY_TEXT_COLOR)),
                       ),
                       Container(
-                        margin: const EdgeInsets.only(left: 15, right: 15, top: 3),
+                        margin:
+                            const EdgeInsets.only(left: 15, right: 15, top: 3),
                         width: 1,
                         color: const Color(COUPON_DASH_COLOR),
                       ),
-                      Text("valid till ".tr() + getDate(snapshot[index].expireOfferDate!.toDate().toString())!,
-                          style: const TextStyle(letterSpacing: 0.5, color: Color(0Xff696A75)))
+                      Text(
+                          "valid till ".tr() +
+                              getDate(snapshot[index]
+                                  .expireOfferDate!
+                                  .toDate()
+                                  .toString())!,
+                          style: const TextStyle(
+                              letterSpacing: 0.5, color: Color(0Xff696A75)))
                     ],
                   ),
                 ],
@@ -494,10 +623,15 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
       children: [
         Container(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            margin: const EdgeInsets.only(left: 13, top: 13, right: 13, bottom: 13),
+            margin:
+                const EdgeInsets.only(left: 13, top: 13, right: 13, bottom: 13),
             decoration: BoxDecoration(
               color: isDarkMode(context) ? Colors.grey.shade700 : Colors.white,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -538,15 +672,21 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                         enableDrag: true,
                         builder: (BuildContext context) => sheet());
                   },
-                  child: const Image(image: AssetImage("assets/images/add.png"), width: 40),
+                  child: const Image(
+                      image: AssetImage("assets/images/add.png"), width: 40),
                 )
               ],
             )),
         Container(
-          margin: const EdgeInsets.only(left: 13, top: 10, right: 13, bottom: 13),
+          margin:
+              const EdgeInsets.only(left: 13, top: 10, right: 13, bottom: 13),
           decoration: BoxDecoration(
             color: isDarkMode(context) ? Colors.grey.shade700 : Colors.white,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10), bottomLeft: Radius.circular(10), bottomRight: Radius.circular(10)),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -560,7 +700,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -570,7 +711,11 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                       ),
                       Text(
                         amountShow(amount: subTotal.toString()),
-                        style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 16),
+                        style: TextStyle(
+                            color: isDarkMode(context)
+                                ? const Color(0xffFFFFFF)
+                                : const Color(0xff333333),
+                            fontSize: 16),
                       ),
                     ],
                   )),
@@ -578,7 +723,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                 thickness: 1,
               ),
               Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -587,7 +733,9 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                         style: const TextStyle(fontSize: 16),
                       ),
                       Text(
-                        "(-" + amountShow(amount: discountAmount.toString()) + ")",
+                        "(-" +
+                            amountShow(amount: discountAmount.toString()) +
+                            ")",
                         style: TextStyle(color: Colors.red, fontSize: 16),
                       ),
                     ],
@@ -595,10 +743,14 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
               Visibility(
                 visible: offerCode.isNotEmpty,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   child: Text(
                     "Coupon code :".tr() + "${offerCode}",
-                    style: TextStyle(fontWeight: FontWeight.w600, color: Color(COLOR_PRIMARY), fontSize: 16),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color(COLOR_PRIMARY),
+                        fontSize: 16),
                   ),
                 ),
               ),
@@ -614,7 +766,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                   return Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 5),
                         child: Row(
                           children: [
                             Expanded(
@@ -624,8 +777,17 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                               ),
                             ),
                             Text(
-                              amountShow(amount: getTaxValue(amount: (subTotal - discountAmount).toString(), taxModel: taxModel).toString()),
-                              style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 16),
+                              amountShow(
+                                  amount: getTaxValue(
+                                          amount: (subTotal - discountAmount)
+                                              .toString(),
+                                          taxModel: taxModel)
+                                      .toString()),
+                              style: TextStyle(
+                                  color: isDarkMode(context)
+                                      ? const Color(0xffFFFFFF)
+                                      : const Color(0xff333333),
+                                  fontSize: 16),
                             ),
                           ],
                         ),
@@ -669,17 +831,26 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                   child: Column(
                     children: [
                       Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 5),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 "Tip amount".tr(),
-                                style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 16),
+                                style: TextStyle(
+                                    color: isDarkMode(context)
+                                        ? const Color(0xffFFFFFF)
+                                        : const Color(0xff333333),
+                                    fontSize: 16),
                               ),
                               Text(
                                 amountShow(amount: tipValue.toString()),
-                                style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 16),
+                                style: TextStyle(
+                                    color: isDarkMode(context)
+                                        ? const Color(0xffFFFFFF)
+                                        : const Color(0xff333333),
+                                    fontSize: 16),
                               ),
                             ],
                           )),
@@ -690,17 +861,26 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                   )),
 
               Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         "Order Total".tr(),
-                        style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 16),
+                        style: TextStyle(
+                            color: isDarkMode(context)
+                                ? const Color(0xffFFFFFF)
+                                : const Color(0xff333333),
+                            fontSize: 16),
                       ),
                       Text(
                         amountShow(amount: getTotalAmount().toString()),
-                        style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 16),
+                        style: TextStyle(
+                            color: isDarkMode(context)
+                                ? const Color(0xffFFFFFF)
+                                : const Color(0xff333333),
+                            fontSize: 16),
                       ),
                     ],
                   )),
@@ -715,7 +895,12 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
               Text(
                 "Tip your delivery partner".tr(),
                 textAlign: TextAlign.start,
-                style: TextStyle(fontWeight: FontWeight.bold, color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 15),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode(context)
+                        ? const Color(0xffFFFFFF)
+                        : const Color(0xff333333),
+                    fontSize: 15),
               ),
               Text(
                 "100% of the tip will go to your delivery partner".tr(),
@@ -752,12 +937,17 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                 ? Colors.black
                                 : const Color(0xffFFFFFF),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xff9091A4), width: 1),
+                        border: Border.all(
+                            color: const Color(0xff9091A4), width: 1),
                       ),
                       child: Center(
                           child: Text(
                         amountShow(amount: "10"),
-                        style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 14),
+                        style: TextStyle(
+                            color: isDarkMode(context)
+                                ? const Color(0xffFFFFFF)
+                                : const Color(0xff333333),
+                            fontSize: 14),
                       )),
                     ),
                   ),
@@ -786,12 +976,17 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                 ? Colors.black
                                 : const Color(0xffFFFFFF),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xff9091A4), width: 1),
+                        border: Border.all(
+                            color: const Color(0xff9091A4), width: 1),
                       ),
                       child: Center(
                           child: Text(
                         amountShow(amount: "20"),
-                        style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 14),
+                        style: TextStyle(
+                            color: isDarkMode(context)
+                                ? const Color(0xffFFFFFF)
+                                : const Color(0xff333333),
+                            fontSize: 14),
                       )),
                     ),
                   ),
@@ -822,13 +1017,18 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                 ? Colors.black
                                 : const Color(0xffFFFFFF),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xff9091A4), width: 1),
+                        border: Border.all(
+                            color: const Color(0xff9091A4), width: 1),
                       ),
                       child: Center(
                           child: Text(
                         //symbol + "30",
                         amountShow(amount: "30"),
-                        style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 14),
+                        style: TextStyle(
+                            color: isDarkMode(context)
+                                ? const Color(0xffFFFFFF)
+                                : const Color(0xff333333),
+                            fontSize: 14),
                       )),
                     ),
                   ),
@@ -859,12 +1059,17 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                   ? Colors.black
                                   : const Color(0xffFFFFFF),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xff9091A4), width: 1),
+                          border: Border.all(
+                              color: const Color(0xff9091A4), width: 1),
                         ),
                         child: Center(
                             child: Text(
                           "Other".tr(),
-                          style: TextStyle(color: isDarkMode(context) ? const Color(0xffFFFFFF) : const Color(0xff333333), fontSize: 14),
+                          style: TextStyle(
+                              color: isDarkMode(context)
+                                  ? const Color(0xffFFFFFF)
+                                  : const Color(0xff333333),
+                              fontSize: 14),
                         )),
                       ),
                     ),
@@ -880,15 +1085,21 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
 
   sheet() {
     return Container(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 4.3, left: 25, right: 25),
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).size.height / 4.3,
+            left: 25,
+            right: 25),
         height: MediaQuery.of(context).size.height * 0.88,
-        decoration: BoxDecoration(color: Colors.transparent, border: Border.all(style: BorderStyle.none)),
+        decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(style: BorderStyle.none)),
         child: FutureBuilder<List<OfferModel>>(
             future: coupon,
             initialData: const [],
             builder: (context, snapshot) {
               snapshot = snapshot;
-              print(snapshot.data!.length.toString() + "[][]][][][][][][][][]][][====");
+              print(snapshot.data!.length.toString() +
+                  "[][]][][][][][][][][]][][====");
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: CircularProgressIndicator.adaptive(
@@ -903,7 +1114,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                     onTap: () => Navigator.pop(context),
                     child: Container(
                       height: 45,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 0.3), color: Colors.transparent, shape: BoxShape.circle),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 0.3),
+                          color: Colors.transparent,
+                          shape: BoxShape.circle),
 
                       // radius: 20,
                       child: const Center(
@@ -919,7 +1133,9 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                 ),
                 Expanded(
                     child: Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white),
                   alignment: Alignment.center,
                   child: SingleChildScrollView(
                     child: Column(
@@ -927,23 +1143,29 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                         Container(
                             padding: const EdgeInsets.only(top: 30),
                             child: const Image(
-                              image: AssetImage('assets/images/redeem_coupon.png'),
+                              image:
+                                  AssetImage('assets/images/redeem_coupon.png'),
                               width: 100,
                             )),
                         Container(
                             padding: const EdgeInsets.only(top: 20),
                             child: Text(
                               'Redeem Your Coupons'.tr(),
-                              style: const TextStyle(color: Color(0XFF2A2A2A), fontSize: 16),
+                              style: const TextStyle(
+                                  color: Color(0XFF2A2A2A), fontSize: 16),
                             )),
                         Container(
                             padding: const EdgeInsets.only(top: 10),
                             child: const Text(
                               "Voucher or Coupon code",
-                              style: TextStyle(color: Color(0XFF9091A4), letterSpacing: 0.5, height: 2),
+                              style: TextStyle(
+                                  color: Color(0XFF9091A4),
+                                  letterSpacing: 0.5,
+                                  height: 2),
                             ).tr()),
                         Container(
-                            padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
                             // height: 120,
                             child: DottedBorder(
                                 borderType: BorderType.RRect,
@@ -951,9 +1173,14 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                 dashPattern: const [4, 2],
                                 color: const Color(0XFFB7B7B7),
                                 child: ClipRRect(
-                                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(12)),
                                     child: Container(
-                                        padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
+                                        padding: const EdgeInsets.only(
+                                            left: 20,
+                                            right: 20,
+                                            top: 20,
+                                            bottom: 20),
                                         color: const Color(0XFFF1F4F7),
                                         // height: 120,
                                         alignment: Alignment.center,
@@ -965,8 +1192,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
                                             hintText: "Write Coupon Code".tr(),
-                                            hintStyle: const TextStyle(color: Color(0XFF9091A4)),
-                                            labelStyle: const TextStyle(color: Color(0XFF333333)),
+                                            hintStyle: const TextStyle(
+                                                color: Color(0XFF9091A4)),
+                                            labelStyle: const TextStyle(
+                                                color: Color(0XFF333333)),
                                             //  hintTextDirection: TextDecoration.lineThrough
                                             // contentPadding: EdgeInsets.only(left: 80,right: 30),
                                           ),
@@ -975,7 +1204,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                           padding: const EdgeInsets.only(top: 30, bottom: 30),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 100, vertical: 15),
                               backgroundColor: Color(COLOR_PRIMARY),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -983,16 +1213,28 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                             ),
                             onPressed: () {
                               setState(() {
-                                for (int a = 0; a < snapshot.data!.length; a++) {
+                                for (int a = 0;
+                                    a < snapshot.data!.length;
+                                    a++) {
                                   OfferModel couponModel = snapshot.data![a];
-                                  if (txt.text.toString() == couponModel.offerCode!.toString()) {
-                                    if (couponModel.discountTypeOffer == 'Percentage' || couponModel.discountTypeOffer == 'Percent') {
-                                      discountAmount = subTotal * double.parse(couponModel.discountOffer!) / 100;
-                                      offerCode = couponModel.offerCode.toString();
+                                  if (txt.text.toString() ==
+                                      couponModel.offerCode!.toString()) {
+                                    if (couponModel.discountTypeOffer ==
+                                            'Percentage' ||
+                                        couponModel.discountTypeOffer ==
+                                            'Percent') {
+                                      discountAmount = subTotal *
+                                          double.parse(
+                                              couponModel.discountOffer!) /
+                                          100;
+                                      offerCode =
+                                          couponModel.offerCode.toString();
                                       break;
                                     } else {
-                                      discountAmount = double.parse(couponModel.discountOffer!);
-                                      offerCode = couponModel.offerCode.toString();
+                                      discountAmount = double.parse(
+                                          couponModel.discountOffer!);
+                                      offerCode =
+                                          couponModel.offerCode.toString();
                                     }
                                   }
                                 }
@@ -1002,7 +1244,11 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                             },
                             child: Text(
                               "REDEEM NOW".tr(),
-                              style: TextStyle(color: isDarkMode(context) ? Colors.black : Colors.white, fontSize: 16),
+                              style: TextStyle(
+                                  color: isDarkMode(context)
+                                      ? Colors.black
+                                      : Colors.white,
+                                  fontSize: 16),
                             ),
                           ),
                         ),
@@ -1031,14 +1277,20 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
             ),
             actions: <Widget>[
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Color(COLOR_PRIMARY), textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(COLOR_PRIMARY),
+                    textStyle: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.normal)),
                 child: const Text('cancel').tr(),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Color(COLOR_PRIMARY), textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(COLOR_PRIMARY),
+                    textStyle: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.normal)),
                 child: const Text('Submit').tr(),
                 onPressed: () {
                   setState(() {
@@ -1076,7 +1328,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
 
   RazorPayModel? razorPayData = UserPreference.getRazorPayData();
 
-  showAlert(BuildContext context123, {required String response, required Color colors}) {
+  showAlert(BuildContext context123,
+      {required String response, required Color colors}) {
     return ScaffoldMessenger.of(context123).showSnackBar(SnackBar(
       content: Text(response),
       backgroundColor: colors,
@@ -1084,12 +1337,15 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
   }
 
   getPaymentSettingData() async {
-    userQuery = fireStore.collection(USERS).doc(MyAppState.currentUser!.userID).snapshots();
+    userQuery = fireStore
+        .collection(USERS)
+        .doc(MyAppState.currentUser!.userID)
+        .snapshots();
     await UserPreference.getStripeData().then((value) async {
       stripeData = value;
       stripe1.Stripe.publishableKey = stripeData!.clientpublishableKey;
       stripe1.Stripe.merchantIdentifier = PAYID;
-      await stripe1.Stripe.instance.applySettings();
+      // await stripe1.Stripe.instance.applySettings();
     });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
@@ -1106,7 +1362,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
 
   void initPayPal() async {
     //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
+    FlutterPaypalNative.isDebugMode =
+        paypalSettingData!.isLive == false ? true : false;
     //initiate payPal plugin
     await _flutterPaypalNativePlugin.init(
       //your app id !!! No Underscore!!! see readme.md for help
@@ -1114,7 +1371,9 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
       //client id from developer dashboard
       clientID: paypalSettingData!.paypalClient,
       //sandbox, staging, live etc
-      payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
+      payPalEnvironment: paypalSettingData!.isLive == true
+          ? FPayPalEnvironment.live
+          : FPayPalEnvironment.sandbox,
       //what currency do you plan to use? default is US dollars
       currencyCode: FPayPalCurrencyCode.usd,
       //action paynow?
@@ -1143,7 +1402,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
         },
         onShippingChange: (data) {
           Navigator.pop(context);
-          ShowToastDialog.showToast("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
+          ShowToastDialog.showToast(
+              "shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
         },
       ),
     );
@@ -1159,30 +1419,41 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
               const Divider(),
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                   stream: userQuery,
-                  builder: (context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> asyncSnapshot) {
+                  builder: (context,
+                      AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
+                          asyncSnapshot) {
                     if (asyncSnapshot.hasError) {
                       return const Text(
                         "error",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
                       ).tr();
                     }
-                    if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+                    if (asyncSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return const Center(
-                          child: SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 0.8,
-                                color: Colors.white,
-                                backgroundColor: Colors.transparent,
-                              )));
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 0.8,
+                            color: Colors.white,
+                            backgroundColor: Colors.transparent,
+                          ),
+                        ),
+                      );
                     }
                     if (asyncSnapshot.data == null) {
                       return Container();
                     }
                     User userData = User.fromJson(asyncSnapshot.data!.data()!);
 
-                    walletBalanceError = userData.wallet_amount < getTotalAmount() ? true : false;
+                    walletBalanceError =
+                        userData.wallet_amount < getTotalAmount()
+                            ? true
+                            : false;
                     return Column(
                       children: [
                         // CheckboxListTile(
@@ -1234,9 +1505,12 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                             image: "assets/images/wallet_icon.png",
                             value: "Wallet".tr(),
                             childWidget: Text(
-                              amountShow(amount: userData.wallet_amount.toString()),
+                              amountShow(
+                                  amount: userData.wallet_amount.toString()),
                               style: TextStyle(
-                                color: walletBalanceError ? Colors.red : Colors.green,
+                                color: walletBalanceError
+                                    ? Colors.red
+                                    : Colors.green,
                                 fontWeight: FontWeight.w600,
                               ),
                             )),
@@ -1250,12 +1524,16 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                                   padding: const EdgeInsets.only(right: 0.0),
                                   child: walletBalanceError
                                       ? Text(
-                                          "Your wallet doesn't have sufficient balance".tr(),
-                                          style: const TextStyle(fontSize: 14, color: Colors.red),
+                                          "Your wallet doesn't have sufficient balance"
+                                              .tr(),
+                                          style: const TextStyle(
+                                              fontSize: 14, color: Colors.red),
                                         )
                                       : Text(
                                           'Sufficient Balance'.tr(),
-                                          style: const TextStyle(fontSize: 14, color: Colors.green),
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.green),
                                         ),
                                 ),
                               ),
@@ -1275,55 +1553,66 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
           image: "assets/images/cash.png",
           value: "Cash".tr(),
         ),
-        buildPaymentTile(
-          isVisible: (stripeData == null) ? false : stripeData!.isEnabled,
-          selectedPayment: stripe,
-          value: "Stripe".tr(),
-        ),
+        // buildPaymentTile(
+        //   isVisible: (stripeData == null) ? false : stripeData!.isEnabled,
+        //   selectedPayment: stripe,
+        //   value: "Stripe".tr(),
+        // ),
         buildPaymentTile(
           isVisible: razorPayData!.isEnabled,
           selectedPayment: razorPay,
           image: "assets/images/razorpay_@3x.png",
           value: "RazorPay".tr(),
         ),
-        buildPaymentTile(
-          isVisible: (paytmSettingData == null) ? false : paytmSettingData!.isEnabled,
-          selectedPayment: payTm,
-          image: "assets/images/paytm_@3x.png",
-          value: "PayTm".tr(),
-        ),
-        buildPaymentTile(
-          isVisible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
-          selectedPayment: paypal,
-          image: "assets/images/paypal_@3x.png",
-          value: "PayPal".tr(),
-        ),
+        // buildPaymentTile(
+        //   isVisible:
+        //       (paytmSettingData == null) ? false : paytmSettingData!.isEnabled,
+        //   selectedPayment: payTm,
+        //   image: "assets/images/paytm_@3x.png",
+        //   value: "PayTm".tr(),
+        // ),
+        // buildPaymentTile(
+        //   isVisible: (paypalSettingData == null)
+        //       ? false
+        //       : paypalSettingData!.isEnabled,
+        //   selectedPayment: paypal,
+        //   image: "assets/images/paypal_@3x.png",
+        //   value: "PayPal".tr(),
+        // ),
 
-        buildPaymentTile(
-          isVisible: (payFastSettingData == null) ? false : payFastSettingData!.isEnable,
-          selectedPayment: payFast,
-          image: "assets/images/payfast.png",
-          value: "PayFast".tr(),
-        ),
-        buildPaymentTile(
-          isVisible: (payStackSettingData == null) ? false : payStackSettingData!.isEnabled,
-          selectedPayment: payStack,
-          image: "assets/images/paystack.png",
-          value: "PayStack".tr(),
-        ),
-        buildPaymentTile(
-          isVisible: (flutterWaveSettingData == null) ? false : flutterWaveSettingData!.isEnable,
-          selectedPayment: paypal,
-          image: "assets/images/flutterwave.png",
-          value: "FlutterWave".tr(),
-        ),
+        // buildPaymentTile(
+        //   isVisible: (payFastSettingData == null)
+        //       ? false
+        //       : payFastSettingData!.isEnable,
+        //   selectedPayment: payFast,
+        //   image: "assets/images/payfast.png",
+        //   value: "PayFast".tr(),
+        // ),
+        // buildPaymentTile(
+        //   isVisible: (payStackSettingData == null)
+        //       ? false
+        //       : payStackSettingData!.isEnabled,
+        //   selectedPayment: payStack,
+        //   image: "assets/images/paystack.png",
+        //   value: "PayStack".tr(),
+        // ),
+        // buildPaymentTile(
+        //   isVisible: (flutterWaveSettingData == null)
+        //       ? false
+        //       : flutterWaveSettingData!.isEnable,
+        //   selectedPayment: paypal,
+        //   image: "assets/images/flutterwave.png",
+        //   value: "FlutterWave".tr(),
+        // ),
 
-        buildPaymentTile(
-          isVisible: (mercadoPagoSettingData == null) ? false : mercadoPagoSettingData!.isEnabled,
-          selectedPayment: mercadoPago,
-          image: "assets/images/mercadopago.png",
-          value: "Mercado Pago".tr(),
-        ),
+        // buildPaymentTile(
+        //   isVisible: (mercadoPagoSettingData == null)
+        //       ? false
+        //       : mercadoPagoSettingData!.isEnabled,
+        //   selectedPayment: mercadoPago,
+        //   image: "assets/images/mercadopago.png",
+        //   value: "Mercado Pago".tr(),
+        // ),
 
         // Visibility(
         //   visible: true,
@@ -1741,7 +2030,9 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          color: isDarkMode(context) ? const Color(DarkContainerColor) : Colors.white,
+          color: isDarkMode(context)
+              ? const Color(DarkContainerColor)
+              : Colors.white,
           elevation: selectedRadioTile == value ? 0.5 : 1.2,
           child: RadioListTile(
             controlAffinity: ListTileControlAffinity.trailing,
@@ -1774,12 +2065,14 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 10),
                           child: SizedBox(
                             width: 80,
                             height: 35,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 6.0),
                               child: Image.asset(image),
                             ),
                           ),
@@ -1789,7 +2082,9 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
                     ),
                     Text(value,
                         style: TextStyle(
-                          color: isDarkMode(context) ? const Color(0xffFFFFFF) : Colors.black,
+                          color: isDarkMode(context)
+                              ? const Color(0xffFFFFFF)
+                              : Colors.black,
                         )),
                   ],
                 ),
@@ -1859,7 +2154,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
   void _handlePaymentError(PaymentFailureResponse response) {
     Navigator.pop(_globalKey.currentContext!);
     print(response.code);
-    RazorPayFailedModel lom = RazorPayFailedModel.fromJson(jsonDecode(response.message!.toString()));
+    RazorPayFailedModel lom =
+        RazorPayFailedModel.fromJson(jsonDecode(response.message!.toString()));
     ScaffoldMessenger.of(_globalKey.currentContext!).showSnackBar(SnackBar(
       content: Text(
         "Payment Failed!!\n".tr() + lom.error.description,
@@ -1878,7 +2174,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
       paymentIntentData = await createStripeIntent(amount);
       if (paymentIntentData!.containsKey("error")) {
         Navigator.pop(_globalKey.currentContext!);
-        showAlert(_globalKey.currentContext!, response: "contact-admin".tr(), colors: Colors.red);
+        showAlert(_globalKey.currentContext!,
+            response: "contact-admin".tr(), colors: Colors.red);
       } else {
         await stripe1.Stripe.instance
             .initPaymentSheet(
@@ -1928,13 +2225,17 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
         Navigator.pop(_globalKey.currentContext!);
         var lo1 = jsonEncode(error);
         var lo2 = jsonDecode(lo1);
-        showDialog(context: context, builder: (_) => AlertDialog(content: Text("Payment Failed")));
+        showDialog(
+            context: context,
+            builder: (_) => AlertDialog(content: Text("Payment Failed")));
       });
     } on stripe1.StripeException catch (e) {
       Navigator.pop(_globalKey.currentContext!);
       var lo1 = jsonEncode(e);
       var lo2 = jsonDecode(lo1);
-      showDialog(context: context, builder: (_) => AlertDialog(content: Text("Payment Failed")));
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(content: Text("Payment Failed")));
     } catch (e) {
       print('$e');
       Navigator.pop(_globalKey.currentContext!);
@@ -1953,8 +2254,13 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
         'currency': currencyData!.code,
       };
       print(body);
-      var response = await http.post(Uri.parse('https://api.stripe.com/v1/payment_intents'),
-          body: body, headers: {'Authorization': 'Bearer ${stripeData?.stripeSecret}', 'Content-Type': 'application/x-www-form-urlencoded'});
+      var response = await http.post(
+          Uri.parse('https://api.stripe.com/v1/payment_intents'),
+          body: body,
+          headers: {
+            'Authorization': 'Bearer ${stripeData?.stripeSecret}',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          });
       print('Create Intent response ===> ${response.body.toString()}');
       return jsonDecode(response.body);
     } catch (err) {
@@ -2103,17 +2409,25 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
 
     final data = jsonDecode(response.body);
     print(data);
-    await verifyCheckSum(checkSum: data["code"], amount: amount, orderId: orderId).then((value) {
+    await verifyCheckSum(
+            checkSum: data["code"], amount: amount, orderId: orderId)
+        .then((value) {
       initiatePayment(amount: amount, orderId: orderId).then((value) {
         GetPaymentTxtTokenModel result = value;
         String callback = "";
         if (paytmSettingData!.isSandboxEnabled) {
-          callback = callback + "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+          callback = callback +
+              "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
         } else {
-          callback = callback + "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+          callback = callback +
+              "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
         }
 
-        _startTransaction(context, txnTokenBy: result.body.txnToken, orderId: orderId, amount: amount, callBackURL: callback);
+        _startTransaction(context,
+            txnTokenBy: result.body.txnToken,
+            orderId: orderId,
+            amount: amount,
+            callBackURL: callback);
       });
     });
   }
@@ -2143,7 +2457,9 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
           print(amount);
           Navigator.pop(_globalKey.currentContext!, true);
           placeOrderChanges();
-          showAlert(context, response: "Payment Successful!!\n".tr() + "${value['RESPMSG']}", colors: Colors.green);
+          showAlert(context,
+              response: "Payment Successful!!\n".tr() + "${value['RESPMSG']}",
+              colors: Colors.green);
         }
       }).catchError((onError) {
         if (onError is PlatformException) {
@@ -2151,25 +2467,30 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
           Navigator.pop(_globalKey.currentContext!);
 
           print("Error124 : $onError");
-          result = onError.message.toString() + " \n  " + onError.code.toString();
-          showAlert(_globalKey.currentContext!, response: onError.message.toString(), colors: Colors.red);
+          result =
+              onError.message.toString() + " \n  " + onError.code.toString();
+          showAlert(_globalKey.currentContext!,
+              response: onError.message.toString(), colors: Colors.red);
         } else {
           print("======>>2");
 
           result = onError.toString();
           Navigator.pop(_globalKey.currentContext!);
-          showAlert(_globalKey.currentContext!, response: result, colors: Colors.red);
+          showAlert(_globalKey.currentContext!,
+              response: result, colors: Colors.red);
         }
       });
     } catch (err) {
       print("======>>3");
       result = err.toString();
       Navigator.pop(_globalKey.currentContext!);
-      showAlert(_globalKey.currentContext!, response: result, colors: Colors.red);
+      showAlert(_globalKey.currentContext!,
+          response: result, colors: Colors.red);
     }
   }
 
-  Future<GetPaymentTxtTokenModel> initiatePayment({required double amount, required orderId}) async {
+  Future<GetPaymentTxtTokenModel> initiatePayment(
+      {required double amount, required orderId}) async {
     String initiateURL = "${GlobalURL}payments/initiatepaytmpayment";
 
     print("uday");
@@ -2177,11 +2498,14 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     print(amount.toStringAsFixed(currencyData!.decimal).toString());
     String callback = "";
     if (paytmSettingData!.isSandboxEnabled) {
-      callback = callback + "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+      callback = callback +
+          "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
     } else {
-      callback = callback + "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+      callback = callback +
+          "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
     }
-    final response = await http.post(Uri.parse(initiateURL), headers: {}, body: {
+    final response =
+        await http.post(Uri.parse(initiateURL), headers: {}, body: {
       "mid": paytmSettingData?.PaytmMID,
       "order_id": orderId,
       "key_secret": paytmSettingData?.PAYTM_MERCHANT_KEY.toString(),
@@ -2193,15 +2517,20 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     });
     // print(response.body);
     final data = jsonDecode(response.body);
-    if (data["body"]["txnToken"] == null || data["body"]["txnToken"].toString().isEmpty) {
+    if (data["body"]["txnToken"] == null ||
+        data["body"]["txnToken"].toString().isEmpty) {
       Navigator.pop(_globalKey.currentContext!);
-      showAlert(_globalKey.currentContext!, response: "contact-admin".tr(), colors: Colors.red);
+      showAlert(_globalKey.currentContext!,
+          response: "contact-admin".tr(), colors: Colors.red);
     }
     print(data);
     return GetPaymentTxtTokenModel.fromJson(data);
   }
 
-  Future verifyCheckSum({required String checkSum, required double amount, required orderId}) async {
+  Future verifyCheckSum(
+      {required String checkSum,
+      required double amount,
+      required orderId}) async {
     String getChecksum = "${GlobalURL}payments/validatechecksum";
     final response = await http.post(
         Uri.parse(
@@ -2242,7 +2571,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     final flutterwave = Flutterwave(
       amount: getTotalAmount().toStringAsFixed(currencyData!.decimal).trim(),
       currency: currencyData!.code,
-      customer: Customer(name: MyAppState.currentUser!.firstName, phoneNumber: MyAppState.currentUser!.phoneNumber.trim(), email: MyAppState.currentUser!.email.trim()),
+      customer: Customer(
+          name: MyAppState.currentUser!.firstName,
+          phoneNumber: MyAppState.currentUser!.phoneNumber.trim(),
+          email: MyAppState.currentUser!.email.trim()),
       context: context,
       publicKey: flutterWaveSettingData!.publicKey.trim(),
       paymentOptions: "card, payattitude",
@@ -2264,7 +2596,8 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     print("${response.toJson()}");
   }
 
-  Future<void> showLoading({required String message, Color txtColor = Colors.black}) {
+  Future<void> showLoading(
+      {required String message, Color txtColor = Colors.black}) {
     return showDialog(
       context: context,
       barrierDismissible: false,
@@ -2290,10 +2623,18 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     final mp = MP.fromAccessToken(mercadoPagoSettingData!.accessToken);
     var pref = {
       "items": [
-        {"title": "Wallet TopUp", "quantity": 1, "unit_price": double.parse(getTotalAmount().toString().trim())}
+        {
+          "title": "Wallet TopUp",
+          "quantity": 1,
+          "unit_price": double.parse(getTotalAmount().toString().trim())
+        }
       ],
       "auto_return": "all",
-      "back_urls": {"failure": "${GlobalURL}payment/failure", "pending": "${GlobalURL}payment/pending", "success": "${GlobalURL}payment/success"},
+      "back_urls": {
+        "failure": "${GlobalURL}payment/failure",
+        "pending": "${GlobalURL}payment/pending",
+        "success": "${GlobalURL}payment/success"
+      },
     };
 
     var result = await mp.createPreference(pref);
@@ -2308,20 +2649,26 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
         print(result);
         print(result['response']['init_point']);
 
-        final bool isDone = await Navigator.push(context, MaterialPageRoute(builder: (context) => MercadoPagoScreen(initialURl: result['response']['init_point'])));
+        final bool isDone = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MercadoPagoScreen(
+                    initialURl: result['response']['init_point'])));
         print(isDone);
         print(result.toString());
         print(preferenceId);
 
         if (isDone) {
           placeOrderChanges();
-          ScaffoldMessenger.of(_globalKey.currentContext!).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(_globalKey.currentContext!)
+              .showSnackBar(SnackBar(
             content: Text("Payment Successful!!\n".tr()),
             backgroundColor: Colors.green,
           ));
         } else {
           Navigator.pop(_globalKey.currentContext!);
-          ScaffoldMessenger.of(_globalKey.currentContext!).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(_globalKey.currentContext!)
+              .showSnackBar(SnackBar(
             content: Text("Payment UnSuccessful!!\n".tr()),
             backgroundColor: Colors.red,
           ));
@@ -2340,7 +2687,10 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
 
   ///PayStack Payment Method
   payStackPayment(BuildContext context) async {
-    var amount = (double.parse(getTotalAmount().toStringAsFixed(currencyData!.decimal)) * 100).toString();
+    var amount =
+        (double.parse(getTotalAmount().toStringAsFixed(currencyData!.decimal)) *
+                100)
+            .toString();
     print(amount);
     await PayStackURLGen.payStackURLGen(
       amount: amount,
@@ -2364,24 +2714,29 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
           if (isDone) {
             Navigator.pop(_globalKey.currentContext!, true);
             placeOrderChanges();
-            ScaffoldMessenger.of(_globalKey.currentContext!).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(_globalKey.currentContext!)
+                .showSnackBar(SnackBar(
               content: Text("Payment Successful!!\n".tr()),
               backgroundColor: Colors.green,
             ));
           } else {
             Navigator.pop(_globalKey.currentContext!);
-            ScaffoldMessenger.of(_globalKey.currentContext!).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(_globalKey.currentContext!)
+                .showSnackBar(SnackBar(
               content: Text("Payment UnSuccessful!!\n".tr()),
               backgroundColor: Colors.red,
             ));
           }
         } else {
           Navigator.pop(_globalKey.currentContext!);
-          showAlert(_globalKey.currentContext!, response: value['message'].toString(), colors: Colors.red);
+          showAlert(_globalKey.currentContext!,
+              response: value['message'].toString(), colors: Colors.red);
         }
       } else {
         Navigator.pop(_globalKey.currentContext!);
-        showAlert(_globalKey.currentContext!, response: "Something went wrong, please contact admin.".tr(), colors: Colors.red);
+        showAlert(_globalKey.currentContext!,
+            response: "Something went wrong, please contact admin.".tr(),
+            colors: Colors.red);
       }
     });
   }

@@ -27,7 +27,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum DrawerSelection { Dashboard, Home, Order, Profile, Wallet, provideInbox, workerInbox, favoriteService, termsCondition, privacyPolicy, chooseLanguage, Logout, referral, giftCard }
+
+enum DrawerSelection { Dashboard, Home, Order, Profile, Wallet, provideInbox, workerInbox, favoriteService, termsCondition, privacyPolicy, chooseLanguage, Logout, referral, giftCard, driver, Orders }
 
 class OnDemandDahBoard extends StatefulWidget {
   final User? user;

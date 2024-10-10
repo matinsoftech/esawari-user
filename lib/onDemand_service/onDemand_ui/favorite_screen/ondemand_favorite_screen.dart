@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:emartconsumer/constants.dart';
 import 'package:emartconsumer/main.dart';

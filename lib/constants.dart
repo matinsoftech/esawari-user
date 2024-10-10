@@ -19,8 +19,7 @@ import 'model/TaxModel.dart';
 
 const FINISHED_ON_BOARDING = 'finishedOnBoarding';
 const COLOR_ACCENT = 0xFF8fd468;
-int COLOR_PRIMARY = 0xFF00B761;
-// int COLOR_PRIMARY = 0xFF00B761;
+int COLOR_PRIMARY = 0xFFFF0000;
 const FACEBOOK_BUTTON_COLOR = 0xFF415893;
 const COUPON_BG_COLOR = 0xFFFCF8F3;
 const DARK_BG_COLOR = 0xff121212;
@@ -146,8 +145,7 @@ const BOOKREQUEST = 'TableBook';
 
 const STRIPE_CURRENCY_CODE = 'USD';
 
-const STRIPE_PUBLISHABLE_KEY =
-    'pk_test_51JSxh2SBrhOQ6gKpCaW25ZzepUsITRbJrZuJWBAvRqotTspPkAbuIAlS046R0JS4YCsF1SZsbMew6NX00Imr6WeV00lpd6mjGp';
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51JSxh2SBrhOQ6gKpCaW25ZzepUsITRbJrZuJWBAvRqotTspPkAbuIAlS046R0JS4YCsF1SZsbMew6NX00Imr6WeV00lpd6mjGp';
 
 const USER_ROLE_DRIVER = 'driver';
 const USER_ROLE_CUSTOMER = 'customer';
@@ -197,7 +195,7 @@ List<TaxModel>? taxList = [];
 String? country = "";
 
 String durationToString(int minutes) {
-  var d = Duration(minutes: minutes);
+  var d = Duration(minutes:minutes);
   List<String> parts = d.toString().split(':');
   return '${parts[0].padLeft(2, '0')}.${parts[1].padLeft(2, '0')}';
 }
@@ -250,9 +248,7 @@ double getTaxValue({String? amount, TaxModel? taxModel}) {
     if (taxModel.type == "fix") {
       taxVal = double.parse(taxModel.tax.toString());
     } else {
-      taxVal = (double.parse(amount.toString()) *
-              double.parse(taxModel.tax!.toString())) /
-          100;
+      taxVal = (double.parse(amount.toString()) * double.parse(taxModel.tax!.toString())) / 100;
     }
   }
   return taxVal;
@@ -261,8 +257,7 @@ double getTaxValue({String? amount, TaxModel? taxModel}) {
 Uri createCoordinatesUrl(double latitude, double longitude, [String? label]) {
   var uri;
   if (kIsWeb) {
-    uri = Uri.https('www.google.com', '/maps/search/',
-        {'api': '1', 'query': '$latitude,$longitude'});
+    uri = Uri.https('www.google.com', '/maps/search/', {'api': '1', 'query': '$latitude,$longitude'});
   } else if (Platform.isAndroid) {
     var query = '$latitude,$longitude';
     if (label != null) query += '($label)';
@@ -272,8 +267,7 @@ Uri createCoordinatesUrl(double latitude, double longitude, [String? label]) {
     if (label != null) params['q'] = label;
     uri = Uri.https('maps.apple.com', '/', params);
   } else {
-    uri = Uri.https('www.google.com', '/maps/search/',
-        {'api': '1', 'query': '$latitude,$longitude'});
+    uri = Uri.https('www.google.com', '/maps/search/', {'api': '1', 'query': '$latitude,$longitude'});
   }
 
   return uri;
@@ -288,8 +282,7 @@ String amountShow({required String? amount}) {
 }
 
 String getKm(UserLocation pos1, UserLocation pos2) {
-  double distanceInMeters = Geolocator.distanceBetween(
-      pos1.latitude, pos1.longitude, pos2.latitude, pos2.longitude);
+  double distanceInMeters = Geolocator.distanceBetween(pos1.latitude, pos1.longitude, pos2.latitude, pos2.longitude);
   double kilometer = distanceInMeters / 1000;
   debugPrint("KiloMeter$kilometer");
   return kilometer.toStringAsFixed(2).toString();
@@ -306,25 +299,15 @@ String getImageVAlidUrl(String url) {
 MailSettings? mailSettings;
 
 final smtpServer = SmtpServer(mailSettings!.host.toString(),
-    username: mailSettings!.userName.toString(),
-    password: mailSettings!.password.toString(),
-    port: 465,
-    ignoreBadCertificate: false,
-    ssl: true,
-    allowInsecure: true);
+    username: mailSettings!.userName.toString(), password: mailSettings!.password.toString(), port: 465, ignoreBadCertificate: false, ssl: true, allowInsecure: true);
 
-sendMail(
-    {String? subject,
-    String? body,
-    bool? isAdmin = false,
-    List<dynamic>? recipients}) async {
+sendMail({String? subject, String? body, bool? isAdmin = false, List<dynamic>? recipients}) async {
   // Create our message.
   if (isAdmin == true) {
     recipients!.add(mailSettings!.userName.toString());
   }
   final message = Message()
-    ..from = Address(
-        mailSettings!.userName.toString(), mailSettings!.fromName.toString())
+    ..from = Address(mailSettings!.userName.toString(), mailSettings!.fromName.toString())
     ..recipients = recipients!
     ..subject = subject
     ..text = body
@@ -350,7 +333,7 @@ Future<void> makePhoneCall(String phoneNumber) async {
   await launchUrl(launchUri);
 }
 
-void checkPermission(Function() onTap, BuildContext context) async {
+void checkPermission(Function() onTap,BuildContext context) async {
   LocationPermission permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();

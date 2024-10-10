@@ -1,25 +1,79 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:emartconsumer/cab_service/dashboard_cab_service.dart';
-import 'package:emartconsumer/ecommarce_service/ecommarce_dashboard.dart';
+import 'package:emartconsumer/cab_service/cab_intercity_service_screen.dart';
 import 'package:emartconsumer/main.dart';
 import 'package:emartconsumer/model/CurrencyModel.dart';
 import 'package:emartconsumer/model/SectionModel.dart';
-import 'package:emartconsumer/onDemand_service/onDemand_ui/onDemand_dashboard.dart';
-import 'package:emartconsumer/parcel_delivery/parcel_dashboard.dart';
-import 'package:emartconsumer/rental_service/rental_service_dash_board.dart';
-import 'package:emartconsumer/ui/QrCodeScanner/QrCodeScanner.dart';
-import 'package:emartconsumer/ui/container/ContainerScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:emartconsumer/ui/StoreSelection/blogs.dart';
+import 'package:emartconsumer/ui/StoreSelection/carouselsliderservice.dart';
+import 'package:emartconsumer/ui/StoreSelection/drawerservice.dart';
+import 'package:emartconsumer/ui/StoreSelection/storeservices.dart';
+import 'package:emartconsumer/ui/profile/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants.dart';
 import '../../model/User.dart';
 import '../../services/FirebaseHelper.dart';
 import '../../services/helper.dart';
 import '../../services/localDatabase.dart';
 import '../auth/AuthScreen.dart';
+
+// Singleton class to manage section data
+class SectionDataController {
+  static final SectionDataController _instance = SectionDataController._internal();
+  factory SectionDataController() => _instance;
+  SectionDataController._internal();
+
+  List<SectionModel>? _sectionList;
+  bool _isLoading = false;
+  
+  Future<List<SectionModel>> getSections() async {
+    if (_sectionList != null) return _sectionList!;
+    if (_isLoading) {
+      // Wait until the current loading is complete
+      while (_isLoading) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      return _sectionList ?? [];
+    }
+    
+    try {
+      _isLoading = true;
+      final fireStoreUtils = FireStoreUtils();
+      _sectionList = await fireStoreUtils.getSections();
+      return _sectionList ?? [];
+    } catch (e) {
+      print('Error loading sections: $e');
+      return [];
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  void clearData() {
+    _sectionList = null;
+    _isLoading = false;
+  }
+}
+
+enum StoreDrawerSelection {
+  Dashboard,
+  Home,
+  Order,
+  Profile,
+  Wallet,
+  provideInbox,
+  workerInbox,
+  favoriteService,
+  termsCondition,
+  privacyPolicy,
+  chooseLanguage,
+  Logout,
+  referral,
+  giftCard,
+  driver,
+  Orders
+}
 
 class StoreSelection extends StatefulWidget {
   const StoreSelection({Key? key}) : super(key: key);
@@ -28,558 +82,321 @@ class StoreSelection extends StatefulWidget {
   StoreSelectionState createState() => StoreSelectionState();
 }
 
-class StoreSelectionState extends State<StoreSelection> {
+class StoreSelectionState extends State<StoreSelection> with AutomaticKeepAliveClientMixin {
   late CartDatabase cartDatabase;
-  int cartCount = 0;
   final fireStoreUtils = FireStoreUtils();
-  List<SectionModel> preSectionList = [];
+  //final SectionDataController _sectionController = SectionDataController();
+  List<SectionModel> sectionList = [];
+  bool isLoading = true;
+  bool isLanguageShown = false;
+  String? country;
+  CurrencyModel? currencyData;
+  
+  DateTime pre_backpress = DateTime.now();
+  final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();
+  StoreDrawerSelection _drawerSelection = StoreDrawerSelection.Home;
+
+  bool _mounted = true;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-
-    getLanguages();
-    setCurrency();
+    _initializeData();
   }
 
-  setCurrency() async {
-    await FireStoreUtils().getCurrency().then((value) {
-      print("---->" + value.toString());
-      /*for (var element in value) {
-        if (element.isactive = true) {
-          currencyData = element;
-        }
-      }*/
-      if (value != null) {
-        currencyData = value;
-      } else {
-        currencyData = CurrencyModel(
+  @override
+  void dispose() {
+    _mounted = false;
+    super.dispose();
+  }
+
+Future<void> _initializeData() async {
+    try {
+      await Future.wait([
+        _loadSections(),
+        _initializeCurrency(),
+      ]);
+    } catch (e) {
+      print('Error initializing data: $e');
+    } finally {
+      if (_mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+    Future<void> _loadSections() async {
+    try {
+      final sections = await fireStoreUtils.getSections();
+      if (mounted) {
+        setState(() {
+          sectionList = sections;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading sections: $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _initializeCurrency() async {
+    try {
+      final value = await FireStoreUtils().getCurrency();
+      if (_mounted) {
+        setState(() {
+          currencyData = value ?? CurrencyModel(
             id: "",
             code: "USD",
             decimal: 2,
             isactive: true,
             name: "US Dollar",
             symbol: "\$",
-            symbolatright: false);
+            symbolatright: false,
+          );
+        });
       }
-    });
 
-    List<Placemark> placeMarks = await placemarkFromCoordinates(
-        MyAppState.selectedPosotion.location!.latitude,
-        MyAppState.selectedPosotion.location!.longitude);
-    country = placeMarks.first.country;
+      if (MyAppState.selectedPosotion.location != null) {
+        List<Placemark> placeMarks = await placemarkFromCoordinates(
+          MyAppState.selectedPosotion.location!.latitude,
+          MyAppState.selectedPosotion.location!.longitude,
+        );
+        if (_mounted) {
+          setState(() {
+            country = placeMarks.first.country;
+          });
+        }
+      }
 
-    await FireStoreUtils().getRazorPayDemo();
-    await FireStoreUtils.getPaypalSettingData();
-    await FireStoreUtils.getStripeSettingData();
-    await FireStoreUtils.getPayStackSettingData();
-    await FireStoreUtils.getFlutterWaveSettingData();
-    await FireStoreUtils.getPaytmSettingData();
-    await FireStoreUtils.getPayFastSettingData();
-    await FireStoreUtils.getWalletSettingData();
-    await FireStoreUtils.getMercadoPagoSettingData();
+      // Load payment settings sequentially instead of parallel
+      await _loadPaymentSettings();
+    } catch (e) {
+      print('Error initializing currency: $e');
+    }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    cartDatabase = Provider.of<CartDatabase>(context);
+  Future<void> _loadPaymentSettings() async {
+    try {
+      // Load settings sequentially to avoid any potential race conditions
+      await FireStoreUtils().getRazorPayDemo();
+      await FireStoreUtils.getPaypalSettingData();
+      await FireStoreUtils.getStripeSettingData();
+      await FireStoreUtils.getPayStackSettingData();
+      await FireStoreUtils.getFlutterWaveSettingData();
+      await FireStoreUtils.getPaytmSettingData();
+      await FireStoreUtils.getPayFastSettingData();
+      await FireStoreUtils.getWalletSettingData();
+      await FireStoreUtils.getMercadoPagoSettingData();
+    } catch (e) {
+      print('Error loading payment settings: $e');
+    }
   }
 
-  DateTime pre_backpress = DateTime.now();
+  void _handleProfileNavigation(BuildContext context, User? user) {
+    if (user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(),
+          settings: const RouteSettings(name: 'ProfileScreen'),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AuthScreen(),
+          settings: const RouteSettings(name: 'AuthScreen'),
+        ),
+      );
+    }
+  }
+
+  Widget _buildServiceGrid() {
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator.adaptive(
+          valueColor: AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),
+        ),
+      );
+    }
+
+    if (sectionList.isEmpty) {
+      return showEmptyState('No Categories'.tr(), context);
+    }
+   
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: sectionList.length + 1,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        mainAxisExtent: 150,
+      ),
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return _buildOutstationCell();
+        }
+
+        return CuisineCell(sectionModel: sectionList[index - 1]);
+      },
+    );
+  }
+
+  Widget _buildOutstationCell() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CabInterCityServiceScreen(),
+            settings: const RouteSettings(name: 'CabInterCityServiceScreen'),
+          ),
+        );
+      },
+      child: Container(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 75,
+                width: 75,
+                child: Image.asset('assets/images/INTERCITY ICON PNG.png'),
+              ),
+              const Text(
+                "Outstation",
+                textAlign: TextAlign.end,
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return WillPopScope(
       onWillPop: () async {
         final timegap = DateTime.now().difference(pre_backpress);
         final cantExit = timegap >= const Duration(seconds: 2);
         pre_backpress = DateTime.now();
+        
         if (cantExit) {
-          SnackBar snack = SnackBar(
-            content: Text(
-              "back-button".tr(),
-              style: const TextStyle(color: Colors.white),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "back-button".tr(),
+                style: const TextStyle(color: Colors.white),
+              ),
+              duration: const Duration(seconds: 2),
+              backgroundColor: Colors.black,
             ),
-            duration: const Duration(seconds: 2),
-            backgroundColor: Colors.black,
           );
-          ScaffoldMessenger.of(context).showSnackBar(snack);
-          return false; // false will do nothing when back press
-        } else {
-          return true; // true will exit the app
+          return false;
         }
+        return true;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: false,
-          title: Text(
-            "eMart".tr(),
-            textAlign: TextAlign.left,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
-          ),
-          actions: [
-            IconButton(
-                padding: const EdgeInsets.only(right: 20),
-                visualDensity: const VisualDensity(horizontal: -4),
-                tooltip: 'QrCode'.tr(),
-                icon: Stack(
-                  clipBehavior: Clip.none,
-                  children: const [
-                    Image(
-                      image: AssetImage("assets/images/qrscan.png"),
-                      width: 20,
-                      color: Colors.black,
+      child: ChangeNotifierProvider.value(
+        value: MyAppState.currentUser,
+        child: Consumer<User?>(
+          builder: (context, user, _) {
+            return Scaffold(
+              key: scaffoldkey,
+              drawer: user == null
+                  ? null
+                  : CustomDrawer(
+                      drawerSelection: _drawerSelection,
+                      onDrawerSelectionChanged: (StoreDrawerSelection selection) {
+                        setState(() {
+                          _drawerSelection = selection;
+                        });
+                      },
+                    ),
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => scaffoldkey.currentState?.openDrawer(),
+                ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Image.asset(
+                          "assets/images/app_logo_new.png",
+                          height: 40,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      padding: const EdgeInsets.only(left: 20),
+                      icon: const Icon(Icons.person),
+                      onPressed: () => _handleProfileNavigation(context, user),
                     ),
                   ],
                 ),
-                onPressed: () {
-                  push(
-                    context,
-                    QrCodeScanner(
-                      presectionList: preSectionList,
-                    ),
-                  );
-                }),
-            // IconButton(
-            //     padding: const EdgeInsets.only(right: 20),
-            //     visualDensity: const VisualDensity(horizontal: -4),
-            //     tooltip: 'Cart'.tr(),
-            //     icon: Stack(
-            //       clipBehavior: Clip.none,
-            //       children: [
-            //         const Image(
-            //           image: AssetImage("assets/images/cart.png"),
-            //           width: 20,
-            //           color: Colors.black,
-            //         ),
-            //         StreamBuilder<List<CartProduct>>(
-            //           stream: cartDatabase.watchProducts,
-            //           builder: (context, snapshot) {
-            //             cartCount = 0;
-            //             if (snapshot.hasData) {
-            //               for (var element in snapshot.data!) {
-            //                 cartCount += element.quantity;
-            //               }
-            //             }
-            //             return Visibility(
-            //               visible: cartCount >= 1,
-            //               child: Positioned(
-            //                 right: -6,
-            //                 top: -8,
-            //                 child: Container(
-            //                   padding: const EdgeInsets.all(4),
-            //                   decoration: BoxDecoration(
-            //                     shape: BoxShape.circle,
-            //                     color: Color(COLOR_PRIMARY),
-            //                   ),
-            //                   constraints: const BoxConstraints(
-            //                     minWidth: 12,
-            //                     minHeight: 12,
-            //                   ),
-            //                   child: Center(
-            //                     child: Text(
-            //                       cartCount <= 99 ? '$cartCount' : '+99',
-            //                       style: const TextStyle(
-            //                         color: Colors.white,
-            //                         // fontSize: 10,
-            //                       ),
-            //                       textAlign: TextAlign.center,
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //             );
-            //           },
-            //         )
-            //       ],
-            //     ),
-            //     onPressed: () {
-            //       push(
-            //         context,
-            //         const CartScreen(
-            //           fromContainer: false,
-            //           fromStoreSelection: true,
-            //         ),
-            //       );
-            //     }),
-          ],
-        ),
-        body: SingleChildScrollView(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {},
-              child: Banner_Url.isEmpty
-                  ? Container()
-                  : Container(
-                      margin: const EdgeInsets.all(10),
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.width / 2.5,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                              color: isDarkMode(context)
-                                  ? const Color(DarkContainerBorderColor)
-                                  : Colors.grey.shade100,
-                              width: 1),
-                          color: isDarkMode(context)
-                              ? const Color(DarkContainerColor)
-                              : Colors.white,
-                          boxShadow: [
-                            isDarkMode(context)
-                                ? const BoxShadow()
-                                : BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    blurRadius: 5,
-                                  ),
-                          ],
-                          image: DecorationImage(
-                              image: NetworkImage(Banner_Url),
-                              fit: BoxFit.cover,
-                              colorFilter: ColorFilter.mode(
-                                  Colors.black.withOpacity(0.5),
-                                  BlendMode.darken))),
-                    ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 10, right: 10, top: 15),
-              child: FutureBuilder<List<SectionModel>>(
-                  future: fireStoreUtils.getSections(),
-                  initialData: const [],
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator.adaptive(
-                          valueColor:
-                              AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),
-                        ),
-                      );
-                    }
-
-                    if (snapshot.hasData ||
-                        (snapshot.data?.isNotEmpty ?? false)) {
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          if (snapshot.data != null) {
-                            preSectionList.clear();
-                            preSectionList.addAll(snapshot.data!);
-                          }
-                          return snapshot.data != null
-                              ? buildCuisineCell(snapshot.data![index])
-                              : showEmptyState('No Categories'.tr(), context);
-                        },
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: 0,
-                                crossAxisSpacing: 8,
-                                mainAxisExtent: 200),
-                      );
-                    }
-                    return const CircularProgressIndicator();
-                  }),
-            )
-          ],
-        )),
-      ),
-    );
-  }
-
-  Widget buildCuisineCell(SectionModel sectionModel) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: GestureDetector(
-          onTap: () async {
-            COLOR_PRIMARY =
-                int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-
-            print("=========>");
-            print(sectionModel.adminCommision!.toJson());
-            if (auth.FirebaseAuth.instance.currentUser != null &&
-                MyAppState.currentUser != null) {
-              User? user = await FireStoreUtils.getCurrentUser(
-                  MyAppState.currentUser!.userID);
-
-              if (user!.role == USER_ROLE_CUSTOMER) {
-                user.active = true;
-                user.role = USER_ROLE_CUSTOMER;
-                sectionConstantModel = sectionModel;
-
-                user.fcmToken =
-                    await FireStoreUtils.firebaseMessaging.getToken() ?? '';
-                await FireStoreUtils.updateCurrentUser(user);
-                if (sectionConstantModel!.serviceTypeFlag ==
-                    "ecommerce-service") {
-                  await Provider.of<CartDatabase>(context, listen: false)
-                      .allCartProducts
-                      .then((value) {
-                    if (value.isNotEmpty) {
-                      showAlertDialog(context, user, sectionModel);
-                    } else {
-                      push(context, EcommeceDashBoardScreen(user: user));
-                    }
-                  });
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "cab-service") {
-                  push(context, DashBoardCabService(user: user));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "rental-service") {
-                  push(context, RentalServiceDashBoard(user: user));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "parcel_delivery") {
-                  push(context, ParcelDahBoard(user: user));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "ondemand-service") {
-                  push(
-                      context,
-                      OnDemandDahBoard(
-                        user: user,
-                      ));
-                } else {
-                  await Provider.of<CartDatabase>(context, listen: false)
-                      .allCartProducts
-                      .then((value) {
-                    if (value.isNotEmpty) {
-                      showAlertDialog(context, user, sectionConstantModel!);
-                    } else {
-                      push(context, ContainerScreen(user: user));
-                    }
-                  });
-                }
-              } else {
-                pushReplacement(context, const AuthScreen());
-              }
-            } else {
-              if (isSkipLogin) {
-                sectionConstantModel = sectionModel;
-
-                if (sectionConstantModel!.serviceTypeFlag ==
-                    "ecommerce-service") {
-                  push(context, EcommeceDashBoardScreen(user: null));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "cab-service") {
-                  push(context, DashBoardCabService(user: null));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "rental-service") {
-                  push(context, RentalServiceDashBoard(user: null));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "parcel_delivery") {
-                  push(context, ParcelDahBoard(user: null));
-                } else if (sectionConstantModel!.serviceTypeFlag ==
-                    "ondemand-service") {
-                  push(context, OnDemandDahBoard(user: null));
-                } else {
-                  push(context, ContainerScreen(user: null));
-                }
-              } else {
-                pushReplacement(context, const AuthScreen());
-              }
-            }
-
-            // if (sectionModel.serviceTypeFlag == "cab-service") {
-            //   auth.User? firebaseUser = auth.FirebaseAuth.instance.currentUser;
-            //   if (firebaseUser != null) {
-            //     User? user = await FireStoreUtils.getCurrentUser(firebaseUser.uid);
-            //
-            //     if (user!.role == USER_ROLE_CUSTOMER) {
-            //       user.active = true;
-            //       user.role = USER_ROLE_CUSTOMER;
-            //       SELECTED_CATEGORY = sectionModel.id.toString();
-            //       SELECTED_SECTION_NAME = sectionModel.name.toString();
-            //       serviceTypeFlag = sectionModel.serviceTypeFlag.toString();
-            //       isDineEnable = sectionModel.dineInActive!;
-            //       COLOR_PRIMARY = int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-            //       user.fcmToken = await FireStoreUtils.firebaseMessaging.getToken() ?? '';
-            //       await FireStoreUtils.updateCurrentUser(user);
-            //       push(context, DashBoardCabService(user: user));
-            //     } else {
-            //       pushReplacement(context, const AuthScreen());
-            //     }
-            //   } else {
-            //     if (isSkipLogin) {
-            //       SELECTED_CATEGORY = sectionModel.id.toString();
-            //       SELECTED_SECTION_NAME = sectionModel.name.toString();
-            //       isDineEnable = sectionModel.dineInActive!;
-            //       serviceTypeFlag = sectionModel.serviceTypeFlag.toString();
-            //       COLOR_PRIMARY = int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-            //       push(context, DashBoardCabService(user: null));
-            //     } else {
-            //       pushReplacement(context, const AuthScreen());
-            //     }
-            //   }
-            // }
-            // else if (sectionModel.serviceTypeFlag == "parcel_delivery") {
-            //   auth.User? firebaseUser = auth.FirebaseAuth.instance.currentUser;
-            //   if (firebaseUser != null) {
-            //     User? user = await FireStoreUtils.getCurrentUser(firebaseUser.uid);
-            //
-            //     if (user != null && user.role == USER_ROLE_CUSTOMER) {
-            //       user.active = true;
-            //       user.role = USER_ROLE_CUSTOMER;
-            //       SELECTED_CATEGORY = sectionModel.id.toString();
-            //       SELECTED_SECTION_NAME = sectionModel.name.toString();
-            //       isDineEnable = sectionModel.dineInActive!;
-            //       serviceTypeFlag = sectionModel.serviceTypeFlag.toString();
-            //       COLOR_PRIMARY = int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-            //       user.fcmToken = await FireStoreUtils.firebaseMessaging.getToken() ?? '';
-            //       await FireStoreUtils.updateCurrentUser(user);
-            //       push(context, ParcelDahBoard(user: user));
-            //     } else {
-            //       pushReplacement(context, const AuthScreen());
-            //     }
-            //   } else {
-            //     if (isSkipLogin) {
-            //       SELECTED_CATEGORY = sectionModel.id.toString();
-            //       SELECTED_SECTION_NAME = sectionModel.name.toString();
-            //       serviceTypeFlag = sectionModel.serviceTypeFlag.toString();
-            //       isDineEnable = sectionModel.dineInActive!;
-            //       COLOR_PRIMARY = int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-            //       push(context, ParcelDahBoard(user: null));
-            //     } else {
-            //       pushReplacement(context, const AuthScreen());
-            //     }
-            //   }
-            // }
-            // else if (sectionModel.serviceTypeFlag == "rental-service") {
-            //   auth.User? firebaseUser = auth.FirebaseAuth.instance.currentUser;
-            //   if (firebaseUser != null) {
-            //     User? user = await FireStoreUtils.getCurrentUser(firebaseUser.uid);
-            //
-            //     if (user!.role == USER_ROLE_CUSTOMER) {
-            //       user.active = true;
-            //       user.role = USER_ROLE_CUSTOMER;
-            //       SELECTED_CATEGORY = sectionModel.id.toString();
-            //       SELECTED_SECTION_NAME = sectionModel.name.toString();
-            //       serviceTypeFlag = sectionModel.serviceTypeFlag.toString();
-            //       isDineEnable = sectionModel.dineInActive!;
-            //       COLOR_PRIMARY = int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-            //       user.fcmToken = await FireStoreUtils.firebaseMessaging.getToken() ?? '';
-            //       await FireStoreUtils.updateCurrentUser(user);
-            //       push(context, RentalServiceDashBoard(user: user));
-            //     } else {
-            //       pushReplacement(context, const AuthScreen());
-            //     }
-            //   } else {
-            //     if (isSkipLogin) {
-            //       SELECTED_CATEGORY = sectionModel.id.toString();
-            //       SELECTED_SECTION_NAME = sectionModel.name.toString();
-            //       serviceTypeFlag = sectionModel.serviceTypeFlag.toString();
-            //       isDineEnable = sectionModel.dineInActive!;
-            //       COLOR_PRIMARY = int.parse(sectionModel.color!.replaceFirst("#", "0xff"));
-            //       push(context, RentalServiceDashBoard(user: null));
-            //     } else {
-            //       pushReplacement(context, const AuthScreen());
-            //     }
-            //   }
-            // } else {
-            //
-            // }
-          },
-          child: Container(
-            margin: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  color: isDarkMode(context)
-                      ? const Color(DarkContainerBorderColor)
-                      : Colors.grey.shade100,
-                  width: 1),
-              color: isDarkMode(context)
-                  ? const Color(DarkContainerColor)
-                  : Colors.white,
-              boxShadow: [
-                isDarkMode(context)
-                    ? const BoxShadow()
-                    : BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        blurRadius: 5,
-                      ),
-              ],
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.network(
-                    (sectionModel.sectionImage == null ||
-                            sectionModel.sectionImage!.isEmpty)
-                        ? placeholderImage
-                        : sectionModel.sectionImage.toString(),
-                    height: 75,
-                    width: 75,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    sectionModel.name.toString(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 18),
-                  ).tr(),
-                ],
+                centerTitle: true,
               ),
-            ),
-          ),
+              body:
+           
+                 SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Text(
+                          "Welcome".tr() + " ${user?.firstName ?? ''}",
+                          style: const TextStyle(fontSize: 22, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                       MainSliders(),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: Text(
+                          "Our Services",
+                          style: const TextStyle(fontSize: 22, color: Colors.black),
+                        ),
+                      ),
+                      Container(
+                        color: Colors.white,
+                        child: Container(
+                          color: const Color(0xFFF9F9F9),
+                          margin: const EdgeInsets.only(left: 8, right: 8, top: 12),
+                          child: _buildServiceGrid(),
+                        ),
+                      ),
+                      BlogsProvider(),
+                    ],
+                  ),
+                ),
+              );
+  })
         ));
-  }
-
-  Future<void> getLanguages() async {
-    await FireStoreUtils.firestore
-        .collection(Setting)
-        .doc("languages")
-        .get()
-        .then((value) {
-      List list = value.data()!["list"];
-      isLanguageShown = (list.isNotEmpty);
-    });
-  }
-
-  showAlertDialog(BuildContext context, User? user, SectionModel sectionModel) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: const Text("OK"),
-      onPressed: () async {
-        if (sectionModel.serviceTypeFlag == "ecommerce-service") {
-          Provider.of<CartDatabase>(context, listen: false).deleteAllProducts();
-          push(context, EcommeceDashBoardScreen(user: user));
-        } else {
-          Provider.of<CartDatabase>(context, listen: false).deleteAllProducts();
-          push(context, ContainerScreen(user: user));
         }
-      },
-    );
-
-    Widget cancelButton = TextButton(
-      child: const Text("Cancel"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text("Alert!"),
-      content: const Text(
-          "If you select this Section/Service, your previously added items will be removed from the cart."),
-      actions: [
-        cancelButton,
-        okButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    cartDatabase = Provider.of<CartDatabase>(context);
   }
 }

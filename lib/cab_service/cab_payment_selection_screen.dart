@@ -15,10 +15,10 @@ import 'package:emartconsumer/model/stripeSettingData.dart';
 import 'package:emartconsumer/services/FirebaseHelper.dart';
 import 'package:emartconsumer/userPrefrence.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_stripe/flutter_stripe.dart' as stripe1;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../model/MercadoPagoSettingsModel.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CabPaymentSelectionScreen extends StatefulWidget {
   final LatLng? departureLatLong;
@@ -30,19 +30,21 @@ class CabPaymentSelectionScreen extends StatefulWidget {
   final String? vehicleId;
   final String? distance;
   final String? duration;
+  final String? hospitalId;
 
-  CabPaymentSelectionScreen(
-      {Key? key,
-      this.departureLatLong,
-      this.destinationLatLong,
-      this.departureName,
-      this.destinationName,
-      this.subTotal,
-      this.vehicleType,
-      this.vehicleId,
-      this.distance,
-      this.duration})
-      : super(key: key);
+  CabPaymentSelectionScreen({
+    Key? key,
+    this.departureLatLong,
+    this.destinationLatLong,
+    this.departureName,
+    this.destinationName,
+    this.subTotal,
+    this.vehicleType,
+    this.vehicleId,
+    this.distance,
+    this.duration,
+    this.hospitalId,
+  }) : super(key: key);
 
   @override
   State<CabPaymentSelectionScreen> createState() =>
@@ -72,12 +74,13 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
   bool isLoading = true;
 
   getPaymentSettingData() async {
-    await UserPreference.getStripeData().then((value) async {
-      stripeData = value;
-      stripe1.Stripe.publishableKey = stripeData!.clientpublishableKey;
-      stripe1.Stripe.merchantIdentifier = PAYID;
-      await stripe1.Stripe.instance.applySettings();
-    });
+    // await UserPreference.getStripeData().then((value) async {
+    //   stripeData = value;
+    //   print("Stripe Publishable Key: ${stripeData!.clientpublishableKey}");
+    //   stripe1.Stripe.publishableKey = stripeData!.clientpublishableKey;
+    //   stripe1.Stripe.merchantIdentifier = PAYID;
+    //   await stripe1.Stripe.instance.applySettings();
+    // });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
     paypalSettingData = await UserPreference.getPayPalData();
@@ -86,6 +89,7 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
     mercadoPagoSettingData = await UserPreference.getMercadoPago();
     payFastSettingData = await UserPreference.getPayFastData();
     await fireStoreUtils.getCod().then((value) {
+      //? here the value will be true or false
       setState(() {
         futurecod = value;
       });
@@ -101,6 +105,41 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
     ));
   }
 
+  Future<void> addHospitalBooking(String ridesId) async {
+    try {
+      // Get a reference to the Firestore instance
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Create a map with the data to be saved
+      Map<String, dynamic> bookingData = {
+        'hospital_id': widget.hospitalId,
+        'user_id': MyAppState.currentUser!.userID,
+        'booking_type': 'app',
+        'location': {
+          'latitude': widget.departureLatLong!.latitude,
+          'longitude': widget.departureLatLong!.longitude,
+        },
+        'rides_id': ridesId,
+        'created_at': FieldValue.serverTimestamp(),
+      };
+      // Add the data to the collection
+      await firestore.collection('hospital_booking').add(bookingData);
+
+      // print('Booking added successfully');
+      final SnackBar snackBar = SnackBar(
+        content: Text(
+          "Booking added successfully".tr(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Color(COLOR_PRIMARY),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } catch (e) {
+      print('Failed to add booking: $e');
+    }
+  }
+
   @override
   void initState() {
     selectedRadioTile = '';
@@ -110,6 +149,7 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // print('hospital id${widget.hospitalId}');
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: false,
@@ -142,80 +182,80 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
               padding: const EdgeInsets.all(16),
               children: [
                 Text("Select Payment Method".tr()),
-                buildPaymentTile(
-                  isVisible: UserPreference.getWalletData() ?? false,
-                  selectedPayment: wallet,
-                  image: "assets/images/wallet_icon.png",
-                  value: "Wallet".tr(),
-                ),
+                // buildPaymentTile(
+                //   isVisible: UserPreference.getWalletData() ?? false,
+                //   selectedPayment: wallet,
+                //   image: "assets/images/wallet_icon.png",
+                //   value: "Wallet".tr(),
+                // ),
 
-                buildPaymentTile(
-                  isVisible: UserPreference.getWalletData() ?? false,
-                  selectedPayment: codPay,
-                  image: "assets/images/cash.png",
-                  value: "Cash".tr(),
-                ),
-                buildPaymentTile(
-                  isVisible:
-                      (stripeData == null) ? false : stripeData!.isEnabled,
-                  selectedPayment: stripe,
-                  value: "Stripe".tr(),
-                ),
+                // buildPaymentTile(
+                //   isVisible: UserPreference.getWalletData() ?? false,
+                //   selectedPayment: codPay,
+                //   image: "assets/images/cash.png",
+                //   value: "Cash".tr(),
+                // ),
+                // buildPaymentTile(
+                //   isVisible:
+                //       (stripeData == null) ? false : stripeData!.isEnabled,
+                //   selectedPayment: stripe,
+                //   value: "Stripe".tr(),
+                // ),
                 buildPaymentTile(
                   isVisible: razorPayData!.isEnabled,
                   selectedPayment: razorPay,
                   image: "assets/images/razorpay_@3x.png",
                   value: "RazorPay".tr(),
                 ),
-                buildPaymentTile(
-                  isVisible: (paytmSettingData == null)
-                      ? false
-                      : paytmSettingData!.isEnabled,
-                  selectedPayment: payTm,
-                  image: "assets/images/paytm_@3x.png",
-                  value: "PayTm".tr(),
-                ),
-                buildPaymentTile(
-                  isVisible: (paypalSettingData == null)
-                      ? false
-                      : paypalSettingData!.isEnabled,
-                  selectedPayment: paypal,
-                  image: "assets/images/paypal_@3x.png",
-                  value: "PayPal".tr(),
-                ),
+                // buildPaymentTile(
+                //   isVisible: (paytmSettingData == null)
+                //       ? false
+                //       : paytmSettingData!.isEnabled,
+                //   selectedPayment: payTm,
+                //   image: "assets/images/paytm_@3x.png",
+                //   value: "PayTm".tr(),
+                // ),
+                // buildPaymentTile(
+                //   isVisible: (paypalSettingData == null)
+                //       ? false
+                //       : paypalSettingData!.isEnabled,
+                //   selectedPayment: paypal,
+                //   image: "assets/images/paypal_@3x.png",
+                //   value: "PayPal".tr(),
+                // ),
 
-                buildPaymentTile(
-                  isVisible: (payFastSettingData == null)
-                      ? false
-                      : payFastSettingData!.isEnable,
-                  selectedPayment: payFast,
-                  image: "assets/images/payfast.png",
-                  value: "PayFast".tr(),
-                ),
-                buildPaymentTile(
-                  isVisible: (payStackSettingData == null)
-                      ? false
-                      : payStackSettingData!.isEnabled,
-                  selectedPayment: payStack,
-                  image: "assets/images/paystack.png",
-                  value: "PayStack".tr(),
-                ),
-                buildPaymentTile(
-                  isVisible: (flutterWaveSettingData == null)
-                      ? false
-                      : flutterWaveSettingData!.isEnable,
-                  selectedPayment: paypal,
-                  image: "assets/images/flutterwave.png",
-                  value: "FlutterWave".tr(),
-                ),
-                buildPaymentTile(
-                  isVisible: (mercadoPagoSettingData == null)
-                      ? false
-                      : mercadoPagoSettingData!.isEnabled,
-                  selectedPayment: mercadoPago,
-                  image: "assets/images/mercadopago.png",
-                  value: "Mercado Pago".tr(),
-                ),
+                // buildPaymentTile(
+                //   isVisible: (payFastSettingData == null)
+                //       ? false
+                //       : payFastSettingData!.isEnable,
+                //   selectedPayment: payFast,
+                //   image: "assets/images/payfast.png",
+                //   value: "PayFast".tr(),
+                // ),
+                // buildPaymentTile(
+                //   isVisible: (payStackSettingData == null)
+                //       ? false
+                //       : payStackSettingData!.isEnabled,
+                //   selectedPayment: payStack,
+                //   image: "assets/images/paystack.png",
+                //   value: "PayStack".tr(),
+                // ),
+                // buildPaymentTile(
+                //   isVisible: (flutterWaveSettingData == null)
+                //       ? false
+                //       : flutterWaveSettingData!.isEnable,
+                //   selectedPayment: paypal,
+                //   image: "assets/images/flutterwave.png",
+                //   value: "FlutterWave".tr(),
+                // ),
+                // buildPaymentTile(
+                //   isVisible: (mercadoPagoSettingData == null)
+                //       ? false
+                //       : mercadoPagoSettingData!.isEnabled,
+                //   selectedPayment: mercadoPago,
+                //   image: "assets/images/mercadopago.png",
+                //   value: "Mercado Pago".tr(),
+                // ),
 
                 // Container(
                 //   decoration: BoxDecoration(
@@ -246,41 +286,47 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
                 //     secondary: const FaIcon(FontAwesomeIcons.wallet),
                 //   ),
                 // ),
-                // Visibility(
-                //   visible: futurecod!.cod,
-                //   child: Padding(
-                //     padding: const EdgeInsets.only(top: 10),
-                //     child: Container(
-                //       decoration: BoxDecoration(
-                //         border: Border.all(color: codPay ? Color(COLOR_PRIMARY) : Colors.black12),
-                //         borderRadius: const BorderRadius.all(Radius.circular(5.0) //                 <--- border radius here
-                //             ),
-                //       ),
-                //       padding: const EdgeInsets.symmetric(horizontal: 10),
-                //       child: CheckboxListTile(
-                //         onChanged: (bool? value) {
-                //           setState(() {
-                //             payStack = false;
-                //             flutterWave = false;
-                //             wallet = false;
-                //             razorPay = false;
-                //             codPay = true;
-                //             payTm = false;
-                //             stripe = false;
-                //             paypal = false;
-                //             payFast = false;
-                //
-                //             paymentOption = 'Cash'.tr();
-                //           });
-                //         },
-                //         value: codPay,
-                //         contentPadding: const EdgeInsets.all(0),
-                //         secondary: const FaIcon(FontAwesomeIcons.handHoldingUsd),
-                //         title: Text('Cash on Delivery'.tr()),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Visibility(
+                  visible: futurecod!.cod,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color:
+                                codPay ? Color(COLOR_PRIMARY) : Colors.black12),
+                        borderRadius: const BorderRadius.all(Radius.circular(
+                                5.0) //                 <--- border radius here
+                            ),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: CheckboxListTile(
+                        onChanged: (bool? value) {
+                          setState(() {
+                            payStack = false;
+                            flutterWave = false;
+                            wallet = false;
+                            razorPay = false;
+                            codPay = true;
+                            payTm = false;
+                            stripe = false;
+                            paypal = false;
+                            payFast = false;
+
+                            paymentOption = 'Cash'.tr();
+                          });
+                        },
+                        value: codPay,
+                        contentPadding: const EdgeInsets.all(0),
+                        secondary:
+                            const FaIcon(FontAwesomeIcons.handHoldingDollar),
+                        title: Text(
+                          'Cash on Delivery'.tr(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 // Visibility(
                 //   visible: razorPayData!.isEnabled,
                 //   child: Padding(
@@ -539,6 +585,25 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
                       ),
                     ),
                     onPressed: () async {
+                      try {
+                        print("Attempting to write to Firestore...");
+
+                        await FireStoreUtils.firestore
+                            .collection("alerts")
+                            .doc()
+                            .set({
+                          'booking_id': "${MyAppState.currentUser!.userID}",
+                          'booking_type': 'app',
+                          'message':
+                              'Victim Number is ${MyAppState.currentUser!.phoneNumber} on emergency',
+                          'read_by': '',
+                          'title': 'New App Booking',
+                        });
+
+                        print("Document successfully written hi hi!");
+                      } catch (error) {
+                        print("Error: $error");
+                      }
                       if (razorPay) {
                         paymentType = 'razorpay';
                         placeRides();
@@ -762,13 +827,17 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
         destinationLocationName: widget.destinationName.toString(),
         sourceLocationName: widget.departureName.toString(),
         sourceLocation: sourceLocation,
-        sectionId: sectionConstantModel!.id,
+        sectionId: FireStoreUtils.sections[0].id,
         rideType: "ride",
         scheduleDateTime: Timestamp.now(),
         scheduleReturnDateTime: Timestamp.now());
-
-    await FireStoreUtils().cabOrderPlace(orderModel, false);
-
+    await FireStoreUtils().cabOrderPlace(orderModel, false).then(
+      (value) {
+        print('rides id is ${value.id}');
+        addHospitalBooking(value.id);
+      },
+    );
+    // await FireStoreUtils().getNearestDriver(widget.departureLatLong);
     Navigator.pop(context, true);
   }
 

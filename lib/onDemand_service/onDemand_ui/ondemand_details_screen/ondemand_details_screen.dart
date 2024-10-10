@@ -522,11 +522,11 @@ class _OnDemandDetailsScreenState extends State<OnDemandDetailsScreen> {
           child: const Text('About').tr(),
           style: ButtonStyle(
               foregroundColor:
-                  tabString == "About" ? MaterialStateProperty.all<Color>(Colors.white) : MaterialStateProperty.all<Color>(isDarkMode(context) ? Colors.white : Colors.black),
+                  tabString == "About" ? WidgetStateProperty.all<Color>(Colors.white) : WidgetStateProperty.all<Color>(isDarkMode(context) ? Colors.white : Colors.black),
               backgroundColor: tabString == "About"
-                  ? MaterialStateProperty.all<Color>(Color(COLOR_PRIMARY))
-                  : MaterialStateProperty.all<Color>(isDarkMode(context) ? Color(DarkContainerColor) : Colors.white),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                  ? WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY))
+                  : WidgetStateProperty.all<Color>(isDarkMode(context) ? Color(DarkContainerColor) : Colors.white),
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
                   side: BorderSide(
                     color: Colors.grey.withOpacity(0.30),
@@ -546,12 +546,12 @@ class _OnDemandDetailsScreenState extends State<OnDemandDetailsScreen> {
                 child: const Text('Gallery').tr(),
                 style: ButtonStyle(
                     foregroundColor: tabString == "Gallery"
-                        ? MaterialStateProperty.all<Color>(Colors.white)
-                        : MaterialStateProperty.all<Color>(isDarkMode(context) ? Colors.white : Colors.black),
+                        ? WidgetStateProperty.all<Color>(Colors.white)
+                        : WidgetStateProperty.all<Color>(isDarkMode(context) ? Colors.white : Colors.black),
                     backgroundColor: tabString == "Gallery"
-                        ? MaterialStateProperty.all<Color>(Color(COLOR_PRIMARY))
-                        : MaterialStateProperty.all<Color>(isDarkMode(context) ? Color(DarkContainerColor) : Colors.white),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                        ? WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY))
+                        : WidgetStateProperty.all<Color>(isDarkMode(context) ? Color(DarkContainerColor) : Colors.white),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                         side: BorderSide(
                           color: Colors.grey.withOpacity(0.30),
@@ -571,12 +571,12 @@ class _OnDemandDetailsScreenState extends State<OnDemandDetailsScreen> {
                 child: const Text('Review').tr(),
                 style: ButtonStyle(
                     foregroundColor: tabString == "Review"
-                        ? MaterialStateProperty.all<Color>(Colors.black)
-                        : MaterialStateProperty.all<Color>(isDarkMode(context) ? Colors.white : Colors.black),
+                        ? WidgetStateProperty.all<Color>(Colors.black)
+                        : WidgetStateProperty.all<Color>(isDarkMode(context) ? Colors.white : Colors.black),
                     backgroundColor: tabString == "Review"
-                        ? MaterialStateProperty.all<Color>(Color(COLOR_PRIMARY))
-                        : MaterialStateProperty.all<Color>(isDarkMode(context) ? Color(DarkContainerColor) : Colors.white),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                        ? WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY))
+                        : WidgetStateProperty.all<Color>(isDarkMode(context) ? Color(DarkContainerColor) : Colors.white),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18.0),
                         side: BorderSide(
                           color: Colors.grey.withOpacity(0.30),

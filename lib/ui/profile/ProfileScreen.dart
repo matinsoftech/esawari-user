@@ -10,7 +10,6 @@ import 'package:emartconsumer/services/show_toast_dialog.dart';
 import 'package:emartconsumer/ui/accountDetails/AccountDetailsScreen.dart';
 import 'package:emartconsumer/ui/auth/AuthScreen.dart';
 import 'package:emartconsumer/ui/contactUs/ContactUsScreen.dart';
-import 'package:emartconsumer/ui/reauthScreen/reauth_user_screen.dart';
 import 'package:emartconsumer/ui/settings/SettingsScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
@@ -36,17 +35,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: isDarkMode(context) ? Colors.black : null,
-      // appBar: AppBar(
-      //   leading: GestureDetector(
-      //     onTap: () {
-      //       Navigator.pop(context);
-      //     },
-      //     child: const Icon(
-      //       Icons.arrow_back,
-      //     ),
-      //   ),
-      //   title: Text('My Profile'),
-      // ),
       body: SingleChildScrollView(
         child: Column(children: <Widget>[
           Padding(
@@ -54,9 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: <Widget>[
-                Center(
-                    child: displayCircleImage(
-                        MyAppState.currentUser!.profilePictureURL, 130, false)),
+                Center(child: displayCircleImage(MyAppState.currentUser!.profilePictureURL, 130, false)),
                 Positioned.directional(
                   textDirection: Directionality.of(context),
                   start: 80,
@@ -65,8 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundColor: const Color(COLOR_ACCENT),
                       child: Icon(
                         Icons.camera_alt,
-                        color:
-                            isDarkMode(context) ? Colors.black : Colors.white,
+                        color: isDarkMode(context) ? Colors.black : Colors.white,
                       ),
                       mini: true,
                       onPressed: _onCameraClick),
@@ -78,9 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.only(top: 16.0, right: 32, left: 32),
             child: Text(
               MyAppState.currentUser!.fullName(),
-              style: TextStyle(
-                  color: isDarkMode(context) ? Colors.white : Colors.black,
-                  fontSize: 20),
+              style: TextStyle(color: isDarkMode(context) ? Colors.white : Colors.black, fontSize: 20),
               textAlign: TextAlign.center,
             ),
           ),
@@ -103,8 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ListTile(
                   onTap: () {
-                    push(
-                        context, SettingsScreen(user: MyAppState.currentUser!));
+                    push(context, SettingsScreen(user: MyAppState.currentUser!));
                   },
                   title: Text(
                     'Settings'.tr(),
@@ -173,6 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // }catch(e){
                     //   print(e);
                     // }
+
                   },
                   title: const Text(
                     'Delete Account',
@@ -194,25 +177,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   padding: const EdgeInsets.only(top: 12, bottom: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide(
-                          color: isDarkMode(context)
-                              ? Colors.grey.shade700
-                              : Colors.grey.shade200)),
+                  shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0), side: BorderSide(color: isDarkMode(context) ? Colors.grey.shade700 : Colors.grey.shade200)),
                 ),
                 child: Text(
                   'Log Out'.tr(),
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode(context) ? Colors.white : Colors.black),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDarkMode(context) ? Colors.white : Colors.black),
                 ).tr(),
                 onPressed: () async {
                   //MyAppState.currentUser!.active = false;
                   MyAppState.currentUser!.lastOnlineTimestamp = Timestamp.now();
-                  await FireStoreUtils.updateCurrentUser(
-                      MyAppState.currentUser!);
+                  await FireStoreUtils.updateCurrentUser(MyAppState.currentUser!);
                   await auth.FirebaseAuth.instance.signOut();
                   MyAppState.currentUser = null;
                   pushAndRemoveUntil(context, const AuthScreen(), false);
@@ -224,6 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
 
   showDeleteAccountAlertDialog(BuildContext context) {
     // set up the button
@@ -272,6 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+
   _onCameraClick() {
     final action = CupertinoActionSheet(
       message: const Text(
@@ -295,8 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: const Text('chooseImageFromGallery').tr(),
           onPressed: () async {
             Navigator.pop(context);
-            XFile? image =
-                await _imagePicker.pickImage(source: ImageSource.gallery);
+            XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
             if (image != null) {
               await _imagePicked(File(image.path));
             }
@@ -307,8 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: const Text('Take a picture').tr(),
           onPressed: () async {
             Navigator.pop(context);
-            XFile? image =
-                await _imagePicker.pickImage(source: ImageSource.camera);
+            XFile? image = await _imagePicker.pickImage(source: ImageSource.camera);
             if (image != null) {
               await _imagePicked(File(image.path));
             }
@@ -328,9 +303,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _imagePicked(File image) async {
     showProgress(context, 'Uploading image...'.tr(), false);
-    MyAppState.currentUser!.profilePictureURL =
-        await FireStoreUtils.uploadUserImageToFireStorage(
-            image, MyAppState.currentUser!.userID);
+    MyAppState.currentUser!.profilePictureURL = await FireStoreUtils.uploadUserImageToFireStorage(image, MyAppState.currentUser!.userID);
     await FireStoreUtils.updateCurrentUser(MyAppState.currentUser!);
     hideProgress();
   }

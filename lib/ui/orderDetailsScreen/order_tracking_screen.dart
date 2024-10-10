@@ -12,8 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class OrderTrackingScreen extends StatefulWidget {
   final OrderModel orderModel;
 
-  const OrderTrackingScreen({Key? key, required this.orderModel})
-      : super(key: key);
+  const OrderTrackingScreen({Key? key, required this.orderModel}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -77,8 +76,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
   User? _driverModel = User();
 
   getCurrentOrder() async {
-    ordersFuture =
-        FireStoreUtils().getOrderByID(widget.orderModel.id.toString());
+    ordersFuture = FireStoreUtils().getOrderByID(widget.orderModel.id.toString());
     ordersFuture.listen((event) {
       print("------->${event!.status}");
       setState(() {
@@ -89,8 +87,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
   }
 
   getDriver() {
-    driverStream =
-        FireStoreUtils().getDriver(widget.orderModel.driverID.toString());
+    driverStream = FireStoreUtils().getDriver(widget.orderModel.driverID.toString());
     driverStream.listen((event) {
       _driverModel = event;
       getDirections();
@@ -133,8 +130,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
       appBar: AppBar(title: Text("Track")),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
-        myLocationEnabled:
-            _driverModel!.inProgressOrderID != null ? false : true,
+        myLocationEnabled: _driverModel!.inProgressOrderID != null ? false : true,
         myLocationButtonEnabled: true,
         mapType: MapType.terrain,
         zoomControlsEnabled: false,
@@ -145,8 +141,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         ),
         initialCameraPosition: CameraPosition(
           zoom: 15,
-          target: LatLng(_driverModel!.location.latitude,
-              _driverModel!.location.longitude),
+          target: LatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
         ),
       ),
     );
@@ -158,16 +153,19 @@ class HomeScreenState extends State<OrderTrackingScreen> {
       if (currentOrder!.status == ORDER_STATUS_SHIPPED) {
         List<LatLng> polylineCoordinates = [];
 
+        // Create a PolylineRequest object
+       PolylineRequest polylineRequest = PolylineRequest(
+      origin: PointLatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
+      destination: PointLatLng(currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
+      mode: TravelMode.driving, // Specify the travel mode
+       );
+
+// Call the method with the PolylineRequest
         PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-          googleApiKey: GOOGLE_API_KEY,
-          request: PolylineRequest(
-            origin: PointLatLng(_driverModel!.location.latitude,
-                _driverModel!.location.longitude),
-            destination: PointLatLng(
-                currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
-            mode: TravelMode.driving,
-          ),
+          request: polylineRequest,
+          googleApiKey: GOOGLE_API_KEY, // Provide your API key here
         );
+
 
         print("----?${result.points}");
         if (result.points.isNotEmpty) {
@@ -180,8 +178,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
           _markers['Driver'] = Marker(
               markerId: const MarkerId('Driver'),
               infoWindow: const InfoWindow(title: "Driver"),
-              position: LatLng(_driverModel!.location.latitude,
-                  _driverModel!.location.longitude),
+              position: LatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
               icon: taxiIcon!,
               rotation: double.parse(_driverModel!.rotation.toString()));
         });
@@ -190,24 +187,26 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         _markers['Destination'] = Marker(
           markerId: const MarkerId('Destination'),
           infoWindow: const InfoWindow(title: "Destination"),
-          position: LatLng(
-              currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
+          position: LatLng(currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
           icon: destinationIcon!,
         );
         addPolyLine(polylineCoordinates);
       } else if (currentOrder!.status == ORDER_STATUS_IN_TRANSIT) {
         List<LatLng> polylineCoordinates = [];
 
-        PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-          googleApiKey: GOOGLE_API_KEY,
-          request: PolylineRequest(
-            origin: PointLatLng(_driverModel!.location.latitude,
-                _driverModel!.location.longitude),
-            destination: PointLatLng(currentOrder!.address!.location!.latitude,
-                currentOrder!.address!.location!.longitude),
-            mode: TravelMode.driving,
-          ),
+        // Create a PolylineRequest object
+        PolylineRequest polylineRequest = PolylineRequest(
+        origin: PointLatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
+        destination: PointLatLng(currentOrder!.address!.location!.latitude, currentOrder!.address!.location!.longitude),
+        mode: TravelMode.driving,
         );
+ 
+// Call the method with the PolylineRequest
+        PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        request: polylineRequest,
+        googleApiKey: GOOGLE_API_KEY, // Optional if you want to provide your API key
+        );
+
 
         print("----?${result.points}");
         if (result.points.isNotEmpty) {
@@ -220,8 +219,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
           _markers['Driver'] = Marker(
             markerId: const MarkerId('Driver'),
             infoWindow: const InfoWindow(title: "Driver"),
-            position: LatLng(_driverModel!.location.latitude,
-                _driverModel!.location.longitude),
+            position: LatLng(_driverModel!.location.latitude, _driverModel!.location.longitude),
             rotation: double.parse(_driverModel!.rotation.toString()),
             icon: taxiIcon!,
           );
@@ -231,24 +229,25 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         _markers['Destination'] = Marker(
           markerId: const MarkerId('Destination'),
           infoWindow: const InfoWindow(title: "Destination"),
-          position: LatLng(currentOrder!.address!.location!.latitude,
-              currentOrder!.address!.location!.longitude),
+          position: LatLng(currentOrder!.address!.location!.latitude, currentOrder!.address!.location!.longitude),
           icon: destinationIcon!,
         );
         addPolyLine(polylineCoordinates);
       } else {
         List<LatLng> polylineCoordinates = [];
 
-        PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-          googleApiKey: GOOGLE_API_KEY,
-          request: PolylineRequest(
-            origin: PointLatLng(currentOrder!.address!.location!.latitude,
-                currentOrder!.address!.location!.longitude),
-            destination: PointLatLng(
-                currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
-            mode: TravelMode.driving,
-          ),
-        );
+// Create a PolylineRequest object with required parameters
+  PolylineRequest polylineRequest = PolylineRequest(
+  origin: PointLatLng(currentOrder!.address!.location!.latitude, currentOrder!.address!.location!.longitude),
+  destination: PointLatLng(currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
+  mode: TravelMode.driving, // Specify the travel mode
+);
+
+// Call the method with the PolylineRequest and API key
+PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+  request: polylineRequest,
+  googleApiKey: GOOGLE_API_KEY, // Your API key goes here
+);
 
         print("----?${result.points}");
         if (result.points.isNotEmpty) {
@@ -260,16 +259,14 @@ class HomeScreenState extends State<OrderTrackingScreen> {
         _markers['Departure'] = Marker(
             markerId: const MarkerId('Departure'),
             infoWindow: const InfoWindow(title: "Departure"),
-            position: LatLng(currentOrder!.address!.location!.latitude,
-                currentOrder!.address!.location!.longitude),
+            position: LatLng(currentOrder!.address!.location!.latitude, currentOrder!.address!.location!.longitude),
             icon: departureIcon!);
 
         _markers.remove("Destination");
         _markers['Destination'] = Marker(
             markerId: const MarkerId('Destination'),
             infoWindow: const InfoWindow(title: "Destination"),
-            position: LatLng(
-                currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
+            position: LatLng(currentOrder!.vendor.latitude, currentOrder!.vendor.longitude),
             icon: destinationIcon!);
         addPolyLine(polylineCoordinates);
       }
@@ -286,8 +283,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
       geodesic: true,
     );
     polyLines[id] = polyline;
-    updateCameraLocation(
-        polylineCoordinates.first, polylineCoordinates.last, _mapController);
+    updateCameraLocation(polylineCoordinates.first, polylineCoordinates.last, _mapController);
     setState(() {});
   }
 
@@ -323,8 +319,7 @@ class HomeScreenState extends State<OrderTrackingScreen> {
     // return checkCameraLocation(cameraUpdate, mapController);
   }
 
-  Future<void> checkCameraLocation(
-      CameraUpdate cameraUpdate, GoogleMapController mapController) async {
+  Future<void> checkCameraLocation(CameraUpdate cameraUpdate, GoogleMapController mapController) async {
     mapController.animateCamera(cameraUpdate);
     LatLngBounds l1 = await mapController.getVisibleRegion();
     LatLngBounds l2 = await mapController.getVisibleRegion();

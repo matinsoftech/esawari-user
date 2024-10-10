@@ -51,18 +51,21 @@ class _TableOrderDetailsScreenState extends State<TableOrderDetailsScreen> {
       }
     } else if (widget.bookTableModel.status == ORDER_STATUS_ACCEPTED) {
       bookStatus = 'Confirmed'.tr();
-      polyLinesFuture = polylinePoints.getRouteBetweenCoordinates(
-        googleApiKey: GOOGLE_API_KEY,
-        request: PolylineRequest(
-          origin: PointLatLng(widget.bookTableModel.vendor.latitude,
-              widget.bookTableModel.vendor.longitude),
-          destination: PointLatLng(
-              widget.bookTableModel.author.location.latitude,
-              widget.bookTableModel.author.location.longitude),
-          mode: TravelMode.driving,
-        ),
+            PolylineRequest polylineRequest = PolylineRequest(
+        origin: PointLatLng(widget.bookTableModel.vendor.latitude,
+            widget.bookTableModel.vendor.longitude),
+        destination: PointLatLng(widget.bookTableModel.author.location.latitude,
+            widget.bookTableModel.author.location.longitude),
+        mode: TravelMode.driving, // Specify the travel mode
       );
+
+      polyLinesFuture = polylinePoints.getRouteBetweenCoordinates(
+        request: polylineRequest,
+        googleApiKey: GOOGLE_API_KEY, // Provide your API key here
+      );
+
       isVisible = false;
+
     } else if (widget.bookTableModel.status == ORDER_STATUS_REJECTED) {
       bookStatus = 'Rejected'.tr();
       isVisible = false;
@@ -357,7 +360,7 @@ class _TableOrderDetailsScreenState extends State<TableOrderDetailsScreen> {
                           InkWell(
                             onTap: () {
                               if (widget.bookTableModel.vendor.phonenumber
-                                  .isNotEmpty) {
+                                      .isNotEmpty) {
                                 final Uri launchUri = Uri(
                                   scheme: 'tel',
                                   path:

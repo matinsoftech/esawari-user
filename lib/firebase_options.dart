@@ -65,10 +65,9 @@ class DefaultFirebaseOptions {
     projectId: 'emart-8d99f',
     databaseURL: 'https://emart-8d99f-default-rtdb.firebaseio.com',
     storageBucket: 'emart-8d99f.appspot.com',
-    androidClientId:
-        '841077018919-19kk2v8gtn67780pskpo07kutct6v1t4.apps.googleusercontent.com',
-    iosClientId:
-        '841077018919-ap6ufmadhjb306vmo0j0o83ade5gvkki.apps.googleusercontent.com',
+    androidClientId: '841077018919-19kk2v8gtn67780pskpo07kutct6v1t4.apps.googleusercontent.com',
+    iosClientId: '841077018919-ap6ufmadhjb306vmo0j0o83ade5gvkki.apps.googleusercontent.com',
     iosBundleId: 'com.emart.customer',
   );
+
 }

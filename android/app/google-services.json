@@ -8,6 +8,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:143565238435:android:036e6a5dcd419c5ea14f16",
+        "android_client_info": {
+          "package_name": "driver.esawari.matinsoftech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5wGQK4CLNOsg1N5okCifdHV_V4HyJbjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:143565238435:android:619adaaa4e028237a14f16",
         "android_client_info": {
           "package_name": "user.esawari.matinsoftech"

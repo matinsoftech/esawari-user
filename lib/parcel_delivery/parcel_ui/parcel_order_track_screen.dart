@@ -416,9 +416,9 @@ class _ParcelOrderTrackScreenState extends State<ParcelOrderTrackScreen> {
                                       },
                                       style: ButtonStyle(
                                           foregroundColor:
-                                              MaterialStateProperty.all<Color>(
+                                              WidgetStateProperty.all<Color>(
                                                   Color(COLOR_PRIMARY)),
-                                          shape: MaterialStateProperty.all<
+                                          shape: WidgetStateProperty.all<
                                                   RoundedRectangleBorder>(
                                               RoundedRectangleBorder(
                                                   borderRadius:
@@ -567,17 +567,20 @@ class _ParcelOrderTrackScreenState extends State<ParcelOrderTrackScreen> {
         if (_cabOrderModel!.status == ORDER_STATUS_SHIPPED) {
           List<LatLng> polylineCoordinates = [];
 
+          PolylineRequest polylineRequest = PolylineRequest(
+            origin: PointLatLng(_driverModel!.location.latitude,
+                _driverModel!.location.longitude),
+            destination: PointLatLng(_cabOrderModel!.senderLatLong!.latitude,
+                _cabOrderModel!.senderLatLong!.longitude),
+            mode: TravelMode.driving, // Specify the travel mode
+          );
+
           PolylineResult result =
               await polylinePoints.getRouteBetweenCoordinates(
-            googleApiKey: GOOGLE_API_KEY,
-            request: PolylineRequest(
-              origin: PointLatLng(_driverModel!.location.latitude,
-                  _driverModel!.location.longitude),
-              destination: PointLatLng(_cabOrderModel!.senderLatLong!.latitude,
-                  _cabOrderModel!.senderLatLong!.longitude),
-              mode: TravelMode.driving,
-            ),
+            request: polylineRequest,
+            googleApiKey: GOOGLE_API_KEY, // Provide your API key here
           );
+
 
           print("----?${result.points}");
           if (result.points.isNotEmpty) {
@@ -617,26 +620,20 @@ class _ParcelOrderTrackScreenState extends State<ParcelOrderTrackScreen> {
         } else if (_cabOrderModel!.status == ORDER_STATUS_IN_TRANSIT) {
           List<LatLng> polylineCoordinates = [];
 
-          // PolylineResult result =
-          //     await polylinePoints.getRouteBetweenCoordinates(
-          //   GOOGLE_API_KEY,
-          //   PointLatLng(_driverModel!.location.latitude,
-          //       _driverModel!.location.longitude),
+          PolylineRequest polylineRequest = PolylineRequest(
+            origin: PointLatLng(_driverModel!.location.latitude,
+                _driverModel!.location.longitude),
+            destination: PointLatLng(_cabOrderModel!.receiverLatLong!.latitude,
+                _cabOrderModel!.receiverLatLong!.longitude),
+            mode: TravelMode.driving, // Specify the travel mode
+          );
 
-          //   travelMode: TravelMode.driving,
-          // );
           PolylineResult result =
               await polylinePoints.getRouteBetweenCoordinates(
-            googleApiKey: GOOGLE_API_KEY,
-            request: PolylineRequest(
-              origin: PointLatLng(_driverModel!.location.latitude,
-                  _driverModel!.location.longitude),
-              destination: PointLatLng(
-                  _cabOrderModel!.receiverLatLong!.latitude,
-                  _cabOrderModel!.receiverLatLong!.longitude),
-              mode: TravelMode.driving,
-            ),
+            request: polylineRequest,
+            googleApiKey: GOOGLE_API_KEY, // Provide your API key here
           );
+
 
           print("----?${result.points}");
           if (result.points.isNotEmpty) {
@@ -674,26 +671,20 @@ class _ParcelOrderTrackScreenState extends State<ParcelOrderTrackScreen> {
         } else {
           List<LatLng> polylineCoordinates = [];
 
-          // PolylineResult result =
-          //     await polylinePoints.getRouteBetweenCoordinates(
-          //   GOOGLE_API_KEY,
+          PolylineRequest polylineRequest = PolylineRequest(
+            origin: PointLatLng(_cabOrderModel!.senderLatLong!.latitude,
+                _cabOrderModel!.senderLatLong!.longitude),
+            destination: PointLatLng(_cabOrderModel!.receiverLatLong!.latitude,
+                _cabOrderModel!.receiverLatLong!.longitude),
+            mode: TravelMode.driving, // Specify the travel mode
+          );
 
-          //   PointLatLng(_cabOrderModel!.receiverLatLong!.latitude,
-          //       _cabOrderModel!.receiverLatLong!.longitude),
-          //   travelMode: TravelMode.driving,
-          // );
           PolylineResult result =
               await polylinePoints.getRouteBetweenCoordinates(
-            googleApiKey: GOOGLE_API_KEY,
-            request: PolylineRequest(
-              origin: PointLatLng(_cabOrderModel!.senderLatLong!.latitude,
-                  _cabOrderModel!.senderLatLong!.longitude),
-              destination: PointLatLng(
-                  _cabOrderModel!.receiverLatLong!.latitude,
-                  _cabOrderModel!.receiverLatLong!.longitude),
-              mode: TravelMode.driving,
-            ),
+            request: polylineRequest,
+            googleApiKey: GOOGLE_API_KEY, // Provide your API key here
           );
+
 
           if (result.points.isNotEmpty) {
             for (var point in result.points) {
