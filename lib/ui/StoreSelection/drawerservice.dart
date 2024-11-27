@@ -4,6 +4,7 @@ import 'package:emartconsumer/cab_service/dashboard_cab_service.dart';
 import 'package:emartconsumer/constants.dart';
 import 'package:emartconsumer/main.dart';
 import 'package:emartconsumer/model/User.dart';
+import 'package:emartconsumer/rental_service/rental_booking_screen.dart';
 import 'package:emartconsumer/services/FirebaseHelper.dart';
 import 'package:emartconsumer/services/helper.dart';
 import 'package:emartconsumer/services/localDatabase.dart';
@@ -126,7 +127,14 @@ class CustomDrawer extends StatelessWidget {
                                   title: const Text('Booking').tr(),
                                   onTap: () {
                                     
-                                     
+                                     Navigator.pop(context);
+                                    if (MyAppState.currentUser == null) {
+                                      push(context, const AuthScreen());
+                                    } else {
+                                    
+                                           Navigator.push(context, MaterialPageRoute(builder: (context)=> RentalBookingScreen()));
+                                    
+                                    }
                                     
                                   
                                   },
@@ -173,7 +181,7 @@ class CustomDrawer extends StatelessWidget {
                                 child: ListTile(
                                   selected: drawerSelection == DrawerSelection.workerInbox,
                                   leading: const Icon(CupertinoIcons.chat_bubble_2_fill),
-                                  title: const Text('Worker Inbox').tr(),
+                                  title: const Text('Driver Inbox').tr(),
                                   onTap: () {
                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>InboxWorkerScreen()));
                                     

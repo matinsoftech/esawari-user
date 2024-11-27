@@ -100,6 +100,7 @@ await EasyLocalization.ensureInitialized();
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => User()),
         Provider<CartDatabase>(
           create: (_) => CartDatabase(),
         )

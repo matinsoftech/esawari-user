@@ -107,23 +107,25 @@ class _RentalServiceDashBoardState extends State<RentalServiceDashBoard> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        if (_currentWidget is! RentalServiceHomeScreen) {
-          setState(() {
-            _drawerSelection = DrawerSelection.Home;
-            _appBarTitle = 'Home'.tr();
-            _currentWidget = RentalServiceHomeScreen(
-              user: MyAppState.currentUser,
-            );
-          });
-          return false;
-        } else {
-          pushAndRemoveUntil(context, const StoreSelection(), false);
-          return true;
-        }
-      },
-      child: ChangeNotifierProvider.value(
+    return 
+    // WillPopScope(
+    //   onWillPop: () async {
+    //     if (_currentWidget is! RentalServiceHomeScreen) {
+    //       setState(() {
+    //         _drawerSelection = DrawerSelection.Home;
+    //         _appBarTitle = 'Home'.tr();
+    //         _currentWidget = RentalServiceHomeScreen(
+    //           user: MyAppState.currentUser,
+    //         );
+    //       });
+    //       return false;
+    //     } else {
+    //       pushAndRemoveUntil(context, const StoreSelection(), false);
+    //       return true;
+    //     }
+    //   },
+    //   child: 
+      ChangeNotifierProvider.value(
         value: user,
         child: Consumer<User>(
           builder: (context, user, _) {
@@ -212,25 +214,27 @@ class _RentalServiceDashBoardState extends State<RentalServiceDashBoard> {
                                   ),
                                 ),
                               ),
-                              ListTileTheme(
-                                style: ListTileStyle.drawer,
-                                selectedColor: Color(COLOR_PRIMARY),
-                                child: ListTile(
-                                  selected: _drawerSelection == DrawerSelection.Home,
-                                  title: const Text('Home').tr(),
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      _drawerSelection = DrawerSelection.Home;
-                                      _appBarTitle = 'Home'.tr();
-                                      _currentWidget = RentalServiceHomeScreen(
-                                        user: MyAppState.currentUser,
-                                      );
-                                    });
-                                  },
-                                  leading: const Icon(CupertinoIcons.home),
-                                ),
-                              ),
+                              // ListTileTheme(
+                              //   style: ListTileStyle.drawer,
+                              //   selectedColor: Color(COLOR_PRIMARY),
+                              //   child: ListTile(
+                              //     selected: _drawerSelection == DrawerSelection.Home,
+                              //     title: const Text('Home').tr(),
+                              //     onTap: () {
+                              //       Navigator.pushReplacement(
+                              //       context,MaterialPageRoute(builder: (context) => StoreSelection()),);
+                              //       // Navigator.pop(context);
+                              //       // setState(() {
+                              //       //   _drawerSelection = DrawerSelection.Home;
+                              //       //   _appBarTitle = 'Home'.tr();
+                              //       //   _currentWidget = RentalServiceHomeScreen(
+                              //       //     user: MyAppState.currentUser,
+                              //       //   );
+                              //       // });
+                              //     },
+                              //     leading: const Icon(CupertinoIcons.home),
+                              //   ),
+                              // ),
                               Visibility(
                                 visible: UserPreference.getWalletData() ?? false,
                                 child: ListTileTheme(
@@ -433,7 +437,7 @@ class _RentalServiceDashBoardState extends State<RentalServiceDashBoard> {
                                       await FireStoreUtils.updateCurrentUser(user);
                                       await auth.FirebaseAuth.instance.signOut();
                                       MyAppState.currentUser = null;
-                                      COLOR_PRIMARY = 0xFF00B761;
+                                      COLOR_PRIMARY = 0xFFFF0000;
                                       Provider.of<CartDatabase>(context, listen: false).deleteAllProducts();
                                       pushAndRemoveUntil(context, const AuthScreen(), false);
                                     }
@@ -486,7 +490,7 @@ class _RentalServiceDashBoardState extends State<RentalServiceDashBoard> {
             );
           },
         ),
-      ),
+    //  ),
     );
   }
 }

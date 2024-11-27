@@ -211,11 +211,7 @@ final CameraPosition _kInitialPosition = const CameraPosition(
                   padding: const EdgeInsets.only(top: 3),
                   child: ElevatedButton(
                     onPressed: () {
-                       if(MyAppState.currentUser!=null){
-                      push(context, StoreSelection());}
-                      else {
-                      push(context, StoreSelection());
-                      }
+                      Navigator.pop(context, MaterialPageRoute(builder: (context)=>StoreSelection()));
                     
                     },
                     style: ElevatedButton.styleFrom(

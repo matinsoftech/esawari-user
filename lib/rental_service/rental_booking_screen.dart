@@ -50,45 +50,47 @@ class _RentalBookingScreenState extends State<RentalBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          getBookedData("");
-        },
-        child: Column(
-          children: [
-            SizedBox(
-              height: 45,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                physics: const BouncingScrollPhysics(),
-                itemCount: ridesCategory.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return buildRideType(label: ridesCategory[index], index: index);
-                },
+    return SafeArea(
+      child: Scaffold(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            getBookedData("");
+          },
+          child: Column(
+            children: [
+              SizedBox(
+                height: 45,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: ridesCategory.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return buildRideType(label: ridesCategory[index], index: index);
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ordersList.isEmpty
-                      ? Center(
-                          child: Text(
-                          "Booking not found".tr(),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                        ))
-                      : ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: ordersList.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return buildRides(ordersList[index]);
-                          },
-                        ),
-            ),
-          ],
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ordersList.isEmpty
+                        ? Center(
+                            child: Text(
+                            "Booking not found".tr(),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          ))
+                        : ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: ordersList.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return buildRides(ordersList[index]);
+                            },
+                          ),
+              ),
+            ],
+          ),
         ),
       ),
     );
