@@ -64,7 +64,7 @@ class _InterCityPaymentSelectionScreenState extends State<InterCityPaymentSelect
   CodModel? futurecod;
   StripeSettingData? stripeData;
   PaytmSettingData? paytmSettingData;
-  PaypalSettingData? paypalSettingData;
+  // PaypalSettingData? paypalSettingData;
   PayStackSettingData? payStackSettingData;
   FlutterWaveSettingData? flutterWaveSettingData;
   MercadoPagoSettingData? mercadoPagoSettingData;
@@ -86,7 +86,7 @@ class _InterCityPaymentSelectionScreenState extends State<InterCityPaymentSelect
     });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
-    paypalSettingData = await UserPreference.getPayPalData();
+    // paypalSettingData = await UserPreference.getPayPalData();
     payStackSettingData = await UserPreference.getPayStackData();
     flutterWaveSettingData = await UserPreference.getFlutterWaveData();
     mercadoPagoSettingData = await UserPreference.getMercadoPago();
@@ -177,12 +177,12 @@ class _InterCityPaymentSelectionScreenState extends State<InterCityPaymentSelect
                   image: "assets/images/paytm_@3x.png",
                   value: "PayTm".tr(),
                 ),
-                buildPaymentTile(
-                  isVisible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
-                  selectedPayment: paypal,
-                  image: "assets/images/paypal_@3x.png",
-                  value: "PayPal".tr(),
-                ),
+                // buildPaymentTile(
+                //   isVisible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
+                //   selectedPayment: paypal,
+                //   image: "assets/images/paypal_@3x.png",
+                //   value: "PayPal".tr(),
+                // ),
 
                 buildPaymentTile(
                   isVisible: (payFastSettingData == null) ? false : payFastSettingData!.isEnable,

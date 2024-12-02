@@ -38,13 +38,13 @@ import 'package:emartconsumer/userPrefrence.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
+// import 'package:flutter_paypal_native/flutter_paypal_native.dart';
+// import 'package:flutter_paypal_native/models/custom/currency_code.dart';
+// import 'package:flutter_paypal_native/models/custom/environment.dart';
+// import 'package:flutter_paypal_native/models/custom/order_callback.dart';
+// import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
+// import 'package:flutter_paypal_native/models/custom/user_action.dart';
+// import 'package:flutter_paypal_native/str_helper.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe1;
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:http/http.dart' as http;
@@ -283,7 +283,7 @@ class _CartParcelScreenState extends State<CartParcelScreen> {
                 paymentType = 'paypal';
                 showLoadingAlert();
                 // _makePaypalPayment(amount: getTotalAmount().toString());
-                paypalPaymentSheet(amount: getTotalAmount().toString());
+                // paypalPaymentSheet(amount: getTotalAmount().toString());
               } else if (wallet && walletBalanceError == false) {
                 paymentType = 'wallet';
 
@@ -1201,7 +1201,7 @@ class _CartParcelScreenState extends State<CartParcelScreen> {
   static FirebaseFirestore fireStore = FirebaseFirestore.instance;
   StripeSettingData? stripeData;
   PaytmSettingData? paytmSettingData;
-  PaypalSettingData? paypalSettingData;
+  // PaypalSettingData? paypalSettingData;
   PayStackSettingData? payStackSettingData;
   FlutterWaveSettingData? flutterWaveSettingData;
   PayFastSettingData? payFastSettingData;
@@ -1249,51 +1249,51 @@ class _CartParcelScreenState extends State<CartParcelScreen> {
     });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
-    paypalSettingData = await UserPreference.getPayPalData();
+    // paypalSettingData = await UserPreference.getPayPalData();
     payStackSettingData = await UserPreference.getPayStackData();
     flutterWaveSettingData = await UserPreference.getFlutterWaveData();
     payFastSettingData = await UserPreference.getPayFastData();
     mercadoPagoSettingData = await UserPreference.getMercadoPago();
 
     codModel = await fireStoreUtils.getCod();
-    initPayPal();
+    // initPayPal();
     setState(() {});
   }
 
-  void initPayPal() async {
-    FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
-    await _flutterPaypalNativePlugin.init(
-      returnUrl: "com.emart.customer://paypalpay",
-      clientID: paypalSettingData!.paypalClient,
-      payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
-      currencyCode: FPayPalCurrencyCode.usd,
-      action: FPayPalUserAction.payNow,
-    );
+  // void initPayPal() async {
+  //   FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
+  //   await _flutterPaypalNativePlugin.init(
+  //     returnUrl: "com.emart.customer://paypalpay",
+  //     clientID: paypalSettingData!.paypalClient,
+  //     payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
+  //     currencyCode: FPayPalCurrencyCode.usd,
+  //     action: FPayPalUserAction.payNow,
+  //   );
 
-    //call backs for payment
-    _flutterPaypalNativePlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          Navigator.pop(context);
-          ShowToastDialog.showToast("Payment canceled");
-        },
-        onSuccess: (data) {
-          Navigator.pop(context);
-          _flutterPaypalNativePlugin.removeAllPurchaseItems();
-          ShowToastDialog.showToast("Payment Successfully");
-          placeParcelOrder();
-        },
-        onError: (data) {
-          Navigator.pop(context);
-          ShowToastDialog.showToast("error: ${data.reason}");
-        },
-        onShippingChange: (data) {
-          Navigator.pop(context);
-          ShowToastDialog.showToast("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
-        },
-      ),
-    );
-  }
+  //   //call backs for payment
+  //   _flutterPaypalNativePlugin.setPayPalOrderCallback(
+  //     callback: FPayPalOrderCallback(
+  //       onCancel: () {
+  //         Navigator.pop(context);
+  //         ShowToastDialog.showToast("Payment canceled");
+  //       },
+  //       onSuccess: (data) {
+  //         Navigator.pop(context);
+  //         _flutterPaypalNativePlugin.removeAllPurchaseItems();
+  //         ShowToastDialog.showToast("Payment Successfully");
+  //         placeParcelOrder();
+  //       },
+  //       onError: (data) {
+  //         Navigator.pop(context);
+  //         ShowToastDialog.showToast("error: ${data.reason}");
+  //       },
+  //       onShippingChange: (data) {
+  //         Navigator.pop(context);
+  //         ShowToastDialog.showToast("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget paymentListView() {
     return Column(
@@ -1408,12 +1408,12 @@ class _CartParcelScreenState extends State<CartParcelScreen> {
           image: "assets/images/paytm_@3x.png",
           value: "PayTm",
         ),
-        buildPaymentTile(
-          isVisible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
-          selectedPayment: paypal,
-          image: "assets/images/paypal_@3x.png",
-          value: "PayPal".tr(),
-        ),
+        // buildPaymentTile(
+        //   isVisible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
+        //   selectedPayment: paypal,
+        //   image: "assets/images/paypal_@3x.png",
+        //   value: "PayPal".tr(),
+        // ),
         buildPaymentTile(
           isVisible: (payFastSettingData == null) ? false : payFastSettingData!.isEnable,
           selectedPayment: payFast,
@@ -1699,26 +1699,26 @@ class _CartParcelScreenState extends State<CartParcelScreen> {
   }
 
   ///PayPal payment function
-  final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
+  // final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
 
-  paypalPaymentSheet({required amount}) {
-    //add 1 item to cart. Max is 4!
-    if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
-      _flutterPaypalNativePlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          // random prices
-          amount: double.parse(amount),
+  // paypalPaymentSheet({required amount}) {
+  //   //add 1 item to cart. Max is 4!
+  //   if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
+  //     _flutterPaypalNativePlugin.addPurchaseUnit(
+  //       FPayPalPurchaseUnit(
+  //         // random prices
+  //         amount: double.parse(amount),
 
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: FPayPalStrHelper.getRandomString(16),
-        ),
-      );
-    }
-    // initPayPal();
-    _flutterPaypalNativePlugin.makeOrder(
-      action: FPayPalUserAction.payNow,
-    );
-  }
+  //         ///please use your own algorithm for referenceId. Maybe ProductID?
+  //         referenceId: FPayPalStrHelper.getRandomString(16),
+  //       ),
+  //     );
+  //   }
+  //   // initPayPal();
+  //   _flutterPaypalNativePlugin.makeOrder(
+  //     action: FPayPalUserAction.payNow,
+  //   );
+  // }
 
   // _makePaypalPayment({required amount}) async {
   //   PayPalClientTokenGen.paypalClientToken(

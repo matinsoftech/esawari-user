@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
     cuisinesFuture = fireStoreUtils.getCuisines();
     getBanner();
     FireStoreUtils().getRazorPayDemo();
-    FireStoreUtils.getPaypalSettingData();
+    // FireStoreUtils.getPaypalSettingData();
     FireStoreUtils.getStripeSettingData();
     FireStoreUtils.getPayStackSettingData();
     FireStoreUtils.getFlutterWaveSettingData();

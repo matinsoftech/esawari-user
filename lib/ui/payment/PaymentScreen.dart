@@ -31,13 +31,6 @@ import 'package:emartconsumer/userPrefrence.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe1;
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -118,7 +111,7 @@ class PaymentScreenState extends State<PaymentScreen> {
   final Razorpay _razorPay = Razorpay();
   StripeSettingData? stripeData;
   PaytmSettingData? paytmSettingData;
-  PaypalSettingData? paypalSettingData;
+  // PaypalSettingData? paypalSettingData;
   PayStackSettingData? payStackSettingData;
   FlutterWaveSettingData? flutterWaveSettingData;
   PayFastSettingData? payFastSettingData;
@@ -133,7 +126,7 @@ class PaymentScreenState extends State<PaymentScreen> {
   String result = "";
   String paymentType = "";
 
-  final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
+  // final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
 
   getPaymentSettingData() async {
     userQuery = fireStore.collection(USERS).doc(MyAppState.currentUser!.userID).snapshots();
@@ -145,7 +138,7 @@ class PaymentScreenState extends State<PaymentScreen> {
     });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
-    paypalSettingData = await UserPreference.getPayPalData();
+    // paypalSettingData = await UserPreference.getPayPalData();
     payStackSettingData = await UserPreference.getPayStackData();
     flutterWaveSettingData = await UserPreference.getFlutterWaveData();
     payFastSettingData = await UserPreference.getPayFastData();
@@ -154,56 +147,56 @@ class PaymentScreenState extends State<PaymentScreen> {
     ///set Refrence for FlutterWave
     setRef();
 
-    initPayPal();
+    // initPayPal();
   }
 
-  void initPayPal() async {
-    //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
-    //initiate payPal plugin
-    await _flutterPaypalNativePlugin.init(
-      returnUrl: "com.emart.customer://paypalpay",
-      clientID: paypalSettingData!.paypalClient,
-      payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: FPayPalCurrencyCode.usd,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
+  // void initPayPal() async {
+  //   //set debugMode for error logging
+  //   FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
+  //   //initiate payPal plugin
+  //   await _flutterPaypalNativePlugin.init(
+  //     returnUrl: "com.emart.customer://paypalpay",
+  //     clientID: paypalSettingData!.paypalClient,
+  //     payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
+  //     //what currency do you plan to use? default is US dollars
+  //     currencyCode: FPayPalCurrencyCode.usd,
+  //     //action paynow?
+  //     action: FPayPalUserAction.payNow,
+  //   );
 
-    //call backs for payment
-    _flutterPaypalNativePlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          //user canceled the payment
-          Navigator.pop(context);
-          ShowToastDialog.showToast("Payment canceled");
-        },
-        onSuccess: (data) {
-          //successfully paid
-          //remove all items from queue
-          Navigator.pop(context);
-          _flutterPaypalNativePlugin.removeAllPurchaseItems();
-          ShowToastDialog.showToast("Payment Successfully");
-          if (widget.take_away!) {
-            placeOrder(_scaffoldKey.currentContext!,oid: Uuid().v4());
-          } else {
-            toCheckOutScreen(true, _scaffoldKey.currentContext!,oid: Uuid().v4());
-          }
-        },
-        onError: (data) {
-          //an error occured
-          Navigator.pop(context);
-          ShowToastDialog.showToast("error: ${data.reason}");
-        },
-        onShippingChange: (data) {
-          //the user updated the shipping address
-          Navigator.pop(context);
-          ShowToastDialog.showToast("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
-        },
-      ),
-    );
-  }
+  //   //call backs for payment
+  //   _flutterPaypalNativePlugin.setPayPalOrderCallback(
+  //     callback: FPayPalOrderCallback(
+  //       onCancel: () {
+  //         //user canceled the payment
+  //         Navigator.pop(context);
+  //         ShowToastDialog.showToast("Payment canceled");
+  //       },
+  //       onSuccess: (data) {
+  //         //successfully paid
+  //         //remove all items from queue
+  //         Navigator.pop(context);
+  //         _flutterPaypalNativePlugin.removeAllPurchaseItems();
+  //         ShowToastDialog.showToast("Payment Successfully");
+  //         if (widget.take_away!) {
+  //           placeOrder(_scaffoldKey.currentContext!,oid: Uuid().v4());
+  //         } else {
+  //           toCheckOutScreen(true, _scaffoldKey.currentContext!,oid: Uuid().v4());
+  //         }
+  //       },
+  //       onError: (data) {
+  //         //an error occured
+  //         Navigator.pop(context);
+  //         ShowToastDialog.showToast("error: ${data.reason}");
+  //       },
+  //       onShippingChange: (data) {
+  //         //the user updated the shipping address
+  //         Navigator.pop(context);
+  //         ShowToastDialog.showToast("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
+  //       },
+  //     ),
+  //   );
+  // }
 
   showAlert(context, {required String response, required Color colors}) {
     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -476,7 +469,7 @@ class PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
           Visibility(
-            visible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
+            // visible: (paypalSettingData == null) ? false : paypalSettingData!.isEnabled,
             child: Column(
               children: [
                 const Divider(),
@@ -768,7 +761,7 @@ class PaymentScreenState extends State<PaymentScreen> {
               } else if (paypal) {
                 paymentType = 'paypal';
                 showLoadingAlert();
-                paypalPaymentSheet();
+                // paypalPaymentSheet();
                 //  _makePaypalPayment(amount: widget.total.toString());
               } else if (wallet && walletBalanceError == false) {
                 paymentType = 'wallet';
@@ -1014,24 +1007,24 @@ class PaymentScreenState extends State<PaymentScreen> {
   }
 
   ///PayPal payment function
-  paypalPaymentSheet() {
-    //add 1 item to cart. Max is 4!
-    if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
-      _flutterPaypalNativePlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          // random prices
-          amount: double.parse(widget.total.toString()),
+  // paypalPaymentSheet() {
+  //   //add 1 item to cart. Max is 4!
+  //   if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
+  //     _flutterPaypalNativePlugin.addPurchaseUnit(
+  //       FPayPalPurchaseUnit(
+  //         // random prices
+  //         amount: double.parse(widget.total.toString()),
 
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: FPayPalStrHelper.getRandomString(16),
-        ),
-      );
-    }
-    // initPayPal();
-    _flutterPaypalNativePlugin.makeOrder(
-      action: FPayPalUserAction.payNow,
-    );
-  }
+  //         ///please use your own algorithm for referenceId. Maybe ProductID?
+  //         referenceId: FPayPalStrHelper.getRandomString(16),
+  //       ),
+  //     );
+  //   }
+  //   // initPayPal();
+  //   _flutterPaypalNativePlugin.makeOrder(
+  //     action: FPayPalUserAction.payNow,
+  //   );
+  // }
 
   // _makePaypalPayment({required amount}) async {
   //   PayPalClientTokenGen.paypalClientToken(

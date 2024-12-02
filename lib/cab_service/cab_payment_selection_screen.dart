@@ -60,7 +60,7 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
   CodModel? futurecod;
   StripeSettingData? stripeData;
   PaytmSettingData? paytmSettingData;
-  PaypalSettingData? paypalSettingData;
+  // PaypalSettingData? paypalSettingData;
   PayStackSettingData? payStackSettingData;
   FlutterWaveSettingData? flutterWaveSettingData;
   MercadoPagoSettingData? mercadoPagoSettingData;
@@ -83,7 +83,7 @@ class _CabPaymentSelectionScreenState extends State<CabPaymentSelectionScreen> {
     // });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
-    paypalSettingData = await UserPreference.getPayPalData();
+    // paypalSettingData = await UserPreference.getPayPalData();
     payStackSettingData = await UserPreference.getPayStackData();
     flutterWaveSettingData = await UserPreference.getFlutterWaveData();
     mercadoPagoSettingData = await UserPreference.getMercadoPago();

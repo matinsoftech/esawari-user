@@ -42,31 +42,29 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 // void main() async {
-  void main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
 
   // Log the number of Firebase apps already initialized
-  print('Number of Firebase apps before initialization: ${Firebase.apps.length}');
-    try {
+  print(
+      'Number of Firebase apps before initialization: ${Firebase.apps.length}');
+  try {
     // Ensure Firebase is only initialized once
     if (Firebase.apps.isEmpty) {
       print("firebase is empty and not initilize");
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
-        
       );
-        print('Firebase initialized successfully.');
+      print('Firebase initialized successfully.');
     } else {
       print("Firebase is already initialized. No action taken.");
     }
-    
   } catch (e) {
     print('Error initializing Firebase: $e');
     // Handle the error, e.g., by showing a message to the user or logging it
-   // Exit early if Firebase initialization fails
+    // Exit early if Firebase initialization fails
   }
-await EasyLocalization.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await FirebaseAppCheck.instance.activate(
     webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
     androidProvider: AndroidProvider.playIntegrity,
@@ -78,13 +76,9 @@ await EasyLocalization.ensureInitialized();
     sound: true,
   );
 
-
-
- FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   //SharedPreferences sp = await SharedPreferences.getInstance();
- // await UserPreference.init();
-
-
+  // await UserPreference.init();
 
   await FirebaseMessaging.instance.requestPermission(
     alert: true,
@@ -96,7 +90,7 @@ await EasyLocalization.ensureInitialized();
     sound: true,
   );
 
-   await UserPreference.init();
+  await UserPreference.init();
   runApp(
     MultiProvider(
       providers: [
@@ -134,7 +128,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   // Define an async function to initialize FlutterFire
   NotificationService notificationService = NotificationService();
 
-notificationInit() {
+  notificationInit() {
     notificationService.initInfo().then(
       (value) async {
         await Future.delayed(Duration(seconds: 2));
@@ -151,9 +145,9 @@ notificationInit() {
             print("Failed to update FCM token: $error");
           });
         }
-   },
-);
-}
+      },
+    );
+  }
 
   // Define an async function to initialize FlutterFire
   void initializeFlutterFire() async {
@@ -165,33 +159,57 @@ notificationInit() {
         await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
         originalOnError!(errorDetails);
       };
-      await FirebaseFirestore.instance.collection(Setting).doc("emailSetting").get().then((value) {
+      await FirebaseFirestore.instance
+          .collection(Setting)
+          .doc("emailSetting")
+          .get()
+          .then((value) {
         if (value.exists) {
           mailSettings = MailSettings.fromJson(value.data()!);
         }
       });
-      await FirebaseFirestore.instance.collection(Setting).doc("Version").get().then((value) {
+      await FirebaseFirestore.instance
+          .collection(Setting)
+          .doc("Version")
+          .get()
+          .then((value) {
         print(value.data());
         appVersion = value.data()!['app_version'].toString();
       });
 
-      await FirebaseFirestore.instance.collection(Setting).doc("googleMapKey").get().then((value) {
+      await FirebaseFirestore.instance
+          .collection(Setting)
+          .doc("googleMapKey")
+          .get()
+          .then((value) {
         print(value.data());
         GOOGLE_API_KEY = value.data()!['key'].toString();
       });
 
-      await FirebaseFirestore.instance.collection(Setting).doc("notification_setting").get().then((value) {
+      await FirebaseFirestore.instance
+          .collection(Setting)
+          .doc("notification_setting")
+          .get()
+          .then((value) {
         print(value.data());
         senderId = value.data()!['senderId'].toString();
         jsonNotificationFileURL = value.data()!['serviceJson'].toString();
       });
 
-      await FirebaseFirestore.instance.collection(Setting).doc("placeHolderImage").get().then((value) {
+      await FirebaseFirestore.instance
+          .collection(Setting)
+          .doc("placeHolderImage")
+          .get()
+          .then((value) {
         print(value.data());
         placeholderImage = value.data()!['image'].toString();
       });
 
-      await FirebaseFirestore.instance.collection(Setting).doc("globalSettings").get().then((value) {
+      await FirebaseFirestore.instance
+          .collection(Setting)
+          .doc("globalSettings")
+          .get()
+          .then((value) {
         print(value.data());
         Banner_Url = value.data()!['home_banner'].toString();
       });
@@ -237,7 +255,8 @@ notificationInit() {
   }
 
   void getCurrentAppTheme() async {
-    themeChangeProvider.darkTheme = await themeChangeProvider.darkThemePreference.getTheme();
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.darkThemePreference.getTheme();
   }
 
   @override
@@ -274,16 +293,24 @@ class OnBoardingState extends State<OnBoarding> {
           if (user.active) {
             user.active = true;
             user.role = USER_ROLE_CUSTOMER;
-            user.fcmToken = await FireStoreUtils.firebaseMessaging.getToken() ?? '';
+            user.fcmToken =
+                await FireStoreUtils.firebaseMessaging.getToken() ?? '';
             await FireStoreUtils.updateCurrentUser(user);
             MyAppState.currentUser = user;
             isSkipLogin = false;
 
-            if (MyAppState.currentUser!.shippingAddress != null && MyAppState.currentUser!.shippingAddress!.isNotEmpty) {
-              if (MyAppState.currentUser!.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                MyAppState.selectedPosotion = MyAppState.currentUser!.shippingAddress!.where((element) => element.isDefault == true).single;
+            if (MyAppState.currentUser!.shippingAddress != null &&
+                MyAppState.currentUser!.shippingAddress!.isNotEmpty) {
+              if (MyAppState.currentUser!.shippingAddress!
+                  .where((element) => element.isDefault == true)
+                  .isNotEmpty) {
+                MyAppState.selectedPosotion = MyAppState
+                    .currentUser!.shippingAddress!
+                    .where((element) => element.isDefault == true)
+                    .single;
               } else {
-                MyAppState.selectedPosotion = MyAppState.currentUser!.shippingAddress!.first;
+                MyAppState.selectedPosotion =
+                    MyAppState.currentUser!.shippingAddress!.first;
               }
               pushReplacement(context, const StoreSelection());
             } else {
@@ -322,8 +349,7 @@ class OnBoardingState extends State<OnBoarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-backgroundColor: Color(0xFFF9F9F9),
-
+      backgroundColor: Color(0xFFF9F9F9),
       body: Center(
         child: CircularProgressIndicator.adaptive(
           valueColor: AlwaysStoppedAnimation(Color(COLOR_PRIMARY)),

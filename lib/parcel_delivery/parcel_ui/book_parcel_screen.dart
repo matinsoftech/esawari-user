@@ -60,14 +60,18 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
   }
 
   getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    senderLocation = UserLocation(latitude: position.latitude, longitude: position.longitude);
-    receiverLocation = UserLocation(latitude: position.latitude, longitude: position.longitude);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    senderLocation = UserLocation(
+        latitude: position.latitude, longitude: position.longitude);
+    receiverLocation = UserLocation(
+        latitude: position.latitude, longitude: position.longitude);
     getAddressFromLatLong(position);
   }
 
   Future<void> getAddressFromLatLong(Position position) async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
     print(placemarks);
     Placemark place = placemarks[0];
     setState(() {
@@ -118,8 +122,14 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buildCategory(icon: "assets/images/asSoonAs.png", title: "As soon as possible".tr(), index: 0),
-                  buildCategory(icon: "assets/images/schedule.png", title: "Schedule".tr(), index: 1),
+                  buildCategory(
+                      icon: "assets/images/asSoonAs.png",
+                      title: "As soon as possible".tr(),
+                      index: 0),
+                  buildCategory(
+                      icon: "assets/images/schedule.png",
+                      title: "Schedule".tr(),
+                      index: 1),
                 ],
               ),
             ),
@@ -142,7 +152,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
     );
   }
 
-  buildCategory({required String title, required String icon, required int index}) {
+  buildCategory(
+      {required String title, required String icon, required int index}) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -153,7 +164,9 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
         //duration: const Duration(milliseconds: 250),
         width: 165,
         decoration: BoxDecoration(
-          color: selectedIndex == index ? Color(COLOR_PRIMARY) : Colors.grey.shade100,
+          color: selectedIndex == index
+              ? Color(COLOR_PRIMARY)
+              : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
@@ -161,14 +174,20 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ImageIcon(AssetImage(icon), size: 25, color: selectedIndex == index ? Colors.white : Colors.grey.shade500),
+              ImageIcon(AssetImage(icon),
+                  size: 25,
+                  color: selectedIndex == index
+                      ? Colors.white
+                      : Colors.grey.shade500),
               const SizedBox(
                 height: 5,
               ),
               Text(
                 title,
                 style: TextStyle(
-                  color: selectedIndex == index ? Colors.white : Colors.grey.shade500,
+                  color: selectedIndex == index
+                      ? Colors.white
+                      : Colors.grey.shade500,
                 ),
               ),
             ],
@@ -188,7 +207,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Container(
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Color(COLOR_PRIMARY)),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle, color: Color(COLOR_PRIMARY)),
                   child: const Padding(
                     padding: EdgeInsets.all(7.0),
                     child: Text(
@@ -212,7 +232,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
                 child: Container(
                   color: isDarkMode(context) ? Colors.white : Colors.black,
                   height: selectedIndex == 0 ? 320 : 400,
@@ -234,13 +255,17 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Your Location'.tr(), style: const TextStyle(fontWeight: FontWeight.w400)),
+                                Text('Your Location'.tr(),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w400)),
                                 const SizedBox(
                                   height: 4,
                                 ),
                                 Text(
                                   senderAddress.toString(),
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
                                 )
                               ],
                             ),
@@ -250,10 +275,19 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                 "Change".tr(),
                               ),
                               style: ButtonStyle(
-                                  foregroundColor: WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY)),
-                                  backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(8)), side: BorderSide(color: Color(COLOR_PRIMARY))))),
+                                  foregroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                          Color(COLOR_PRIMARY)),
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                          Colors.white),
+                                  shape: WidgetStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(8)),
+                                          side: BorderSide(
+                                              color: Color(COLOR_PRIMARY))))),
                               onPressed: () async {
                                 Navigator.push(
                                   context,
@@ -261,11 +295,17 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                     builder: (context) => PlacePicker(
                                       apiKey: GOOGLE_API_KEY,
                                       onPlacePicked: (result) {
-                                        senderAddress = result.formattedAddress!;
-                                        senderLocation = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
+                                        senderAddress =
+                                            result.formattedAddress!;
+                                        senderLocation = UserLocation(
+                                            latitude:
+                                                result.geometry!.location.lat,
+                                            longitude:
+                                                result.geometry!.location.lng);
                                         Navigator.of(context).pop();
                                       },
-                                      initialPosition: LatLng(-33.8567844, 151.213108),
+                                      initialPosition:
+                                          LatLng(-33.8567844, 151.213108),
                                       useCurrentLocation: true,
                                       selectInitialPosition: true,
                                       usePinPointingSearch: true,
@@ -273,7 +313,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                       zoomGesturesEnabled: true,
                                       zoomControlsEnabled: true,
                                       initialMapType: MapType.terrain,
-                                      resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
+                                      resizeToAvoidBottomInset:
+                                          false, // only works in page mode, less flickery, remove if wrong offsets
                                     ),
                                   ),
                                 );
@@ -291,9 +332,12 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                         controller: sNameController,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16.0, right: 8.0, left: 8.0),
+                        padding: const EdgeInsets.only(
+                            top: 16.0, right: 8.0, left: 8.0),
                         child: InternationalPhoneNumberInput(
-                          onInputChanged: (PhoneNumber number) => sPhoneController.text = number.phoneNumber.toString(),
+                          onInputChanged: (PhoneNumber number) =>
+                              sPhoneController.text =
+                                  number.phoneNumber.toString(),
                           ignoreBlank: true,
                           autoValidateMode: AutovalidateMode.onUserInteraction,
                           inputDecoration: InputDecoration(
@@ -303,7 +347,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                           inputBorder: const OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          selectorConfig: const SelectorConfig(selectorType: PhoneInputSelectorType.DIALOG),
+                          selectorConfig: const SelectorConfig(
+                              selectorType: PhoneInputSelectorType.DIALOG),
                         ),
                       ),
                       Visibility(
@@ -315,21 +360,26 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                             children: [
                               Text(
                                 "When to Pickup at this address",
-                                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                                style: TextStyle(
+                                    color: Colors.grey.shade500, fontSize: 13),
                               ).tr(),
                               const SizedBox(
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
                                     onTap: () => selectDate(context),
                                     child: Container(
                                       decoration: const BoxDecoration(),
                                       child: Text(
-                                        senderData.isEmpty ? 'Select Date'.tr() : senderData.toString(),
-                                        style: TextStyle(color: Color(COLOR_PRIMARY)),
+                                        senderData.isEmpty
+                                            ? 'Select Date'.tr()
+                                            : senderData.toString(),
+                                        style: TextStyle(
+                                            color: Color(COLOR_PRIMARY)),
                                       ),
                                     ),
                                   ),
@@ -338,8 +388,11 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                     child: Container(
                                       decoration: const BoxDecoration(),
                                       child: Text(
-                                        senderTime.isEmpty ? 'Select Time'.tr() : senderTime.toString(),
-                                        style: TextStyle(color: Color(COLOR_PRIMARY)),
+                                        senderTime.isEmpty
+                                            ? 'Select Time'.tr()
+                                            : senderTime.toString(),
+                                        style: TextStyle(
+                                            color: Color(COLOR_PRIMARY)),
                                       ),
                                     ),
                                   ),
@@ -349,7 +402,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                 height: 10,
                               ),
                               Container(
-                                decoration: const BoxDecoration(color: Colors.black38),
+                                decoration:
+                                    const BoxDecoration(color: Colors.black38),
                                 height: 1,
                               )
                             ],
@@ -415,7 +469,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
                 child: Container(
                   color: isDarkMode(context) ? Colors.white : Colors.black,
                   height: selectedIndex == 0 ? 190 : 250,
@@ -436,13 +491,17 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Your Location'.tr(), style: TextStyle(fontWeight: FontWeight.w400)),
+                                Text('Your Location'.tr(),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w400)),
                                 const SizedBox(
                                   height: 4,
                                 ),
                                 Text(
                                   receiverAddress.toString(),
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
                                 )
                               ],
                             ),
@@ -452,10 +511,19 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                 "Change".tr(),
                               ),
                               style: ButtonStyle(
-                                  foregroundColor: WidgetStateProperty.all<Color>(Color(COLOR_PRIMARY)),
-                                  backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(borderRadius: const BorderRadius.all(Radius.circular(8)), side: BorderSide(color: Color(COLOR_PRIMARY))))),
+                                  foregroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                          Color(COLOR_PRIMARY)),
+                                  backgroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                          Colors.white),
+                                  shape: WidgetStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(8)),
+                                          side: BorderSide(
+                                              color: Color(COLOR_PRIMARY))))),
                               onPressed: () async {
                                 Navigator.push(
                                   context,
@@ -463,11 +531,17 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                     builder: (context) => PlacePicker(
                                       apiKey: GOOGLE_API_KEY,
                                       onPlacePicked: (result) {
-                                        receiverAddress = result.formattedAddress!;
-                                        receiverLocation = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
+                                        receiverAddress =
+                                            result.formattedAddress!;
+                                        receiverLocation = UserLocation(
+                                            latitude:
+                                                result.geometry!.location.lat,
+                                            longitude:
+                                                result.geometry!.location.lng);
                                         Navigator.of(context).pop();
                                       },
-                                      initialPosition: LatLng(-33.8567844, 151.213108),
+                                      initialPosition:
+                                          LatLng(-33.8567844, 151.213108),
                                       useCurrentLocation: true,
                                       selectInitialPosition: true,
                                       usePinPointingSearch: true,
@@ -475,7 +549,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                       zoomGesturesEnabled: true,
                                       zoomControlsEnabled: true,
                                       initialMapType: MapType.terrain,
-                                      resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
+                                      resizeToAvoidBottomInset:
+                                          false, // only works in page mode, less flickery, remove if wrong offsets
                                     ),
                                   ),
                                 );
@@ -494,9 +569,12 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                         controller: rNameController,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16.0, right: 8.0, left: 8.0),
+                        padding: const EdgeInsets.only(
+                            top: 16.0, right: 8.0, left: 8.0),
                         child: InternationalPhoneNumberInput(
-                          onInputChanged: (PhoneNumber number) => rPhoneController.text = number.phoneNumber.toString(),
+                          onInputChanged: (PhoneNumber number) =>
+                              rPhoneController.text =
+                                  number.phoneNumber.toString(),
                           ignoreBlank: true,
                           autoValidateMode: AutovalidateMode.onUserInteraction,
                           inputDecoration: InputDecoration(
@@ -506,7 +584,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                           inputBorder: const OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
-                          selectorConfig: const SelectorConfig(selectorType: PhoneInputSelectorType.DIALOG),
+                          selectorConfig: const SelectorConfig(
+                              selectorType: PhoneInputSelectorType.DIALOG),
                         ),
                       ),
                       Visibility(
@@ -518,31 +597,41 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                             children: [
                               Text(
                                 "When to arrive at this address".tr(),
-                                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                                style: TextStyle(
+                                    color: Colors.grey.shade500, fontSize: 13),
                               ),
                               const SizedBox(
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
-                                    onTap: () => selectDate(context, isPickUp: false),
+                                    onTap: () =>
+                                        selectDate(context, isPickUp: false),
                                     child: Container(
                                       decoration: const BoxDecoration(),
                                       child: Text(
-                                        receiverDate.isEmpty ? 'Select Date'.tr() : receiverDate.toString(),
-                                        style: TextStyle(color: Color(COLOR_PRIMARY)),
+                                        receiverDate.isEmpty
+                                            ? 'Select Date'.tr()
+                                            : receiverDate.toString(),
+                                        style: TextStyle(
+                                            color: Color(COLOR_PRIMARY)),
                                       ),
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => selectTime(context, isPickUp: false),
+                                    onTap: () =>
+                                        selectTime(context, isPickUp: false),
                                     child: Container(
                                       decoration: const BoxDecoration(),
                                       child: Text(
-                                        receiverTime.isEmpty ? 'Select Time'.tr() : receiverTime.toString(),
-                                        style: TextStyle(color: Color(COLOR_PRIMARY)),
+                                        receiverTime.isEmpty
+                                            ? 'Select Time'.tr()
+                                            : receiverTime.toString(),
+                                        style: TextStyle(
+                                            color: Color(COLOR_PRIMARY)),
                                       ),
                                     ),
                                   ),
@@ -552,9 +641,11 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                                 height: 5,
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
                                 child: Container(
-                                  decoration: const BoxDecoration(color: Colors.black38),
+                                  decoration: const BoxDecoration(
+                                      color: Colors.black38),
                                   height: 1,
                                 ),
                               )
@@ -602,7 +693,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
               : null,
           hintStyle: TextStyle(color: Colors.grey.shade600),
           alignLabelWithHint: true,
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: color)),
+          focusedBorder:
+              UnderlineInputBorder(borderSide: BorderSide(color: color)),
           focusColor: color),
     );
   }
@@ -617,7 +709,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Container(
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Color(COLOR_PRIMARY)),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle, color: Color(COLOR_PRIMARY)),
                   child: const Padding(
                     padding: EdgeInsets.all(7.0),
                     child: Text(
@@ -641,7 +734,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 17.0, vertical: 10),
                 child: Container(
                   color: isDarkMode(context) ? Colors.white : Colors.black,
                   height: selectedIndex == 0 ? 120 : 120,
@@ -665,13 +759,18 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                             itemBuilder: (context, index) {
                               print(images![index].name);
                               return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
                                 child: Container(
                                   width: 100,
                                   height: 100.0,
                                   decoration: BoxDecoration(
-                                    image: DecorationImage(fit: BoxFit.cover, image: FileImage(File(images![index].path))),
-                                    borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: FileImage(
+                                            File(images![index].path))),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(8.0)),
                                   ),
                                   child: InkWell(
                                       onTap: () {
@@ -688,12 +787,15 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                             },
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                             child: InkWell(
                               onTap: () {
                                 _onCameraClick();
                               },
-                              child: Image.asset('assets/images/parcel_add_image.png', height: 100),
+                              child: Image.asset(
+                                  'assets/images/parcel_add_image.png',
+                                  height: 100),
                             ),
                           )
                         ],
@@ -722,7 +824,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
           floatingLabelBehavior: FloatingLabelBehavior.always,
           labelText: title,
           hintText: title,
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: color)),
+          focusedBorder:
+              UnderlineInputBorder(borderSide: BorderSide(color: color)),
         ),
         value: selectedWeight,
         validator: (value) => value == null ? 'field required'.tr() : null,
@@ -747,8 +850,12 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
   String receiverDate = ""; //DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   selectDate(BuildContext context, {bool isPickUp = true}) async {
-    final DateTime? picked =
-        await showDatePicker(context: context, initialDate: selectedDatePickUp, initialDatePickerMode: DatePickerMode.day, firstDate: selectedDatePickUp, lastDate: DateTime(2101));
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDatePickUp,
+        initialDatePickerMode: DatePickerMode.day,
+        firstDate: selectedDatePickUp,
+        lastDate: DateTime(2101));
     if (picked != null) {
       setState(() {
         if (isPickUp) {
@@ -759,7 +866,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
         } else {
           selectedDateDeliver = picked;
 
-          receiverDate = DateFormat('dd-MMMM-yyyy ').format(selectedDateDeliver);
+          receiverDate =
+              DateFormat('dd-MMMM-yyyy ').format(selectedDateDeliver);
           print(receiverDate);
         }
       });
@@ -829,28 +937,97 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
                   ));
                 } else {
                   _key.currentState!.save();
-                  await getDurationDistance(LatLng(senderLocation!.latitude, senderLocation!.longitude), LatLng(receiverLocation!.latitude, receiverLocation!.longitude))
+                  await getDurationDistance(
+                          LatLng(senderLocation!.latitude,
+                              senderLocation!.longitude),
+                          LatLng(receiverLocation!.latitude,
+                              receiverLocation!.longitude))
                       .then((durationValue) async {
                     print("----->${durationValue.toString()}");
                     if (durationValue != null) {
                       setState(() {
-                        distance = durationValue['rows'].first['elements'].first['distance']['value'] / 1000.00;
-                        subTotal = (distance! * double.parse(selectedWeight!.deliveryCharge.toString()));
+                        distance = durationValue['rows']
+                                .first['elements']
+                                .first['distance']['value'] /
+                            1000.00;
+                        subTotal = (distance! *
+                            double.parse(
+                                selectedWeight!.deliveryCharge.toString()));
                       });
+                    } else {
+                      print("duration----->${durationValue.toString()}");
+
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Location Error"),
+                            content: Text(
+                              "Please select another drop off location, currently we only support pickup and dropoff distance under 100km only",
+                              style:
+                                  TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+                              textAlign: TextAlign.justify,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                },
+                                child: Text("OK"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     }
                   });
                   bookParcelOrder();
                 }
               } else {
                 _key.currentState!.save();
-                await getDurationDistance(LatLng(senderLocation!.latitude, senderLocation!.longitude), LatLng(receiverLocation!.latitude, receiverLocation!.longitude))
+                await getDurationDistance(
+                        LatLng(senderLocation!.latitude,
+                            senderLocation!.longitude),
+                        LatLng(receiverLocation!.latitude,
+                            receiverLocation!.longitude))
                     .then((durationValue) async {
                   print("----->${durationValue.toString()}");
                   if (durationValue != null) {
                     setState(() {
-                      distance = durationValue['rows'].first['elements'].first['distance']['value'] / 1000.00;
-                      subTotal = (distance! * double.parse(selectedWeight!.deliveryCharge.toString()));
+                      distance = durationValue['rows']
+                              .first['elements']
+                              .first['distance']['value'] /
+                          1000.00;
+                      subTotal = (distance! *
+                          double.parse(
+                              selectedWeight!.deliveryCharge.toString()));
                     });
+                  } else {
+                    print("duration----->${durationValue.toString()}");
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Location Error"),
+                          content: Text(
+                            "Please select another drop off location, currently we only support pickup and dropoff distance under 100km only",
+                            style:
+                                TextStyle(fontSize: 16, fontFamily: 'Roboto'),
+                            textAlign: TextAlign.justify,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              child: Text("OK"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   }
                 });
                 bookParcelOrder();
@@ -878,10 +1055,18 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
           parcelWeight: selectedWeight!.title,
           parcelWeightCharge: selectedWeight!.deliveryCharge,
           sendToDriver: selectedIndex == 1 ? false : true,
-          senderPickupDateTime:
-              Timestamp.fromDate(DateTime(selectedDatePickUp.year, selectedDatePickUp.month, selectedDatePickUp.day, selectedTimePickUp.hour, selectedTimePickUp.minute)),
-          receiverPickupDateTime:
-              Timestamp.fromDate(DateTime(selectedDateDeliver.year, selectedDateDeliver.month, selectedDateDeliver.day, selectedTimeDeliver.hour, selectedTimeDeliver.minute)),
+          senderPickupDateTime: Timestamp.fromDate(DateTime(
+              selectedDatePickUp.year,
+              selectedDatePickUp.month,
+              selectedDatePickUp.day,
+              selectedTimePickUp.hour,
+              selectedTimePickUp.minute)),
+          receiverPickupDateTime: Timestamp.fromDate(DateTime(
+              selectedDateDeliver.year,
+              selectedDateDeliver.month,
+              selectedDateDeliver.day,
+              selectedTimeDeliver.hour,
+              selectedTimeDeliver.minute)),
           isSchedule: selectedIndex == 1 ? true : false,
           sender: ParcelUserDetails(
             address: sAddressController.text,
@@ -914,17 +1099,20 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
     }
   }
 
-  Future<dynamic> getDurationDistance(LatLng departureLatLong, LatLng destinationLatLong) async {
+  Future<dynamic> getDurationDistance(
+      LatLng departureLatLong, LatLng destinationLatLong) async {
     showProgress(context, 'Please wait...'.tr(), false);
 
     String url = 'https://maps.googleapis.com/maps/api/distancematrix/json';
-    http.Response restaurantToCustomerTime = await http.get(Uri.parse('$url?units=metric&origins=${departureLatLong.latitude},'
+    http.Response restaurantToCustomerTime = await http.get(Uri.parse(
+        '$url?units=metric&origins=${departureLatLong.latitude},'
         '${departureLatLong.longitude}&destinations=${destinationLatLong.latitude},${destinationLatLong.longitude}&key=$GOOGLE_API_KEY'));
 
     var decodedResponse = jsonDecode(restaurantToCustomerTime.body);
 
     print(decodedResponse);
-    if (decodedResponse['status'] == 'OK' && decodedResponse['rows'].first['elements'].first['status'] == 'OK') {
+    if (decodedResponse['status'] == 'OK' &&
+        decodedResponse['rows'].first['elements'].first['status'] == 'OK') {
       await hideProgress();
       return decodedResponse;
     }
@@ -959,7 +1147,8 @@ class _BookOrderScreenState extends State<BookParcelScreen> {
           isDestructiveAction: false,
           onPressed: () async {
             Navigator.pop(context);
-            final XFile? photo = await ImagePicker().pickImage(source: ImageSource.camera);
+            final XFile? photo =
+                await ImagePicker().pickImage(source: ImageSource.camera);
             if (photo != null) {
               setState(() async {
                 images!.add(photo);

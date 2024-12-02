@@ -18,16 +18,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   final List<String> _titlesList = [
     // easyLocal.tr('Welcome to FOODIES'),
     // 'Order Food'.tr(),
-    'Add Address'.tr(),
-    'Choose Your Favorite Item'.tr(),
-    'Fastest Delivery'.tr(),
+    'Welcome to the App'.tr(),
+    'Easy Booking Process'.tr(),
+    'Safe and Affordable'.tr(),
   ];
 
   final List<String> _subtitlesList = [
     // 'Hungry? Order food in just a few clicks and we\'ll take care of you.'.tr(),
-    'Find perfect store nearby or  place order at your favorite store in few clicks.'.tr(),
-    'A diverse list of different dining stores throughout the territory and around your area carefully selected'.tr(),
-    'Get your favorite item fastest delivered at your doorstep'.tr(),
+    'Your Ride, Your Way!'.tr(),
+    'Book a Ride in Just a Tap!'.tr(),
+    'Affordable Rides, Safe Travels!'.tr(),
   ];
 
   final List<dynamic> _imageList = [
@@ -36,9 +36,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     'assets/images/intro_3.png',
   ];
   final List<dynamic> _darkimageList = [
-    'assets/images/intro_1_dark.png',
-    'assets/images/intro_2_dark.png',
-    'assets/images/intro_3_dark.png',
+    'assets/images/intro_1.png',
+    'assets/images/intro_2.png',
+    'assets/images/intro_3.png',
   ];
   int _currentIndex = 0;
 

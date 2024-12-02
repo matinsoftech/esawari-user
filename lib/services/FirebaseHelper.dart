@@ -980,16 +980,16 @@ static Future<User?> getCurrentUser(String uid) async {
     });
   }
 
-  static getPaypalSettingData() async {
-    firestore.collection(Setting).doc("paypalSettings").get().then((paypalData) {
-      try {
-        PaypalSettingData payplaDataModel = PaypalSettingData.fromJson(paypalData.data() ?? {});
-        UserPreference.setPayPalData(payplaDataModel);
-      } catch (error) {
-        print(error.toString());
-      }
-    });
-  }
+  // static getPaypalSettingData() async {
+  //   firestore.collection(Setting).doc("paypalSettings").get().then((paypalData) {
+  //     try {
+  //       PaypalSettingData payplaDataModel = PaypalSettingData.fromJson(paypalData.data() ?? {});
+  //       UserPreference.setPayPalData(payplaDataModel);
+  //     } catch (error) {
+  //       print(error.toString());
+  //     }
+  //   });
+  // }
 
   static getMercadoPagoSettingData() async {
     firestore.collection(Setting).doc("MercadoPago").get().then((mercadoPago) {

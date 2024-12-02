@@ -73,15 +73,15 @@ class UserPreference {
 
   static String paypalKey = "paypalKey";
 
-  static setPayPalData(PaypalSettingData payPalSettingModel) async {
-    final jsonData = jsonEncode(payPalSettingModel);
-    await _preferences.setString(paypalKey, jsonData);
-  }
+  // static setPayPalData(PaypalSettingData payPalSettingModel) async {
+  //   final jsonData = jsonEncode(payPalSettingModel);
+  //   await _preferences.setString(paypalKey, jsonData);
+  // }
 
-  static getPayPalData() {
-    final String? jsonData = _preferences.getString(paypalKey);
-    if (jsonData != null) return PaypalSettingData.fromJson((jsonDecode(jsonData)));
-  }
+  // static getPayPalData() {
+  //   final String? jsonData = _preferences.getString(paypalKey);
+  //   if (jsonData != null) return PaypalSettingData.fromJson((jsonDecode(jsonData)));
+  // }
 
   static String mercadoPago = "mercadoPago";
 

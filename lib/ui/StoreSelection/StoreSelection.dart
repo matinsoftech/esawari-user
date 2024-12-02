@@ -68,7 +68,7 @@ class StoreSelectionState extends State<StoreSelection> {
     country = placeMarks.first.country;
 
     await FireStoreUtils().getRazorPayDemo();
-    await FireStoreUtils.getPaypalSettingData();
+    // await FireStoreUtils.getPaypalSettingData();
     await FireStoreUtils.getStripeSettingData();
     await FireStoreUtils.getPayStackSettingData();
     await FireStoreUtils.getFlutterWaveSettingData();
@@ -320,13 +320,13 @@ class StoreSelectionState extends State<StoreSelection> {
                     );
                   }
 
-                  return showEmptyState('No Categories'.tr(), context);
+                  return showEmptyState('Please login to see the services'.tr(), context);
                 },
               ),
             ],
           ),
         ),
-        BlogsProvider(),
+        // BlogsProvider(),
       ],
     ),
   ),

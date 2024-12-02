@@ -38,13 +38,6 @@ import 'package:emartconsumer/userPrefrence.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' as stripe1;
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:http/http.dart' as http;
@@ -363,7 +356,7 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
               paymentType = 'paypal';
               showLoadingAlert();
               //  _makePaypalPayment(amount: getTotalAmount().toString());
-              paypalPaymentSheet(amount: getTotalAmount().toString());
+              // paypalPaymentSheet(amount: getTotalAmount().toString());
             } else if (wallet && walletBalanceError == false) {
               paymentType = 'wallet';
 
@@ -1320,7 +1313,7 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
   static FirebaseFirestore fireStore = FirebaseFirestore.instance;
   StripeSettingData? stripeData;
   PaytmSettingData? paytmSettingData;
-  PaypalSettingData? paypalSettingData;
+  // PaypalSettingData? paypalSettingData;
   PayStackSettingData? payStackSettingData;
   FlutterWaveSettingData? flutterWaveSettingData;
   PayFastSettingData? payFastSettingData;
@@ -1349,7 +1342,7 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
     });
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
-    paypalSettingData = await UserPreference.getPayPalData();
+    // paypalSettingData = await UserPreference.getPayPalData();
     payStackSettingData = await UserPreference.getPayStackData();
     flutterWaveSettingData = await UserPreference.getFlutterWaveData();
     payFastSettingData = await UserPreference.getPayFastData();
@@ -1362,51 +1355,51 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
 
   void initPayPal() async {
     //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode =
-        paypalSettingData!.isLive == false ? true : false;
+    // FlutterPaypalNative.isDebugMode =
+    //     paypalSettingData!.isLive == false ? true : false;
     //initiate payPal plugin
-    await _flutterPaypalNativePlugin.init(
-      //your app id !!! No Underscore!!! see readme.md for help
-      returnUrl: "com.emart.customer://paypalpay",
-      //client id from developer dashboard
-      clientID: paypalSettingData!.paypalClient,
-      //sandbox, staging, live etc
-      payPalEnvironment: paypalSettingData!.isLive == true
-          ? FPayPalEnvironment.live
-          : FPayPalEnvironment.sandbox,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: FPayPalCurrencyCode.usd,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
+    // await _flutterPaypalNativePlugin.init(
+    //   //your app id !!! No Underscore!!! see readme.md for help
+    //   returnUrl: "com.emart.customer://paypalpay",
+    //   //client id from developer dashboard
+    //   clientID: paypalSettingData!.paypalClient,
+    //   //sandbox, staging, live etc
+    //   // payPalEnvironment: paypalSettingData!.isLive == true
+    //   //     ? FPayPalEnvironment.live
+    //   //     : FPayPalEnvironment.sandbox,
+    //   // //what currency do you plan to use? default is US dollars
+    //   // currencyCode: FPayPalCurrencyCode.usd,
+    //   // //action paynow?
+    //   // action: FPayPalUserAction.payNow,
+    // );
 
     //call backs for payment
-    _flutterPaypalNativePlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          //user canceled the payment
-          Navigator.pop(context);
-          ShowToastDialog.showToast("Payment canceled");
-        },
-        onSuccess: (data) {
-          //successfully paid
-          //remove all items from queue
-          Navigator.pop(context);
-          _flutterPaypalNativePlugin.removeAllPurchaseItems();
-          ShowToastDialog.showToast("Payment Successfully");
-          placeOrderChanges();
-        },
-        onError: (data) {
-          Navigator.pop(context);
-          ShowToastDialog.showToast("error: ${data.reason}");
-        },
-        onShippingChange: (data) {
-          Navigator.pop(context);
-          ShowToastDialog.showToast(
-              "shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
-        },
-      ),
-    );
+    // _flutterPaypalNativePlugin.setPayPalOrderCallback(
+    //   // callback: FPayPalOrderCallback(
+    //   //   onCancel: () {
+    //   //     //user canceled the payment
+    //   //     Navigator.pop(context);
+    //   //     ShowToastDialog.showToast("Payment canceled");
+    //   //   },
+    //   //   onSuccess: (data) {
+    //   //     //successfully paid
+    //   //     //remove all items from queue
+    //   //     Navigator.pop(context);
+    //   //     _flutterPaypalNativePlugin.removeAllPurchaseItems();
+    //   //     ShowToastDialog.showToast("Payment Successfully");
+    //   //     placeOrderChanges();
+    //   //   },
+    //   //   onError: (data) {
+    //   //     Navigator.pop(context);
+    //   //     ShowToastDialog.showToast("error: ${data.reason}");
+    //   //   },
+    //   //   onShippingChange: (data) {
+    //   //     Navigator.pop(context);
+    //   //     ShowToastDialog.showToast(
+    //   //         "shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
+    //   //   },
+    //   // ),
+    // );
   }
 
   Widget paymentListView() {
@@ -2275,26 +2268,26 @@ class _CabPaymentScreenState extends State<CabPaymentScreen> {
   }
 
   ///PayPal payment function
-  final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
+  // final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
 
-  paypalPaymentSheet({required amount}) {
-    //add 1 item to cart. Max is 4!
-    if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
-      _flutterPaypalNativePlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          // random prices
-          amount: double.parse(amount),
+  // paypalPaymentSheet({required amount}) {
+  //   //add 1 item to cart. Max is 4!
+  //   if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
+  //     _flutterPaypalNativePlugin.addPurchaseUnit(
+  //       FPayPalPurchaseUnit(
+  //         // random prices
+  //         amount: double.parse(amount),
 
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: FPayPalStrHelper.getRandomString(16),
-        ),
-      );
-    }
-    // initPayPal();
-    _flutterPaypalNativePlugin.makeOrder(
-      action: FPayPalUserAction.payNow,
-    );
-  }
+  //         ///please use your own algorithm for referenceId. Maybe ProductID?
+  //         referenceId: FPayPalStrHelper.getRandomString(16),
+  //       ),
+  //     );
+  //   }
+  //   // initPayPal();
+  //   _flutterPaypalNativePlugin.makeOrder(
+  //     action: FPayPalUserAction.payNow,
+  //   );
+  // }
 
   // _makePaypalPayment({required amount}) async {
   //   PayPalClientTokenGen.paypalClientToken(

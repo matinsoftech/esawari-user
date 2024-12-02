@@ -7,13 +7,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
+// import 'package:flutter_paypal_native/flutter_paypal_native.dart';
+// import 'package:flutter_paypal_native/models/custom/currency_code.dart';
+// import 'package:flutter_paypal_native/models/custom/environment.dart';
+// import 'package:flutter_paypal_native/models/custom/order_callback.dart';
+// import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
+// import 'package:flutter_paypal_native/models/custom/user_action.dart';
+// import 'package:flutter_paypal_native/str_helper.dart';
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:emartconsumer/constants.dart';
 import 'package:emartconsumer/main.dart';
@@ -73,7 +73,7 @@ class _GiftCardPurchaseScreenState extends State<GiftCardPurchaseScreen> {
   RazorPayModel? razorPayData;
   StripeSettingData? stripeData;
   PaytmSettingData? paytmSettingData;
-  PaypalSettingData? paypalSettingData;
+  // PaypalSettingData? paypalSettingData;
   PayStackSettingData? payStackSettingData;
   FlutterWaveSettingData? flutterWaveSettingData;
   PayFastSettingData? payFastSettingData;
@@ -93,75 +93,75 @@ class _GiftCardPurchaseScreenState extends State<GiftCardPurchaseScreen> {
 
     razorPayData = await UserPreference.getRazorPayData();
     paytmSettingData = await UserPreference.getPaytmData();
-    paypalSettingData = await UserPreference.getPayPalData();
+    // paypalSettingData = await UserPreference.getPayPalData();
     payStackSettingData = await UserPreference.getPayStackData();
     flutterWaveSettingData = await UserPreference.getFlutterWaveData();
     payFastSettingData = await UserPreference.getPayFastData();
     mercadoPagoSettingData = await UserPreference.getMercadoPago();
     setRef();
-    initPayPal();
+    // initPayPal();
   }
 
-  final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
+  // final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
 
-  void initPayPal() async {
-    //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
-    //initiate payPal plugin
-    await _flutterPaypalNativePlugin.init(
-      //your app id !!! No Underscore!!! see readme.md for help
-      returnUrl: "com.emart.customer://paypalpay",
-      //client id from developer dashboard
-      clientID: paypalSettingData!.paypalClient,
-      //sandbox, staging, live etc
-      payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: FPayPalCurrencyCode.usd,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
+  // void initPayPal() async {
+  //   //set debugMode for error logging
+  //   FlutterPaypalNative.isDebugMode = paypalSettingData!.isLive == false ? true : false;
+  //   //initiate payPal plugin
+  //   await _flutterPaypalNativePlugin.init(
+  //     //your app id !!! No Underscore!!! see readme.md for help
+  //     returnUrl: "com.emart.customer://paypalpay",
+  //     //client id from developer dashboard
+  //     clientID: paypalSettingData!.paypalClient,
+  //     //sandbox, staging, live etc
+  //     payPalEnvironment: paypalSettingData!.isLive == true ? FPayPalEnvironment.live : FPayPalEnvironment.sandbox,
+  //     //what currency do you plan to use? default is US dollars
+  //     currencyCode: FPayPalCurrencyCode.usd,
+  //     //action paynow?
+  //     action: FPayPalUserAction.payNow,
+  //   );
 
-    //call backs for payment
-    _flutterPaypalNativePlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          //user canceled the payment
-          Navigator.pop(context);
-          ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
-            content: Text("Payment canceled".tr() + "\n"),
-            backgroundColor: Colors.red,
-          ));
-        },
-        onSuccess: (data) {
-          Navigator.pop(context);
-          _flutterPaypalNativePlugin.removeAllPurchaseItems();
-          String visitor = data.cart?.shippingAddress?.firstName ?? 'Visitor';
-          String address = data.cart?.shippingAddress?.line1 ?? 'Unknown Address';
+  //   //call backs for payment
+  //   _flutterPaypalNativePlugin.setPayPalOrderCallback(
+  //     callback: FPayPalOrderCallback(
+  //       onCancel: () {
+  //         //user canceled the payment
+  //         Navigator.pop(context);
+  //         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
+  //           content: Text("Payment canceled".tr() + "\n"),
+  //           backgroundColor: Colors.red,
+  //         ));
+  //       },
+  //       onSuccess: (data) {
+  //         Navigator.pop(context);
+  //         _flutterPaypalNativePlugin.removeAllPurchaseItems();
+  //         String visitor = data.cart?.shippingAddress?.firstName ?? 'Visitor';
+  //         String address = data.cart?.shippingAddress?.line1 ?? 'Unknown Address';
 
-          ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
-            content: Text("Payment Successfully".tr() + "\n"),
-            backgroundColor: Colors.red,
-          ));
-          paymentCompleted(paymentMethod: "Paypal");
-        },
-        onError: (data) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
-            content: Text("error".tr() + "\n"),
-            backgroundColor: Colors.red,
-          ));
-        },
-        onShippingChange: (data) {
-          //the user updated the shipping address
-          Navigator.pop(context);
-          ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
-            content: Text("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}"),
-            backgroundColor: Colors.red,
-          ));
-        },
-      ),
-    );
-  }
+  //         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
+  //           content: Text("Payment Successfully".tr() + "\n"),
+  //           backgroundColor: Colors.red,
+  //         ));
+  //         paymentCompleted(paymentMethod: "Paypal");
+  //       },
+  //       onError: (data) {
+  //         Navigator.pop(context);
+  //         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
+  //           content: Text("error".tr() + "\n"),
+  //           backgroundColor: Colors.red,
+  //         ));
+  //       },
+  //       onShippingChange: (data) {
+  //         //the user updated the shipping address
+  //         Navigator.pop(context);
+  //         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(SnackBar(
+  //           content: Text("shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}"),
+  //           backgroundColor: Colors.red,
+  //         ));
+  //       },
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -838,67 +838,67 @@ class _GiftCardPurchaseScreenState extends State<GiftCardPurchaseScreen> {
                         ),
                       ),
                     ),
-                    Visibility(
-                      visible: paypalSettingData != null && paypalSettingData!.isEnabled,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 20),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          elevation: paypal ? 0 : 2,
-                          child: RadioListTile(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: paypal ? Color(COLOR_PRIMARY) : Colors.transparent)),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                            ),
-                            controlAffinity: ListTileControlAffinity.trailing,
-                            value: "PayPal",
-                            groupValue: selectedRadioTile,
-                            onChanged: (String? value) {
-                              setState(() {
-                                stripe = false;
-                                payTm = false;
-                                mercadoPago = false;
-                                flutterWave = false;
-                                razorPay = false;
-                                paypal = true;
-                                payFast = false;
-                                payStack = false;
-                                selectedRadioTile = value!;
-                              });
-                            },
-                            selected: paypal,
-                            //selectedRadioTile == "strip" ? true : false,
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.blueGrey.shade50,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
-                                      child: SizedBox(
-                                          width: 80,
-                                          height: 35,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 3.0),
-                                            child: Image.asset("assets/images/paypal_@3x.png"),
-                                          )),
-                                    )),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Text("PayPal"),
-                              ],
-                            ),
-                            //toggleable: true,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Visibility(
+                    //   visible: paypalSettingData != null && paypalSettingData!.isEnabled,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 20),
+                    //     child: Card(
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //       ),
+                    //       elevation: paypal ? 0 : 2,
+                    //       child: RadioListTile(
+                    //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: paypal ? Color(COLOR_PRIMARY) : Colors.transparent)),
+                    //         contentPadding: EdgeInsets.symmetric(
+                    //           horizontal: 6,
+                    //         ),
+                    //         controlAffinity: ListTileControlAffinity.trailing,
+                    //         value: "PayPal",
+                    //         groupValue: selectedRadioTile,
+                    //         onChanged: (String? value) {
+                    //           setState(() {
+                    //             stripe = false;
+                    //             payTm = false;
+                    //             mercadoPago = false;
+                    //             flutterWave = false;
+                    //             razorPay = false;
+                    //             paypal = true;
+                    //             payFast = false;
+                    //             payStack = false;
+                    //             selectedRadioTile = value!;
+                    //           });
+                    //         },
+                    //         selected: paypal,
+                    //         //selectedRadioTile == "strip" ? true : false,
+                    //         title: Row(
+                    //           mainAxisAlignment: MainAxisAlignment.start,
+                    //           children: [
+                    //             Container(
+                    //                 decoration: BoxDecoration(
+                    //                   color: Colors.blueGrey.shade50,
+                    //                   borderRadius: BorderRadius.circular(8),
+                    //                 ),
+                    //                 child: Padding(
+                    //                   padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
+                    //                   child: SizedBox(
+                    //                       width: 80,
+                    //                       height: 35,
+                    //                       child: Padding(
+                    //                         padding: const EdgeInsets.symmetric(vertical: 3.0),
+                    //                         child: Image.asset("assets/images/paypal_@3x.png"),
+                    //                       )),
+                    //                 )),
+                    //             SizedBox(
+                    //               width: 20,
+                    //             ),
+                    //             Text("PayPal"),
+                    //           ],
+                    //         ),
+                    //         //toggleable: true,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 22),
                       child: GestureDetector(
@@ -956,7 +956,7 @@ class _GiftCardPurchaseScreenState extends State<GiftCardPurchaseScreen> {
                             getPaytmCheckSum(context, amount: double.parse(gradTotal));
                           } else if (selectedRadioTile == "PayPal") {
                             showLoadingAlert();
-                            paypalPaymentSheet();
+                            // paypalPaymentSheet();
                           } else if (selectedRadioTile == "PayStack") {
                             showLoadingAlert();
                             payStackPayment();
@@ -1309,24 +1309,24 @@ class _GiftCardPurchaseScreenState extends State<GiftCardPurchaseScreen> {
 
   /// PayPal Payment Gateway
   /// PayPal Payment Gateway
-  paypalPaymentSheet() {
-    //add 1 item to cart. Max is 4!
-    if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
-      _flutterPaypalNativePlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          // random prices
-          amount: double.parse(gradTotal),
+  // paypalPaymentSheet() {
+  //   //add 1 item to cart. Max is 4!
+  //   if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
+  //     _flutterPaypalNativePlugin.addPurchaseUnit(
+  //       FPayPalPurchaseUnit(
+  //         // random prices
+  //         amount: double.parse(gradTotal),
 
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: FPayPalStrHelper.getRandomString(16),
-        ),
-      );
-    }
-    // initPayPal();
-    _flutterPaypalNativePlugin.makeOrder(
-      action: FPayPalUserAction.payNow,
-    );
-  }
+  //         ///please use your own algorithm for referenceId. Maybe ProductID?
+  //         referenceId: FPayPalStrHelper.getRandomString(16),
+  //       ),
+  //     );
+  //   }
+  //   // initPayPal();
+  //   _flutterPaypalNativePlugin.makeOrder(
+  //     action: FPayPalUserAction.payNow,
+  //   );
+  // }
 
   ///MercadoPago Payment Method
 

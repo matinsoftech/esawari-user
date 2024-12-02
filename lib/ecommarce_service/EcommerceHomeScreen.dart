@@ -133,7 +133,7 @@ class _EcommerceHomeScreenState extends State<EcommerceHomeScreen> {
     getBanner();
     saveFoodTypeValue();
     FireStoreUtils().getRazorPayDemo();
-    FireStoreUtils.getPaypalSettingData();
+    // FireStoreUtils.getPaypalSettingData();
     FireStoreUtils.getStripeSettingData();
     FireStoreUtils.getPayStackSettingData();
     FireStoreUtils.getFlutterWaveSettingData();
